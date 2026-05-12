@@ -1,0 +1,227 @@
+{
+  "version": 1,
+  "created": "2026-04-21T03:10:00Z",
+  "base_url": "http://localhost:5173",
+  "screens": [
+    {
+      "url": "/",
+      "name": "Home",
+      "auth_required": false,
+      "source_file": "src/App.jsx",
+      "discovered_from": ["codebase"],
+      "workflow_refs": [],
+      "params": {},
+      "example_url": "/"
+    },
+    {
+      "url": "/products",
+      "name": "Catalog",
+      "auth_required": false,
+      "source_file": "src/App.jsx",
+      "discovered_from": ["codebase"],
+      "workflow_refs": [],
+      "params": {},
+      "example_url": "/products"
+    },
+    {
+      "url": "/product/:id",
+      "name": "Product Detail",
+      "auth_required": false,
+      "source_file": "src/App.jsx",
+      "discovered_from": ["codebase"],
+      "workflow_refs": [],
+      "params": { "id": "1" },
+      "example_url": "/product/1"
+    },
+    {
+      "url": "/login",
+      "name": "Login",
+      "auth_required": false,
+      "source_file": "src/App.jsx",
+      "discovered_from": ["codebase"],
+      "workflow_refs": [],
+      "params": {},
+      "example_url": "/login"
+    },
+    {
+      "url": "/forgot-password",
+      "name": "Forgot Password",
+      "auth_required": false,
+      "source_file": "src/App.jsx",
+      "discovered_from": ["codebase"],
+      "workflow_refs": [],
+      "params": {},
+      "example_url": "/forgot-password"
+    },
+    {
+      "url": "/reset-password",
+      "name": "Reset Password",
+      "auth_required": false,
+      "source_file": "src/App.jsx",
+      "discovered_from": ["codebase"],
+      "workflow_refs": [],
+      "params": {},
+      "example_url": "/reset-password"
+    },
+    {
+      "url": "/about",
+      "name": "About",
+      "auth_required": false,
+      "source_file": "src/App.jsx",
+      "discovered_from": ["codebase"],
+      "workflow_refs": [],
+      "params": {},
+      "example_url": "/about"
+    },
+    {
+      "url": "/checkout",
+      "name": "Checkout",
+      "auth_required": true,
+      "source_file": "src/App.jsx",
+      "discovered_from": ["codebase"],
+      "workflow_refs": [],
+      "params": {},
+      "example_url": "/checkout"
+    },
+    {
+      "url": "/invoice/:id",
+      "name": "Invoice",
+      "auth_required": true,
+      "source_file": "src/App.jsx",
+      "discovered_from": ["codebase"],
+      "workflow_refs": [],
+      "params": { "id": "157" },
+      "example_url": "/invoice/157"
+    },
+    {
+      "url": "/orders",
+      "name": "Track Orders",
+      "auth_required": true,
+      "source_file": "src/App.jsx",
+      "discovered_from": ["codebase"],
+      "workflow_refs": [],
+      "params": {},
+      "example_url": "/orders"
+    },
+    {
+      "url": "/profile",
+      "name": "Profile",
+      "auth_required": true,
+      "source_file": "src/App.jsx",
+      "discovered_from": ["codebase"],
+      "workflow_refs": [],
+      "params": {},
+      "example_url": "/profile"
+    },
+    {
+      "url": "/center",
+      "name": "Center Shop",
+      "auth_required": true,
+      "source_file": "src/App.jsx",
+      "discovered_from": ["codebase"],
+      "workflow_refs": [],
+      "params": {},
+      "example_url": "/center"
+    },
+    {
+      "url": "/join-starcenter",
+      "name": "Join Starcenter",
+      "auth_required": true,
+      "source_file": "src/App.jsx",
+      "discovered_from": ["codebase"],
+      "workflow_refs": [],
+      "params": {},
+      "example_url": "/join-starcenter"
+    },
+    {
+      "url": "/admin",
+      "name": "Admin Dashboard",
+      "auth_required": true,
+      "source_file": "src/App.jsx",
+      "discovered_from": ["codebase"],
+      "workflow_refs": [],
+      "params": {},
+      "example_url": "/admin"
+    },
+    {
+      "url": "/admin/settings",
+      "name": "Admin Appearance Settings",
+      "auth_required": true,
+      "source_file": "src/App.jsx",
+      "discovered_from": ["codebase"],
+      "workflow_refs": [],
+      "params": {},
+      "example_url": "/admin/settings"
+    },
+    {
+      "url": "/admin/payment-settings",
+      "name": "Admin Payment Settings",
+      "auth_required": true,
+      "source_file": "src/App.jsx",
+      "discovered_from": ["codebase"],
+      "workflow_refs": [],
+      "params": {},
+      "example_url": "/admin/payment-settings"
+    },
+    {
+      "url": "/admin/orders",
+      "name": "Admin Orders",
+      "auth_required": true,
+      "source_file": "src/App.jsx",
+      "discovered_from": ["codebase"],
+      "workflow_refs": [],
+      "params": {},
+      "example_url": "/admin/orders"
+    },
+    {
+      "url": "/admin/products",
+      "name": "Admin Products",
+      "auth_required": true,
+      "source_file": "src/App.jsx",
+      "discovered_from": ["codebase"],
+      "workflow_refs": [],
+      "params": {},
+      "example_url": "/admin/products"
+    },
+    {
+      "url": "/admin/users",
+      "name": "Admin Users",
+      "auth_required": true,
+      "source_file": "src/App.jsx",
+      "discovered_from": ["codebase"],
+      "workflow_refs": [],
+      "params": {},
+      "example_url": "/admin/users"
+    },
+    {
+      "url": "/admin/users/:id",
+      "name": "Admin User Detail",
+      "auth_required": true,
+      "source_file": "src/App.jsx",
+      "discovered_from": ["codebase"],
+      "workflow_refs": [],
+      "params": { "id": "1" },
+      "example_url": "/admin/users/1"
+    },
+    {
+      "url": "/admin/commissions",
+      "name": "Admin Commissions",
+      "auth_required": true,
+      "source_file": "src/App.jsx",
+      "discovered_from": ["codebase"],
+      "workflow_refs": [],
+      "params": {},
+      "example_url": "/admin/commissions"
+    },
+    {
+      "url": "/admin/tiers",
+      "name": "Admin Tiers",
+      "auth_required": true,
+      "source_file": "src/App.jsx",
+      "discovered_from": ["codebase"],
+      "workflow_refs": [],
+      "params": {},
+      "example_url": "/admin/tiers"
+    }
+  ]
+}

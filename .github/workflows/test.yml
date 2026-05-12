@@ -1,0 +1,84 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: sdp_test
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+        ports:
+          - 3306:3306
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, xml, ctype, iconv, pdo_mysql
+          coverage: pcov
+
+      - name: Install Composer dependencies
+        working-directory: ./starinc-api
+        run: composer install --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Copy .env file
+        working-directory: ./starinc-api
+        run: cp .env.example .env
+
+      - name: Generate application key
+        working-directory: ./starinc-api
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: sdp_test
+          DB_USERNAME: root
+          DB_PASSWORD: root
+        run: php artisan key:generate
+
+      - name: Run migrations
+        working-directory: ./starinc-api
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: sdp_test
+          DB_USERNAME: root
+          DB_PASSWORD: root
+        run: php artisan migrate --seed
+
+      - name: Run tests
+        working-directory: ./starinc-api
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: sdp_test
+          DB_USERNAME: root
+          DB_PASSWORD: root
+        run: php artisan test --colors
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./starinc-api/coverage/coverage.xml
+          flags: unittests
+          fail_ci_if_error: false

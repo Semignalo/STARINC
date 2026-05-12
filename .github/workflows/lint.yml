@@ -1,0 +1,36 @@
+name: Lint & Code Quality
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, xml, ctype, iconv
+
+      - name: Install Composer dependencies
+        working-directory: ./starinc-api
+        run: composer install --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Run Laravel Pint (PHP code formatter)
+        working-directory: ./starinc-api
+        run: ./vendor/bin/pint --test
+
+      - name: Run PHPStan (Static analysis)
+        working-directory: ./starinc-api
+        run: |
+          composer require --dev phpstan/phpstan phpstan/extension-installer phpstan/phpstan-laravel
+          ./vendor/bin/phpstan analyse
+        continue-on-error: true

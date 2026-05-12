@@ -1,0 +1,14 @@
+Type,Name,Email,Password,Role,Tier,Region,Referral Code,Notes
+Admin,Admin Starinc,admin@starinc.id,password123,admin,N/A,N/A,N/A,System Administrator
+Starcenter,SC Jawa Timur,sc.jawatimur@starinc.com,password123,starcenter,diamond,Jawa Timur,SCJT001,Regional Center
+Downline,SC Jawa Timur - Downline #1,downline.2.1@starinc.com,password123,regular,bronze,Jawa Timur,N/A,Downline of SCJT001
+Downline,SC Jawa Timur - Downline #2,downline.2.2@starinc.com,password123,regular,bronze,Jawa Timur,N/A,Downline of SCJT001
+Downline,SC Jawa Timur - Downline #3,downline.2.3@starinc.com,password123,regular,bronze,Jawa Timur,N/A,Downline of SCJT001
+Starcenter,SC Jawa Tengah,sc.jawatengah@starinc.com,password123,starcenter,diamond,Jawa Tengah,SCJG001,Regional Center
+Downline,SC Jawa Tengah - Downline #1,downline.3.1@starinc.com,password123,regular,bronze,Jawa Tengah,N/A,Downline of SCJG001
+Downline,SC Jawa Tengah - Downline #2,downline.3.2@starinc.com,password123,regular,bronze,Jawa Tengah,N/A,Downline of SCJG001
+Downline,SC Jawa Tengah - Downline #3,downline.3.3@starinc.com,password123,regular,bronze,Jawa Tengah,N/A,Downline of SCJG001
+Starcenter,SC Jawa Barat,sc.jawabarat@starinc.com,password123,starcenter,diamond,Jawa Barat,SCJB001,Regional Center
+Downline,SC Jawa Barat - Downline #1,downline.4.1@starinc.com,password123,regular,bronze,Jawa Barat,N/A,Downline of SCJB001
+Downline,SC Jawa Barat - Downline #2,downline.4.2@starinc.com,password123,regular,bronze,Jawa Barat,N/A,Downline of SCJB001
+Downline,SC Jawa Barat - Downline #3,downline.4.3@starinc.com,password123,regular,bronze,Jawa Barat,N/A,Downline of SCJB001

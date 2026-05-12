@@ -1,0 +1,33 @@
+{
+  "cookies": [
+    {
+      "name": "_cfuvid",
+      "value": "wUUsMw36b2TeU2KdUflVbMeO98TEhld0Fj7xOj15F6I-1776847064.0925424-1.0.1.1-t.h3JMqf66LpMdy8Wb67KTaOhy_ay6.5lyk0VZTScq4",
+      "domain": ".pixabay.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "http://localhost:5173",
+      "localStorage": [
+        {
+          "name": "appearance_settings_cache",
+          "value": "{\"data\":{\"heroVideoUrl\":\"https://cdn.pixabay.com/video/2023/10/22/186175-877661556_large.mp4\",\"heroTitle\":\"True Radiance\",\"heroSubtitle\":\"Discover the new Gold Standard for your skin.\",\"logoUrl\":\"/logo.png\",\"accentColor\":\"#C5A059\",\"goldSerumVideoUrl\":\"\",\"goldSerumSubtitle\":\"Face cleansing balm\",\"goldSerumDescription1\":\"This gentle cleansing balm deeply cleanses and removes even waterproof makeup without irritating or drying out eyes.\",\"goldSerumDescription2\":\"Fragrance-free, lightly scented with ginger and lemon essential oils.\",\"secondFeaturedVideoUrl\":\"\",\"secondFeaturedSubtitle\":\"Our Concept\",\"secondFeaturedDescription1\":\"A focus on healthy, radiant skin.\",\"secondFeaturedDescription2\":\"Crafted with passion.\"},\"timestamp\":1776847062203}"
+        },
+        {
+          "name": "auth_token",
+          "value": "87|BmE8nJuro66C0DWHQWmmN3fovf6x5qQayQfO8dducb623bcd"
+        },
+        {
+          "name": "shopping-cart",
+          "value": "[]"
+        }
+      ]
+    }
+  ]
+}

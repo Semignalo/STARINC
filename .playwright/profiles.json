@@ -1,0 +1,19 @@
+{
+  "profiles": {
+    "admin": {
+      "loginUrl": "http://localhost:5173/login",
+      "description": "Admin dengan full access ke admin panel (admin@starinc.id / password)",
+      "createdAt": "2026-04-21T03:00:00Z"
+    },
+    "starcenter": {
+      "loginUrl": "http://localhost:5173/login",
+      "description": "Starcenter user dengan MLM multi-level commission (sc.jawatimur@starinc.com / password123)",
+      "createdAt": "2026-04-21T03:00:00Z"
+    },
+    "regular": {
+      "loginUrl": "http://localhost:5173/login",
+      "description": "Regular customer dengan single-level commission (downline.2.1@starinc.com / password123)",
+      "createdAt": "2026-04-21T03:00:00Z"
+    }
+  }
+}

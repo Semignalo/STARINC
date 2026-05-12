@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clear Cache - SDP V2</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 500px;
+        }
+        h1 {
+            color: #333;
+            margin: 0 0 20px 0;
+        }
+        .status {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            display: none;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        button {
+            padding: 10px 30px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-clear {
+            background: #dc3545;
+            color: white;
+        }
+        .btn-clear:hover {
+            background: #c82333;
+        }
+        .btn-login {
+            background: #28a745;
+            color: white;
+        }
+        .btn-login:hover {
+            background: #218838;
+        }
+        .btn-admin {
+            background: #007bff;
+            color: white;
+        }
+        .btn-admin:hover {
+            background: #0056b3;
+        }
+        .info {
+            background: #e7f3ff;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
+            border-radius: 4px;
+        }
+        .info h3 {
+            margin-top: 0;
+        }
+        .info p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧹 Clear Cache SDP V2</h1>
+        <div class="status" id="status">Siap untuk clear cache dan reset login...</div>
+        <div class="success" id="success">✅ Cache sudah dihapus! Redirecting...</div>
+
+        <div class="info">
+            <h3>📝 Akun Dummy Baru</h3>
+            <p><strong>Frontend:</strong> http://localhost:5173/</p>
+            <p><strong>Admin:</strong> admin@starinc.id</p>
+            <p><strong>Password:</strong> password123</p>
+            <p><strong>SC Jawa Timur:</strong> sc.jawatimur@starinc.com</p>
+            <p><strong>SC Jawa Tengah:</strong> sc.jawatengah@starinc.com</p>
+            <p><strong>SC Jawa Barat:</strong> sc.jawabarat@starinc.com</p>
+        </div>
+
+        <div class="button-group">
+            <button class="btn-clear" onclick="clearCache()">Clear Cache & Login</button>
+            <button class="btn-login" onclick="goToLogin()">Go to Login</button>
+            <button class="btn-admin" onclick="goToAdmin()">Go to Admin</button>
+        </div>
+    </div>
+
+    <script>
+        function clearCache() {
+            try {
+                // Clear localStorage
+                localStorage.clear();
+
+                // Clear sessionStorage
+                sessionStorage.clear();
+
+                // Clear all cookies
+                document.cookie.split(";").forEach(function(c) {
+                    document.cookie = c
+                        .replace(/^ +/, "")
+                        .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+                });
+
+                // Show success message
+                document.getElementById('status').style.display = 'none';
+                document.getElementById('success').style.display = 'block';
+
+                // Redirect after 2 seconds
+                setTimeout(() => {
+                    window.location.href = 'http://localhost:5173/login';
+                }, 2000);
+            } catch(e) {
+                alert('Error: ' + e.message);
+            }
+        }
+
+        function goToLogin() {
+            window.location.href = 'http://localhost:5173/login';
+        }
+
+        function goToAdmin() {
+            window.location.href = 'http://localhost:8000/admin';
+        }
+
+        // Auto-run on load
+        window.addEventListener('load', function() {
+            // Don't auto-run, let user click the button
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+{
+  "info": {
+    "verified_at": "2026-04-21",
+    "database": "SQLite (starinc-api/database/database.sqlite)",
+    "total_accounts": 13,
+    "total_transactions": "~120",
+    "api_base_url": "http://localhost:8000/api",
+    "frontend_url": "http://localhost:5173",
+    "note": "Admin password is 'password', all other accounts use 'password123'"
+  },
+  "admin_accounts": [
+    {
+      "id": 1,
+      "email": "admin@starinc.id",
+      "password": "password",
+      "name": "Admin Starinc",
+      "role": "admin",
+      "referral_code": "4QWAWPDQ",
+      "tier": "Diamond"
+    }
+  ],
+  "starcenter_accounts": [
+    {
+      "id": 2,
+      "email": "sc.jawatimur@starinc.com",
+      "password": "password123",
+      "name": "SC Jawa Timur",
+      "role": "starcenter",
+      "referral_code": "SCJT001",
+      "tier": "Diamond",
+      "region": "Jawa Timur",
+      "downlines": [
+        { "id": 5, "email": "downline.2.1@starinc.com" },
+        { "id": 6, "email": "downline.2.2@starinc.com" },
+        { "id": 7, "email": "downline.2.3@starinc.com" }
+      ]
+    },
+    {
+      "id": 3,
+      "email": "sc.jawatengah@starinc.com",
+      "password": "password123",
+      "name": "SC Jawa Tengah",
+      "role": "starcenter",
+      "referral_code": "SCJG001",
+      "tier": "Diamond",
+      "region": "Jawa Tengah",
+      "downlines": [
+        { "id": 8, "email": "downline.3.1@starinc.com" },
+        { "id": 9, "email": "downline.3.2@starinc.com" },
+        { "id": 10, "email": "downline.3.3@starinc.com" }
+      ]
+    },
+    {
+      "id": 4,
+      "email": "sc.jawabarat@starinc.com",
+      "password": "password123",
+      "name": "SC Jawa Barat",
+      "role": "starcenter",
+      "referral_code": "SCJB001",
+      "tier": "Diamond",
+      "region": "Jawa Barat",
+      "downlines": [
+        { "id": 11, "email": "downline.4.1@starinc.com" },
+        { "id": 12, "email": "downline.4.2@starinc.com" },
+        { "id": 13, "email": "downline.4.3@starinc.com" }
+      ]
+    }
+  ],
+  "regular_accounts": [
+    { "id": 5, "email": "downline.2.1@starinc.com", "password": "password123", "role": "regular", "referral_code": "4VSTPKSO", "tier": "Bronze", "referrer": "sc.jawatimur@starinc.com" },
+    { "id": 6, "email": "downline.2.2@starinc.com", "password": "password123", "role": "regular", "referral_code": "MEBHM7UD", "tier": "Gold",   "referrer": "sc.jawatimur@starinc.com" },
+    { "id": 7, "email": "downline.2.3@starinc.com", "password": "password123", "role": "regular", "referral_code": "WOC34U2U", "tier": "Gold",   "referrer": "sc.jawatimur@starinc.com" },
+    { "id": 8, "email": "downline.3.1@starinc.com", "password": "password123", "role": "regular", "referral_code": "SNSY421V", "tier": "Gold",   "referrer": "sc.jawatengah@starinc.com" },
+    { "id": 9, "email": "downline.3.2@starinc.com", "password": "password123", "role": "regular", "referral_code": "REZUUGYV", "tier": "Silver", "referrer": "sc.jawatengah@starinc.com" },
+    { "id": 10, "email": "downline.3.3@starinc.com", "password": "password123", "role": "regular", "referral_code": "3IXJFLXG", "tier": "Silver", "referrer": "sc.jawatengah@starinc.com" },
+    { "id": 11, "email": "downline.4.1@starinc.com", "password": "password123", "role": "regular", "referral_code": "EBTPUUOP", "tier": "Gold",   "referrer": "sc.jawabarat@starinc.com" },
+    { "id": 12, "email": "downline.4.2@starinc.com", "password": "password123", "role": "regular", "referral_code": "GFPYPZIX", "tier": "Silver", "referrer": "sc.jawabarat@starinc.com" },
+    { "id": 13, "email": "downline.4.3@starinc.com", "password": "password123", "role": "regular", "referral_code": "50IKOWRK", "tier": "Silver", "referrer": "sc.jawabarat@starinc.com" }
+  ],
+  "playwright_profiles": {
+    "admin":      { "file": ".playwright/profiles/admin.json",      "email": "admin@starinc.id",             "password": "password"   },
+    "starcenter": { "file": ".playwright/profiles/starcenter.json",  "email": "sc.jawatimur@starinc.com",     "password": "password123" },
+    "regular":    { "file": ".playwright/profiles/regular.json",     "email": "downline.2.1@starinc.com",     "password": "password123" }
+  },
+  "tiers": [
+    { "id": 1, "name": "Bronze" },
+    { "id": 2, "name": "Silver" },
+    { "id": 3, "name": "Gold"   },
+    { "id": 4, "name": "Platinum" },
+    { "id": 5, "name": "Diamond"  }
+  ],
+  "reset_command": "cd starinc-api && php artisan migrate:fresh --seed"
+}
