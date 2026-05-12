@@ -15,6 +15,11 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         // $middleware->statefulApi(); // Disabled because frontend uses stateless Bearer tokens in headers
+
+        // Global rate limit untuk semua API routes (60 req/min per IP)
+        $middleware->api(append: [
+            \Illuminate\Routing\Middleware\ThrottleRequests::class . ':60,1',
+        ]);
     })
     ->withSchedule(function (Schedule $schedule): void {
         $schedule->command('tier:check-downgrades')->dailyAt('00:00');

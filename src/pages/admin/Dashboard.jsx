@@ -1,6 +1,7 @@
 import React, { useEffect, useState, lazy, Suspense } from 'react';
-import { TrendingUp, ShoppingCart, Users, AlertCircle, RefreshCw, ArrowUpRight, Clock } from 'lucide-react';
+import { TrendingUp, ShoppingCart, Users, AlertCircle, RefreshCw, ArrowUpRight, Clock, FileDown } from 'lucide-react';
 import { adminApi } from '../../api/adminApi';
+import apiClient from '../../api/client';
 
 const DashboardCharts = lazy(() => import('./DashboardCharts'));
 
@@ -59,9 +60,23 @@ export default function AdminDashboard() {
                     <h1 className="text-2xl font-bold text-gray-800">Dashboard Overview</h1>
                     <p className="text-sm text-gray-500 mt-0.5">Ringkasan performa bisnis hari ini</p>
                 </div>
-                <button onClick={fetchDashboard} className="text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg flex items-center gap-2">
-                    <RefreshCw size={14} /> Refresh
-                </button>
+                <div className="flex gap-2">
+                    <button
+                        onClick={async () => {
+                            const month = new Date().toISOString().slice(0, 7);
+                            const res = await apiClient.get(`/admin/reports/monthly?month=${month}`, { responseType: 'blob' });
+                            const url = URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
+                            Object.assign(document.createElement('a'), { href: url, download: `laporan-${month}.pdf` }).click();
+                            URL.revokeObjectURL(url);
+                        }}
+                        className="text-sm bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-lg flex items-center gap-2"
+                    >
+                        <FileDown size={14} /> Laporan PDF
+                    </button>
+                    <button onClick={fetchDashboard} className="text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg flex items-center gap-2">
+                        <RefreshCw size={14} /> Refresh
+                    </button>
+                </div>
             </div>
 
             {/* Urgent Alert: Pending Payments */}

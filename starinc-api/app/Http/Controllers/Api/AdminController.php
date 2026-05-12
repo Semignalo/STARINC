@@ -8,6 +8,8 @@ use App\Models\Order;
 use App\Models\User;
 use App\Models\Tier;
 use App\Models\OrderItem;
+use App\Models\WalletLedger;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -341,7 +343,18 @@ class AdminController extends Controller
             return response()->json(['message' => 'Komisi ini tidak dalam status pending.'], 422);
         }
 
-        $commission->update(['status' => 'paid']);
+        DB::transaction(function () use ($commission) {
+            $commission->update(['status' => 'paid']);
+
+            WalletLedger::create([
+                'user_id'      => $commission->user_id,
+                'type'         => 'credit',
+                'amount'       => $commission->commission_amount,
+                'description'  => "Komisi level {$commission->level} dari order #{$commission->order->order_number}",
+                'reference_id' => $commission->id,
+                'status'       => 'completed',
+            ]);
+        });
 
         return response()->json(['message' => 'Komisi berhasil dibayarkan.']);
     }
@@ -355,11 +368,27 @@ class AdminController extends Controller
             'commission_ids.*' => 'integer|exists:commissions,id'
         ]);
 
-        Commission::whereIn('id', $validated['commission_ids'])
+        $commissions = Commission::whereIn('id', $validated['commission_ids'])
             ->where('status', 'pending')
-            ->update(['status' => 'paid']);
+            ->with('order')
+            ->get();
 
-        return response()->json(['message' => count($validated['commission_ids']) . ' komisi berhasil dibayarkan.']);
+        DB::transaction(function () use ($commissions) {
+            foreach ($commissions as $commission) {
+                $commission->update(['status' => 'paid']);
+
+                WalletLedger::create([
+                    'user_id'      => $commission->user_id,
+                    'type'         => 'credit',
+                    'amount'       => $commission->commission_amount,
+                    'description'  => "Komisi level {$commission->level} dari order #{$commission->order->order_number}",
+                    'reference_id' => $commission->id,
+                    'status'       => 'completed',
+                ]);
+            }
+        });
+
+        return response()->json(['message' => $commissions->count() . ' komisi berhasil dibayarkan.']);
     }
 
     /**
@@ -372,51 +401,119 @@ class AdminController extends Controller
         if ($request->has('status')) {
             $query->where('status', $request->status);
         }
-
         if ($request->has('date_from')) {
             $query->whereDate('created_at', '>=', $request->date_from);
         }
-
         if ($request->has('date_to')) {
             $query->whereDate('created_at', '<=', $request->date_to);
         }
 
         $orders = $query->get();
+        $filename = 'orders-' . now()->format('Y-m-d') . '.csv';
 
-        $mapped = $orders->map(function ($o) {
-            return [
-                'Order ID' => $o->order_number,
-                'Customer Name' => $o->customer_info['name'] ?? '',
-                'Customer Phone' => $o->customer_info['phone'] ?? '',
-                'Subtotal' => $o->subtotal,
-                'Discount' => $o->discount_amount,
-                'Shipping' => $o->shipping_cost,
-                'Total' => $o->total,
-                'Status' => $o->status,
-                'Date' => $o->created_at->format('Y-m-d H:i:s'),
-            ];
-        });
-        return response()->json($mapped);
+        $headers = [
+            'Content-Type'        => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ];
+
+        $callback = function () use ($orders) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, ['Order ID', 'Customer Name', 'Customer Phone', 'Subtotal', 'Discount', 'Shipping', 'Total', 'Status', 'Date']);
+            foreach ($orders as $o) {
+                fputcsv($file, [
+                    $o->order_number,
+                    $o->customer_info['name'] ?? '',
+                    $o->customer_info['phone'] ?? '',
+                    $o->subtotal,
+                    $o->discount_amount,
+                    $o->shipping_cost,
+                    $o->total,
+                    $o->status,
+                    $o->created_at->format('Y-m-d H:i:s'),
+                ]);
+            }
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     /**
-     * Export Commissions to CSV (Basic)
+     * Export Commissions to CSV download.
      */
     public function exportCommissions(Request $request)
     {
         $commissions = Commission::with(['user', 'order'])->orderBy('created_at', 'desc')->get();
-        $mapped = $commissions->map(function ($c) {
-            return [
-                'Commission ID' => $c->id,
-                'Recipient' => $c->user->name ?? '',
-                'Order Number' => $c->order->order_number ?? '',
-                'Order Amount' => $c->order_amount,
-                'Comm Rate %' => $c->commission_rate,
-                'Comm Amount' => $c->commission_amount,
-                'Status' => $c->status,
-                'Date' => $c->created_at->format('Y-m-d H:i:s'),
-            ];
-        });
-        return response()->json($mapped);
+        $filename = 'commissions-' . now()->format('Y-m-d') . '.csv';
+
+        $headers = [
+            'Content-Type'        => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ];
+
+        $callback = function () use ($commissions) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, ['Commission ID', 'Recipient', 'Order Number', 'Order Amount', 'Comm Rate %', 'Comm Amount', 'Level', 'Status', 'Date']);
+            foreach ($commissions as $c) {
+                fputcsv($file, [
+                    $c->id,
+                    $c->user->name ?? '',
+                    $c->order->order_number ?? '',
+                    $c->order_amount,
+                    $c->commission_rate,
+                    $c->commission_amount,
+                    $c->level,
+                    $c->status,
+                    $c->created_at->format('Y-m-d H:i:s'),
+                ]);
+            }
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Monthly financial report — PDF download.
+     * GET /admin/reports/monthly?month=2026-05
+     */
+    public function monthlyReport(Request $request)
+    {
+        $month = $request->get('month', now()->format('Y-m'));
+        $start = Carbon::parse($month . '-01')->startOfMonth();
+        $end   = $start->copy()->endOfMonth();
+
+        $orders = Order::whereBetween('created_at', [$start, $end])
+            ->with('items')
+            ->get();
+
+        $revenue        = $orders->where('status', 'completed')->sum('total');
+        $orderCount     = $orders->count();
+        $completedCount = $orders->where('status', 'completed')->count();
+        $cancelledCount = $orders->whereIn('status', ['cancelled', 'rejected'])->count();
+
+        $commissions = Commission::whereBetween('created_at', [$start, $end])->get();
+        $commPending = $commissions->where('status', 'pending')->sum('commission_amount');
+        $commPaid    = $commissions->where('status', 'paid')->sum('commission_amount');
+
+        $topProducts = OrderItem::join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->where('orders.status', 'completed')
+            ->whereBetween('orders.created_at', [$start, $end])
+            ->select(
+                'order_items.product_title',
+                DB::raw('SUM(order_items.quantity) as qty'),
+                DB::raw('SUM(order_items.line_total) as revenue')
+            )
+            ->groupBy('order_items.product_title')
+            ->orderByDesc('revenue')
+            ->limit(10)
+            ->get();
+
+        $data = compact('month', 'start', 'end', 'revenue', 'orderCount', 'completedCount',
+            'cancelledCount', 'commPending', 'commPaid', 'topProducts', 'orders');
+
+        $pdf = Pdf::loadView('reports.monthly', $data)->setPaper('a4', 'portrait');
+
+        return $pdf->download("laporan-{$month}.pdf");
     }
 }

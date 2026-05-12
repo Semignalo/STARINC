@@ -257,10 +257,10 @@ class AdminControllerTest extends TestCase
         Order::factory()->count(3)->create();
 
         $response = $this->withHeader('Authorization', "Bearer {$this->token}")
-                         ->getJson('/api/admin/orders/export');
+                         ->get('/api/admin/orders/export');
 
         $response->assertStatus(200)
-                 ->assertJsonIsArray();
+                 ->assertHeader('Content-Type', 'text/csv; charset=UTF-8');
     }
 
     public function test_export_commissions(): void
@@ -268,10 +268,10 @@ class AdminControllerTest extends TestCase
         Commission::factory()->count(3)->create();
 
         $response = $this->withHeader('Authorization', "Bearer {$this->token}")
-                         ->getJson('/api/admin/commissions/export');
+                         ->get('/api/admin/commissions/export');
 
         $response->assertStatus(200)
-                 ->assertJsonIsArray();
+                 ->assertHeader('Content-Type', 'text/csv; charset=UTF-8');
     }
 
     public function test_unauthorized_access(): void

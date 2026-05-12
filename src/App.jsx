@@ -3,6 +3,7 @@ import { Suspense, lazy, useEffect } from 'react';
 import RootLayout from './layouts/RootLayout';
 import AdminLayout from './layouts/AdminLayout';
 import PageLoader from './components/PageLoader';
+import ErrorBoundary from './components/ErrorBoundary';
 
 function ScrollToTop() {
     const { pathname } = useLocation();
@@ -44,9 +45,10 @@ const AdminTestimonials = lazy(() => import('./pages/admin/Testimonials'));
 
 function App() {
   return (
-    <Suspense fallback={<PageLoader />}>
-      <ScrollToTop />
-      <Routes>
+    <ErrorBoundary>
+      <Suspense fallback={<PageLoader />}>
+        <ScrollToTop />
+        <Routes>
         {/* Public Routes */}
         <Route element={<RootLayout />}>
           <Route path="/" element={<Home />} />
@@ -83,8 +85,9 @@ function App() {
           <Route path="applications" element={<AdminApplications />} />
           <Route path="testimonials" element={<AdminTestimonials />} />
         </Route>
-      </Routes>
-    </Suspense>
+        </Routes>
+      </Suspense>
+    </ErrorBoundary>
   );
 }
 

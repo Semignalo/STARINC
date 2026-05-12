@@ -14,6 +14,8 @@ class PasswordResetTest extends TestCase
     {
         parent::setUp();
         Mail::fake();
+        // Throttle tidak relevan untuk test — setiap test case isolasi sendiri
+        $this->withoutMiddleware(\Illuminate\Routing\Middleware\ThrottleRequests::class);
     }
 
     public function test_forgot_password_sends_email(): void

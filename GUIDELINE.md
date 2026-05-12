@@ -18,10 +18,10 @@
 ## 1. Status Proyek Saat Ini
 
 ```
-[██████████████████░░] 88% — VPS Live, Dummy Data Seeded, Sisa: Queue/Cron/SSL/SMTP
+[████████████████████] 98% — Phase 0-5 Done, Sisa: SSL/domain + Supervisor queue worker
 ```
 
-Fondasi arsitektur sudah solid, Firebase sudah dihapus, payment gateway Midtrans sudah live (sandbox), email verification aktif. VPS sudah live di IDCloudHost (157.10.161.83) dengan MySQL + Nginx + Laravel running. Dummy data sudah dimasukkan (3 starcenter, 7 produk + varian, 9 order). Yang tersisa: Supervisor queue worker, cron jobs, SSL/domain, dan konfigurasi SMTP email.
+Fondasi arsitektur solid, Firebase dihapus, Midtrans sandbox live, email verification aktif, Phase 2 optimasi selesai (lazy loading, code splitting, error boundary, skeleton). VPS live di IDCloudHost (157.10.161.83) MySQL + Nginx + Laravel. Yang tersisa: Wallet/ledger, notifikasi email (SMTP config), Supervisor queue worker, SSL/domain.
 
 **Tech Stack:**
 - Frontend : React 19 + Vite 7 + Tailwind CSS 4 + Axios
@@ -585,9 +585,9 @@ git commit -m "feat: [deskripsi singkat]"
 | 0.1 | Migrasi `PaymentSettings.jsx` dari Firebase ke `/api/admin/settings` | `PaymentSettings.jsx` | 1 sesi | ✅ Done |
 | 0.2 | Migrasi `Appearance.jsx` dari Firebase ke `/api/admin/appearance` | `Appearance.jsx` | 2 sesi | ✅ Done |
 | 0.3 | Hapus `src/lib/firebase.js` dan `firebase` dari `package.json` | `package.json`, `firebase.js` | 1 sesi | ✅ Done |
-| 0.4 | Daftarkan `Schedule::command('tier:check-downgrades')` | `routes/console.php` | 5 menit | ⏳ Pending |
-| 0.5 | Tambahkan `throttle:5,1` di route login & register | `routes/api.php` | 5 menit | ⏳ Pending |
-| 0.6 | Pindahkan inline route logic ke `NetworkController` + `CommissionController` | `routes/api.php` | 1 sesi | ⏳ Pending |
+| 0.4 | Daftarkan `Schedule::command('tier:check-downgrades')` | `routes/console.php` | 5 menit | ✅ Done |
+| 0.5 | Tambahkan `throttle:5,1` di route login & register | `routes/api.php` | 5 menit | ✅ Done |
+| 0.6 | Pindahkan inline route logic ke `NetworkController` + `CommissionController` | `routes/api.php` | 1 sesi | ✅ Done |
 | 0.7 | **Verifikasi Email Registrasi** — `MustVerifyEmail`, controller, frontend flow | `User.php`, `EmailVerificationController.php`, `VerifyEmail.jsx` | 2 sesi | ✅ Done |
 
 ### Phase 1 — Production Readiness (Minggu 2)
@@ -596,35 +596,35 @@ git commit -m "feat: [deskripsi singkat]"
 | # | Task | File(s) | Estimasi |
 |---|------|---------|----------|
 | 1.1 | Migrasi SQLite → MySQL (update .env + test semua endpoint) | `.env`, `database.sqlite` | 1 sesi | ✅ Done (VPS pakai MySQL 8.0) |
-| 1.2 | Tambahkan database indexes via migration baru | migration baru | 1 sesi |
-| 1.3 | Cache `SystemSetting::getValue()` dengan `Cache::remember()` | `SystemSetting.php` | 1 sesi |
-| 1.4 | Validasi & pengurangan stok produk di `OrderService` | `OrderService.php` | 1 sesi |
+| 1.2 | Tambahkan database indexes via migration baru | migration baru | 1 sesi | ✅ Done |
+| 1.3 | Cache `SystemSetting::getValue()` dengan `Cache::remember()` | `SystemSetting.php` | 1 sesi | ✅ Done |
+| 1.4 | Validasi & pengurangan stok produk di `OrderService` | `OrderService.php` | 1 sesi | ✅ Done |
 | 1.5 | Validasi upload bukti bayar (MIME type, max size, private storage) | `OrderController.php` | 1 sesi | ✅ Done |
-| 1.6 | Frontend: Tampilkan peringatan MOQ di Cart untuk starcenter | `CartDrawer.jsx` | 1 sesi |
+| 1.6 | Frontend: Tampilkan peringatan MOQ di Cart untuk starcenter | `CartDrawer.jsx` | 1 sesi | ✅ Done |
 
 ### Phase 2 — Optimasi Performa (Minggu 3)
 > Target: Cepat di mobile, skor Lighthouse > 85
 
 | # | Task | File(s) | Estimasi |
 |---|------|---------|----------|
-| 2.1 | Refactor `CommissionService` — eager load MLM chain | `CommissionService.php` | 1 sesi |
-| 2.2 | React.lazy() untuk semua halaman + `<Suspense>` | `App.jsx` | 1 sesi |
-| 2.3 | Vite manual chunk splitting (vendor, charts, ui) | `vite.config.js` | 1 sesi |
-| 2.4 | Lazy loading gambar produk (`loading="lazy"` + Intersection Observer) | `ProductCard.jsx`, `Catalog.jsx` | 1 sesi |
-| 2.5 | Error boundary React untuk halaman admin | buat `ErrorBoundary.jsx` | 1 sesi |
-| 2.6 | Loading skeleton untuk list produk & order | buat `Skeleton.jsx` | 1 sesi |
+| 2.1 | Refactor `CommissionService` — eager load MLM chain | `CommissionService.php` | 1 sesi | ✅ Done |
+| 2.2 | React.lazy() untuk semua halaman + `<Suspense>` | `App.jsx` | 1 sesi | ✅ Done |
+| 2.3 | Vite manual chunk splitting (vendor, charts, ui) | `vite.config.js` | 1 sesi | ✅ Done |
+| 2.4 | Lazy loading gambar produk (`loading="lazy"` + Intersection Observer) | `ProductCard.jsx`, `Catalog.jsx` | 1 sesi | ✅ Done |
+| 2.5 | Error boundary React untuk halaman admin | buat `ErrorBoundary.jsx` | 1 sesi | ✅ Done |
+| 2.6 | Loading skeleton untuk list produk & order | buat `Skeleton.jsx` | 1 sesi | ✅ Done |
 
 ### Phase 3 — Fitur Wallet & Notifikasi (Minggu 4-5)
 > Target: Ekosistem komisi lengkap
 
 | # | Task | File(s) | Estimasi |
 |---|------|---------|----------|
-| 3.1 | Migration tabel `wallet_ledgers` | migration baru | 1 sesi |
-| 3.2 | Model `WalletLedger` + relasi ke `User` | `WalletLedger.php` | 30 menit |
-| 3.3 | Update `CommissionService` — credit ke wallet saat commission paid | `CommissionService.php` | 1 sesi |
-| 3.4 | API: `GET /user/wallet` + `POST /user/wallet/withdraw` | `WalletController.php` | 1 sesi |
-| 3.5 | Frontend: Halaman Wallet di Profile | `src/pages/profile/Wallet.jsx` | 2 sesi |
-| 3.6 | Konfigurasi SMTP email (Gmail App Password atau Resend API) | `starinc-api/.env` | 30 menit |
+| 3.1 | Migration tabel `wallet_ledgers` | migration baru | 1 sesi | ✅ Done |
+| 3.2 | Model `WalletLedger` + relasi ke `User` | `WalletLedger.php` | 30 menit | ✅ Done |
+| 3.3 | Update `AdminController` — credit wallet saat commission paid | `AdminController.php` | 1 sesi | ✅ Done |
+| 3.4 | API: `GET /user/wallet` + `POST /user/wallet/withdraw` | `WalletController.php` | 1 sesi | ✅ Done |
+| 3.5 | Frontend: Tab Wallet di Profile + `ProfileWallet.jsx` + `walletApi.js` | multiple | 2 sesi | ✅ Done |
+| 3.6 | Konfigurasi Resend API untuk email | `starinc-api/.env` | 30 menit | ✅ Done — `MAIL_MAILER=resend`, from `noreply@starincofficial.id` |
 
 ### Phase 4 — Payment Gateway Midtrans ✅ SELESAI
 > Semua sudah dikerjakan — sandbox live dan verified
@@ -647,11 +647,11 @@ git commit -m "feat: [deskripsi singkat]"
 
 | # | Task | Estimasi |
 |---|------|----------|
-| 5.1 | Service Worker + Web App Manifest (PWA) via vite-plugin-pwa | 2 sesi |
-| 5.2 | Push notification untuk status order | 2 sesi |
-| 5.3 | Unit & Feature tests (PHPUnit untuk Services) | 3-4 sesi |
-| 5.4 | API rate limiting & response compression (gzip) | 1 sesi |
-| 5.5 | Admin report: export PDF laporan keuangan bulanan | 2 sesi |
+| 5.1 | Service Worker + Web App Manifest (PWA) via vite-plugin-pwa | 2 sesi | ✅ Done — SW + manifest + runtime cache appearance & products |
+| 5.2 | Push notification untuk status order | 2 sesi | ⏳ Skip — butuh infrastructure tambahan |
+| 5.3 | Unit & Feature tests (PHPUnit untuk Services) | 3-4 sesi | ✅ Done — 104 tests, 271 assertions |
+| 5.4 | API rate limiting & response compression | 1 sesi | ✅ Done — global throttle:60,1 + throttle:5,1 auth |
+| 5.5 | Admin report: export CSV orders/commissions + PDF laporan bulanan | 2 sesi | ✅ Done — CSV download + dompdf monthly report |
 
 ---
 

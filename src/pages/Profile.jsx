@@ -7,6 +7,7 @@ import ProfileEdit from '../components/profile/ProfileEdit';
 import ProfileOrders from '../components/profile/ProfileOrders';
 import ProfileNetwork from '../components/profile/ProfileNetwork';
 import ProfileCommissions from '../components/profile/ProfileCommissions';
+import ProfileWallet from '../components/profile/ProfileWallet';
 
 export default function Profile() {
     const { currentUser, userData, userRole } = useAuth();
@@ -98,9 +99,9 @@ export default function Profile() {
                     </div>
                 </div>
 
-                {/* 4 MENU TABS */}
+                {/* MENU TABS */}
                 {activeTab !== 'settings' && (
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-8">
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 mb-8">
                         <button
                             onClick={() => setActiveTab('overview')}
                             className={`flex justify-center items-center gap-2 p-3 sm:p-4 rounded-2xl font-bold text-xs sm:text-sm tracking-wide transition-all ${activeTab === 'overview' ? 'bg-primary text-white shadow-lg' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}
@@ -124,6 +125,12 @@ export default function Profile() {
                             className={`flex justify-center items-center gap-2 p-3 sm:p-4 rounded-2xl font-bold text-xs sm:text-sm tracking-wide transition-all ${activeTab === 'commissions' ? 'bg-primary text-white shadow-lg' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}
                         >
                             <Wallet size={18} /> Komisi
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('wallet')}
+                            className={`flex justify-center items-center gap-2 p-3 sm:p-4 rounded-2xl font-bold text-xs sm:text-sm tracking-wide transition-all ${activeTab === 'wallet' ? 'bg-emerald-700 text-white shadow-lg' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}
+                        >
+                            <TrendingUp size={18} /> Wallet
                         </button>
                     </div>
                 )}
@@ -151,6 +158,9 @@ export default function Profile() {
 
                 {/* TAB CONTENT: Komisi */}
                 {activeTab === 'commissions' && <ProfileCommissions />}
+
+                {/* TAB CONTENT: Wallet */}
+                {activeTab === 'wallet' && <ProfileWallet />}
 
                 {/* TAB CONTENT: Overview */}
                 {activeTab === 'overview' && (

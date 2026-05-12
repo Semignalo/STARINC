@@ -77,6 +77,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Commission::class);
     }
 
+    public function walletLedgers(): HasMany
+    {
+        return $this->hasMany(WalletLedger::class);
+    }
+
     // Starcenter network: users I recruited
     public function downlines(): HasMany
     {

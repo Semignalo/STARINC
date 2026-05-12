@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\SettingsController;
 use App\Http\Controllers\Api\ShippingController;
 use App\Http\Controllers\Api\StarCenterApplicationController;
 use App\Http\Controllers\Api\TestimonialController;
+use App\Http\Controllers\Api\WalletController;
 use App\Http\Controllers\Api\WebhookController;
 use App\Http\Middleware\EnsureIsAdmin;
 use App\Models\Tier;
@@ -110,6 +111,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // System Settings (for Starcenter/MLM flow)
     Route::get('/settings/system', [SettingsController::class, 'systemSettings']);
 
+    // Wallet
+    Route::get('/user/wallet', [WalletController::class, 'index']);
+    Route::post('/user/wallet/withdraw', [WalletController::class, 'withdraw']);
+
     /*
     |----------------------------------------------------------------------
     | Admin Routes
@@ -155,8 +160,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/commissions/bulk-pay', [AdminController::class, 'bulkPayCommissions']);
         Route::get('/commissions/export', [AdminController::class, 'exportCommissions']);
 
-        // Export Orders (place before {id} routes if needed, but it's isolated)
+        // Reports & Exports
         Route::get('/orders/export', [AdminController::class, 'exportOrders']);
+        Route::get('/reports/monthly', [AdminController::class, 'monthlyReport']);
 
         // Media Upload (for Appearance page video/image upload)
         Route::post('/upload', [SettingsController::class, 'upload']);
