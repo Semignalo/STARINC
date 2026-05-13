@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(php artisan *)",
+      "Bash(composer install *)",
+      "Bash(npm run *)",
+      "Bash(npx vite *)",
+      "Bash(npm install *)",
+      "Bash(composer show *)",
+      "Bash(composer require *)",
+      "Bash(git add *)",
+      "Bash(gh auth *)",
+      "Bash(git remote *)",
+      "Bash(git push *)",
+      "Bash(ssh -o ConnectTimeout=10 STARINC@157.10.161.83 \"echo connected && pwd && ls\")",
+      "Bash(ssh -o ConnectTimeout=10 -o BatchMode=yes STARINC@157.10.161.83 \"find /var/www /home -name 'artisan' 2>/dev/null | head -5\")",
+      "Bash(ls ~/.ssh/ 2>&1)",
+      "Read(//c/Users/stefa/.ssh/**)",
+      "Bash(ssh-keygen -t ed25519 -C \"claude-deploy\" -f ~/.ssh/starinc_vps -N \"\")",
+      "Bash(where sshpass *)",
+      "Bash(where plink *)",
+      "Bash(ssh -V)",
+      "Bash(ssh -i ~/.ssh/starinc_vps -o StrictHostKeyChecking=no -o ConnectTimeout=10 STARINC@157.10.161.83 \"echo connected && whoami && pwd\")",
+      "Bash(where python *)",
+      "Read(//c/Program Files/Git/usr/bin/**)",
+      "Read(//c/Program Files/Git/bin/**)",
+      "Bash(ssh -i ~/.ssh/starinc_vps -o StrictHostKeyChecking=no -o ConnectTimeout=10 STARINC@157.10.161.83 \"echo connected && whoami && pwd && ls\")",
+      "Bash(ssh -i ~/.ssh/starinc_vps -o StrictHostKeyChecking=no STARINC@157.10.161.83 ' *)",
+      "Bash(ssh -i ~/.ssh/starinc_vps -o StrictHostKeyChecking=no STARINC@157.10.161.83 \"sudo -n true 2>&1 && echo 'HAS_SUDO' || echo 'NO_SUDO'\")"
+    ]
+  }
+}

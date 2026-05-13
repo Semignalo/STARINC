@@ -2,6 +2,10 @@
 _deploy.cjs
 _pull_storage.cjs
 _vps_dump.sql
+*.sql
+
+# Claude Code memory & plans
+.claude/
 
 # Logs
 logs
