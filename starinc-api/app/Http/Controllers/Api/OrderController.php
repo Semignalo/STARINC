@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AdminCreateOrderRequest;
 use App\Http\Requests\CheckoutRequest;
 use App\Http\Requests\UploadPaymentProofRequest;
 use App\Mail\OrderConfirmedMail;
@@ -13,9 +14,7 @@ use App\Models\Order;
 use App\Models\PaymentProof;
 use App\Models\SystemSetting;
 use App\Services\CommissionService;
-use App\Services\MidtransService;
 use App\Services\OrderService;
-use App\Services\TierService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -26,7 +25,7 @@ class OrderController extends Controller
      * Create a new order (checkout).
      * Validasi variant_id milik product_id ditangani oleh CheckoutRequest.
      */
-    public function checkout(CheckoutRequest $request, OrderService $orderService, MidtransService $midtransService)
+    public function checkout(CheckoutRequest $request, OrderService $orderService)
     {
         $validated = $request->validated();
 
@@ -43,20 +42,17 @@ class OrderController extends Controller
                 ]
             );
 
-            // Send order confirmation email
             try {
                 Mail::queue(new OrderConfirmedMail($order));
             } catch (\Exception $mailError) {
                 \Log::warning('Failed to queue order confirmation email', ['order_id' => $order->id]);
             }
 
-            // Generate Midtrans Snap token
-            $snapToken = null;
-            try {
-                $snapToken = $midtransService->createSnapToken($order);
-            } catch (\Exception $e) {
-                \Log::error('Midtrans snap token error', ['order_id' => $order->id, 'error' => $e->getMessage()]);
-            }
+            $bankInfo = [
+                'bank_name'      => SystemSetting::getValue('payment_bank_name', 'BCA'),
+                'account_number' => SystemSetting::getValue('payment_account_number', '888888888'),
+                'account_name'   => SystemSetting::getValue('payment_account_name', 'PT STARINC'),
+            ];
 
             return response()->json([
                 'data' => [
@@ -64,7 +60,7 @@ class OrderController extends Controller
                     'order_number' => $order->order_number,
                     'order_id'     => $order->id,
                     'total'        => (float) $order->total,
-                    'snap_token'   => $snapToken,
+                    'bank_info'    => $bankInfo,
                 ],
             ], 201);
         } catch (\Exception $e) {
@@ -92,25 +88,6 @@ class OrderController extends Controller
         $orderService->restoreStock($order);
 
         return response()->json(['message' => 'Pesanan berhasil dibatalkan.']);
-    }
-
-    /**
-     * Re-generate Snap token for an unpaid order (user closed popup without paying).
-     */
-    public function repaySnapToken(Request $request, string $orderNumber, MidtransService $midtransService)
-    {
-        $order = Order::where('order_number', $orderNumber)
-            ->where('user_id', $request->user()->id)
-            ->where('status', 'pending_payment')
-            ->firstOrFail();
-
-        try {
-            $snapToken = $midtransService->createSnapToken($order, '-' . time());
-            return response()->json(['snap_token' => $snapToken]);
-        } catch (\Exception $e) {
-            \Log::error('Repay snap token error', ['order_id' => $order->id, 'error' => $e->getMessage()]);
-            return response()->json(['message' => 'Gagal membuat token pembayaran.'], 500);
-        }
     }
 
     /**
@@ -218,6 +195,61 @@ class OrderController extends Controller
     // ── Admin Endpoints ──
 
     /**
+     * Create an order on behalf of a starcenter user (admin-initiated).
+     * MOQ validation is bypassed; flat shipping is used; discount can be customized.
+     */
+    public function adminCreateOrder(AdminCreateOrderRequest $request, OrderService $orderService)
+    {
+        $validated  = $request->validated();
+        $targetUser = \App\Models\User::findOrFail($validated['user_id']);
+
+        if ($targetUser->role !== 'starcenter') {
+            return response()->json([
+                'message' => 'Hanya akun starcenter yang dapat dibuatkan pesanan oleh admin.',
+            ], 422);
+        }
+
+        $customDiscount = isset($validated['discount_percent'])
+            ? (float) $validated['discount_percent']
+            : null;
+
+        try {
+            $order = $orderService->createOrder(
+                $targetUser,
+                $validated['customer_info'],
+                $validated['items'],
+                [],            // flat shipping from SystemSetting
+                true,          // bypassMoq
+                $customDiscount
+            );
+
+            try {
+                Mail::queue(new OrderConfirmedMail($order));
+            } catch (\Exception $mailError) {
+                \Log::warning('Failed to queue admin-created order email', ['order_id' => $order->id]);
+            }
+
+            $bankInfo = [
+                'bank_name'      => SystemSetting::getValue('payment_bank_name', 'BCA'),
+                'account_number' => SystemSetting::getValue('payment_account_number', '888888888'),
+                'account_name'   => SystemSetting::getValue('payment_account_name', 'PT STARINC'),
+            ];
+
+            return response()->json([
+                'data' => [
+                    'message'      => 'Pesanan berhasil dibuat oleh admin.',
+                    'order_number' => $order->order_number,
+                    'order_id'     => $order->id,
+                    'total'        => (float) $order->total,
+                    'bank_info'    => $bankInfo,
+                ],
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+    }
+
+    /**
      * List all orders (admin).
      */
     public function adminIndex(Request $request)
@@ -244,7 +276,7 @@ class OrderController extends Controller
     /**
      * Update order status (admin).
      */
-    public function updateStatus(Request $request, int $id, TierService $tierService, CommissionService $commissionService, OrderService $orderService)
+    public function updateStatus(Request $request, int $id, CommissionService $commissionService, OrderService $orderService)
     {
         $order = Order::with('user')->findOrFail($id);
         $oldStatus = $order->status;
@@ -261,25 +293,20 @@ class OrderController extends Controller
 
         $order->update(['status' => $newStatus]);
 
-        // Business logic on status change
         if ($order->user) {
             $user = $order->user;
 
             if ($newStatus === 'completed' && $oldStatus !== 'completed') {
-                // Add to cumulative spending & evaluate tier upgrade
                 $productSpend = $order->subtotal - $order->discount_amount;
                 $user->increment('cumulative_spending', $productSpend);
-                $user->update(['last_transaction_at' => now()]);
+                $user->update(['last_transaction_at' => now(), 'status' => 'active']);
 
-                $tierService->evaluateUpgrade($user->fresh());
                 $commissionService->distribute($order);
 
             } elseif ($oldStatus === 'completed' && $newStatus !== 'completed') {
-                // Reverse: subtract spending & cancel commissions
                 $productSpend = $order->subtotal - $order->discount_amount;
                 $user->decrement('cumulative_spending', min($user->cumulative_spending, $productSpend));
 
-                $tierService->evaluateUpgrade($user->fresh());
                 $commissionService->cancelForOrder($order);
             }
         }

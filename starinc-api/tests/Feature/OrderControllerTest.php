@@ -6,7 +6,6 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\User;
-use App\Models\Tier;
 use App\Models\SystemSetting;
 use Tests\TestCase;
 use Illuminate\Http\UploadedFile;
@@ -23,7 +22,7 @@ class OrderControllerTest extends TestCase
 
     public function test_create_order_sukses(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->withSpending(50000000)->create();
         $product = Product::factory()->priced(150000)->create(['stock' => 100]);
         $token = $user->createToken('auth-token')->plainTextToken;
 
@@ -58,7 +57,7 @@ class OrderControllerTest extends TestCase
 
     public function test_create_order_insufficient_stock(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->withSpending(50000000)->create();
         $product = Product::factory()->priced(150000)->create(['stock' => 1]);
         $token = $user->createToken('auth-token')->plainTextToken;
 
@@ -112,7 +111,7 @@ class OrderControllerTest extends TestCase
 
     public function test_create_order_with_variant(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->withSpending(50000000)->create();
         $product = Product::factory()->create(['stock' => 100]);
         $variant = ProductVariant::factory()->for($product)->create(['stock' => 50, 'price' => 200000]);
         $token = $user->createToken('auth-token')->plainTextToken;
@@ -144,7 +143,7 @@ class OrderControllerTest extends TestCase
 
     public function test_payment_proof_upload(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->withSpending(50000000)->create();
         $order = Order::factory()->for($user)->create(['status' => 'pending_payment']);
         $token = $user->createToken('auth-token')->plainTextToken;
 
@@ -169,7 +168,7 @@ class OrderControllerTest extends TestCase
 
     public function test_payment_proof_upload_wrong_status(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->withSpending(50000000)->create();
         $order = Order::factory()->for($user)->create(['status' => 'completed']);
         $token = $user->createToken('auth-token')->plainTextToken;
 
@@ -185,7 +184,7 @@ class OrderControllerTest extends TestCase
 
     public function test_get_invoice(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->withSpending(50000000)->create();
         $order = Order::factory()->create([
             'user_id' => $user->id,
             'status' => 'pending_payment',
@@ -204,7 +203,7 @@ class OrderControllerTest extends TestCase
 
     public function test_my_orders(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->withSpending(50000000)->create();
         Order::factory()->count(3)->for($user)->create();
         $token = $user->createToken('auth-token')->plainTextToken;
 

@@ -24,14 +24,35 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Hal yang Perlu Diingat
 - User pakai **Windows 11 laptop baru** — `localhost` resolve ke IPv6 (`::1`). Selalu pakai `127.0.0.1` untuk URL lokal.
 - **`.env.local`** selalu override `.env` di Vite. Kalau ada masalah koneksi frontend, cek `.env.local` dulu.
-- Local database: **MySQL `starinc_db`** (bukan SQLite), mirror dari VPS. Password root kosong.
+- Local database: **MySQL `starinc_db_v2`** (bukan SQLite, bukan `starinc_db` yang lama). Password root kosong.
 - VPS: **IDCloudHost** IP `157.10.161.83`, user SSH `STARINC`.
 
 ---
 
 ## Project Overview
 
-SDP-V2 is a full-stack e-commerce and MLM (multi-level marketing) platform. It is a monorepo with a React + Vite frontend at the root and a Laravel 13 API backend in `starinc-api/`.
+**Repo ini adalah STARINC** — platform brand showcase + MLM STARCENTER. Ini adalah repo baru yang di-copy dari SDP-V2 (2026-05-12). Repo lama SDP-V2 di `C:\laragon\www\SDP-V2\` di-freeze sebagai arsip.
+
+### Kenapa ada dua repo?
+SDP-V2 lama dicampur antara konsep "marketplace" dan "brand STARINC". Diputuskan untuk pisah total:
+- **Repo ini (STARINC)** → platform khusus STARCENTER member. Checkout hanya untuk `role = starcenter`. Non-member di-redirect ke SDP.
+- **Repo SDP (belum dibuat)** → marketplace multi-brand dengan sistem reseller flat % global, vendor admin-curated.
+
+### Status Phases
+- ✅ **Phase 0** — Selesai. Repo ini dibuat, DB `starinc_db_v2` sudah ada di MySQL lokal.
+- 🔲 **Phase 1** — Belum dimulai. Todo:
+  1. Update `starinc-api/.env`: `DB_DATABASE=starinc_db_v2`
+  2. `npm install` (root) + `composer install` (starinc-api/)
+  3. `php artisan migrate:fresh --seed`
+  4. Rename branding "SDP" → "STARINC" (AdminLayout, ProfileNetwork, package.json, index.html, config/app.php)
+  5. Login-wall checkout — hanya `role IN ('starcenter', 'admin')` bisa checkout
+  6. Non-member klik Beli → modal redirect ke SDP
+  7. Update seeder — hapus user `regular`, hanya starcenter
+- 🔲 **Phase 2** — Design SDP marketplace
+- 🔲 **Phase 3** — Build SDP marketplace (repo baru)
+- 🔲 **Phase 4** — Integrasi & Launch
+
+This is a full-stack e-commerce and MLM (multi-level marketing) platform. It is a monorepo with a React + Vite frontend at the root and a Laravel 13 API backend in `starinc-api/`.
 
 ## Commands
 

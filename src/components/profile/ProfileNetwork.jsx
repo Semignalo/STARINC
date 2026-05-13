@@ -100,7 +100,7 @@ export default function ProfileNetwork() {
                                     <Copy size={20} />
                                 </button>
                                 <a
-                                    href={`https://wa.me/?text=${encodeURIComponent(`Bergabunglah bersama saya di SDP! Daftar dengan link referral saya: ${network?.referral_url}`)}`}
+                                    href={`https://wa.me/?text=${encodeURIComponent(`Bergabunglah bersama saya di STARINC! Daftar dengan link referral saya: ${network?.referral_url}`)}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="bg-green-600 text-white p-3 rounded-xl hover:bg-green-500 transition active:scale-95 flex-shrink-0"
@@ -117,7 +117,7 @@ export default function ProfileNetwork() {
                                 onClick={() => {
                                     if (navigator.share) {
                                         navigator.share({
-                                            title: 'Bergabung di SDP',
+                                            title: 'Bergabung di STARINC',
                                             text: `Daftar dengan kode referral saya: ${network?.referral_code}`,
                                             url: network?.referral_url,
                                         }).catch(() => {});

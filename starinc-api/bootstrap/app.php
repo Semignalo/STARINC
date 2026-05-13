@@ -22,7 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withSchedule(function (Schedule $schedule): void {
-        $schedule->command('tier:check-downgrades')->dailyAt('00:00');
+        $schedule->command('app:check-inactive-users')->dailyAt('01:00');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

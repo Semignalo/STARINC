@@ -46,8 +46,8 @@ export const adminApi = {
         return response.data;
     },
 
-    updateUserTier: async (id, tierId) => {
-        const response = await apiClient.put(`/admin/users/${id}/tier`, { tier_id: tierId });
+    updateUserStatus: async (id, status) => {
+        const response = await apiClient.put(`/admin/users/${id}/status`, { status });
         return response.data;
     },
 
@@ -100,6 +100,18 @@ export const adminApi = {
 
     getApplicationDocumentUrl: (id, field) =>
         `${import.meta.env.VITE_API_URL}/admin/starcenter-applications/${id}/document?field=${field}`,
+
+    getStarcenters: async (search = '') => {
+        const response = await apiClient.get('/admin/users', {
+            params: { search, role: 'starcenter', per_page: 20 },
+        });
+        return response.data;
+    },
+
+    createOrderForUser: async (payload) => {
+        const response = await apiClient.post('/admin/orders', payload);
+        return response.data;
+    },
 };
 
 export const userCommissionsApi = {

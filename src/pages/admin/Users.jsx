@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { adminApi } from '../../api/adminApi';
 import {
-    Edit2, Search, Shield, Crown, User as UserIcon, Eye, Trash2,
+    Edit2, Search, Shield, Crown, Eye, Trash2,
     List, GitBranch, ChevronRight, ChevronDown, ExternalLink,
 } from 'lucide-react';
 import Swal from 'sweetalert2';
@@ -12,15 +12,6 @@ import Swal from 'sweetalert2';
 const ROLE_CFG = {
     admin:      { card: 'border-red-200 bg-red-50',       badge: 'bg-red-100 text-red-700',       avatar: 'bg-red-500',    label: 'Admin' },
     starcenter: { card: 'border-purple-200 bg-purple-50', badge: 'bg-purple-100 text-purple-700', avatar: 'bg-purple-500', label: 'Starcenter' },
-    regular:    { card: 'border-gray-200 bg-gray-50',     badge: 'bg-gray-100 text-gray-600',     avatar: 'bg-gray-400',   label: 'Regular' },
-};
-
-const TIER_CFG = {
-    bronze:   'bg-amber-600 text-white',
-    silver:   'bg-gray-300 text-gray-800',
-    gold:     'bg-yellow-400 text-yellow-900',
-    platinum: 'bg-blue-200 text-blue-900',
-    diamond:  'bg-purple-500 text-white',
 };
 
 function countDesc(node) {
@@ -41,7 +32,7 @@ function buildTree(users) {
     });
     // admins first in the root list
     roots.sort((a, b) => {
-        const order = { admin: 0, starcenter: 1, regular: 2 };
+        const order = { admin: 0, starcenter: 1 };
         return (order[a.role] ?? 3) - (order[b.role] ?? 3);
     });
     return roots;
@@ -51,7 +42,7 @@ function NetworkNode({ node, depth = 0 }) {
     const navigate = useNavigate();
     const [collapsed, setCollapsed] = useState(depth >= 2);
     const hasChildren = node.children?.length > 0;
-    const cfg = ROLE_CFG[node.role] || ROLE_CFG.regular;
+    const cfg = ROLE_CFG[node.role] || ROLE_CFG.starcenter;
     const total = hasChildren ? countDesc(node) : 0;
     const initials = (node.name || node.email || '?').charAt(0).toUpperCase();
 
@@ -85,9 +76,9 @@ function NetworkNode({ node, depth = 0 }) {
                             <span className={`text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0 ${cfg.badge}`}>
                                 {cfg.label}
                             </span>
-                            {node.tier && (
-                                <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider flex-shrink-0 ${TIER_CFG[node.tier] || TIER_CFG.silver}`}>
-                                    {node.tier}
+                            {node.status === 'inactive' && (
+                                <span className="text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider flex-shrink-0 bg-red-100 text-red-600">
+                                    Inactive
                                 </span>
                             )}
                         </div>
@@ -164,12 +155,11 @@ export default function Users() {
             title: `Ubah Tipe User untuk ${user.name || user.email}`,
             input: 'select',
             inputOptions: {
-                regular:    'Regular Member',
                 starcenter: 'Official Starinc Distributor (Starcenter)',
                 admin:      'Admin',
             },
             inputPlaceholder: 'Pilih Tipe User',
-            inputValue: user.role || 'regular',
+            inputValue: user.role || 'starcenter',
             showCancelButton: true,
             confirmButtonColor: '#0f172a',
             cancelButtonColor: '#ef4444',
@@ -180,8 +170,7 @@ export default function Users() {
         if (newRole && newRole !== user.role) {
             try {
                 await adminApi.updateUserRole(user.id, newRole);
-                const updatedTier = newRole === 'starcenter' ? { slug: 'diamond', name: 'Diamond' } : user.tier;
-                setUsers(users.map(u => u.id === user.id ? { ...u, role: newRole, tier: updatedTier } : u));
+                setUsers(users.map(u => u.id === user.id ? { ...u, role: newRole } : u));
                 // invalidate network cache so it refreshes next time
                 setNetworkData(null);
                 Swal.fire({ title: 'Berhasil!', text: `Tipe diubah menjadi ${newRole.toUpperCase()}.`, icon: 'success', timer: 1500, showConfirmButton: false });
@@ -222,30 +211,16 @@ export default function Users() {
                 <Shield size={14} /> Admin
             </span>
         );
-        if (user.role === 'starcenter') return (
-            <span className="px-3 py-1 rounded-full text-xs font-medium border bg-blue-100 text-blue-800 border-blue-200 flex items-center w-max gap-1">
-                <Crown size={14} /> Official Starinc Distributor
-            </span>
-        );
         return (
-            <span className="px-3 py-1 rounded-full text-xs font-medium border bg-gray-100 text-gray-800 border-gray-200 flex items-center w-max gap-1">
-                <UserIcon size={14} /> Regular Member
+            <span className="px-3 py-1 rounded-full text-xs font-medium border bg-blue-100 text-blue-800 border-blue-200 flex items-center w-max gap-1">
+                <Crown size={14} /> Distributor
             </span>
         );
     };
 
-    const getTierBadge = (tier) => {
-        const colors = {
-            bronze: 'bg-[#cd7f32] text-white', silver: 'bg-gray-300 text-gray-800',
-            gold: 'bg-yellow-400 text-yellow-900', platinum: 'bg-blue-200 text-blue-900',
-            diamond: 'bg-purple-500 text-white',
-        };
-        return (
-            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${colors[tier] || colors.silver}`}>
-                {tier || 'SILVER'}
-            </span>
-        );
-    };
+    const getStatusBadge = (status) => status === 'inactive'
+        ? <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-red-100 text-red-600">Inactive</span>
+        : <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-green-100 text-green-700">Aktif</span>;
 
     const filteredUsers = users.filter(u =>
         u.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -261,7 +236,7 @@ export default function Users() {
             <div className="flex flex-wrap justify-between items-start gap-4 mb-6">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-800">Manajemen Pengguna</h1>
-                    <p className="text-sm text-gray-500">Kelola role dan tier customer</p>
+                    <p className="text-sm text-gray-500">Kelola akun dan role distributor</p>
                 </div>
 
                 <div className="flex items-center gap-3 flex-wrap">
@@ -314,7 +289,7 @@ export default function Users() {
                                         <th className="p-4">Nama Lengkap</th>
                                         <th className="p-4">Email</th>
                                         <th className="p-4">Tanggal Daftar</th>
-                                        <th className="p-4">Tipe User & Tier</th>
+                                        <th className="p-4">Tipe User & Status</th>
                                         <th className="p-4">Total Spending</th>
                                         <th className="p-4 text-right">Aksi</th>
                                     </tr>
@@ -324,7 +299,6 @@ export default function Users() {
                                         const dateStr = user.created_at
                                             ? new Date(user.created_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' })
                                             : '-';
-                                        const tierSlug = user.tier?.slug || 'bronze';
                                         return (
                                             <tr key={user.id} className="hover:bg-gray-50 transition-colors">
                                                 <td className="p-4 text-sm font-medium text-gray-900">{user.name || '-'}</td>
@@ -333,7 +307,7 @@ export default function Users() {
                                                 <td className="p-4">
                                                     <div className="flex flex-col gap-2 items-start">
                                                         {getRoleBadge(user)}
-                                                        {user.role !== 'admin' && getTierBadge(tierSlug)}
+                                                        {user.role !== 'admin' && getStatusBadge(user.status)}
                                                     </div>
                                                 </td>
                                                 <td className="p-4 text-sm font-bold text-gray-900">
@@ -386,7 +360,6 @@ export default function Users() {
                                 { label: 'Total Pengguna', value: counts.total,      color: 'text-gray-900' },
                                 { label: 'Admin',          value: counts.admin,      color: 'text-red-600' },
                                 { label: 'Starcenter',     value: counts.starcenter, color: 'text-purple-600' },
-                                { label: 'Regular',        value: counts.regular,    color: 'text-blue-600' },
                             ].map(({ label, value, color }) => (
                                 <div key={label} className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
                                     <p className="text-xs text-gray-500 font-medium">{label}</p>

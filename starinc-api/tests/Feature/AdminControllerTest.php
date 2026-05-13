@@ -6,7 +6,6 @@ use App\Models\Commission;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\SystemSetting;
-use App\Models\Tier;
 use App\Models\User;
 use Tests\TestCase;
 
@@ -49,7 +48,7 @@ class AdminControllerTest extends TestCase
 
     public function test_user_list(): void
     {
-        User::factory()->count(5)->create(['role' => 'regular']);
+        User::factory()->count(5)->create(['role' => 'starcenter']);
 
         $response = $this->withHeader('Authorization', "Bearer {$this->token}")
                          ->getJson('/api/admin/users');
@@ -85,36 +84,35 @@ class AdminControllerTest extends TestCase
 
     public function test_user_role_update(): void
     {
-        $user = User::factory()->create(['role' => 'regular']);
+        $user = User::factory()->create(['role' => 'starcenter']);
 
         $response = $this->withHeader('Authorization', "Bearer {$this->token}")
                          ->putJson("/api/admin/users/{$user->id}/role", [
-                             'role' => 'starcenter',
+                             'role' => 'admin',
                          ]);
 
         $response->assertStatus(200);
 
         $this->assertDatabaseHas('users', [
             'id'   => $user->id,
-            'role' => 'starcenter',
+            'role' => 'admin',
         ]);
     }
 
-    public function test_user_tier_update(): void
+    public function test_user_status_update(): void
     {
-        $user = User::factory()->create();
-        $tier = Tier::factory()->create(['name' => 'Silver']);
+        $user = User::factory()->create(['role' => 'starcenter', 'status' => 'active']);
 
         $response = $this->withHeader('Authorization', "Bearer {$this->token}")
-                         ->putJson("/api/admin/users/{$user->id}/tier", [
-                             'tier_id' => $tier->id,
+                         ->putJson("/api/admin/users/{$user->id}/status", [
+                             'status' => 'inactive',
                          ]);
 
         $response->assertStatus(200);
 
         $this->assertDatabaseHas('users', [
-            'id'      => $user->id,
-            'tier_id' => $tier->id,
+            'id'     => $user->id,
+            'status' => 'inactive',
         ]);
     }
 
@@ -276,7 +274,7 @@ class AdminControllerTest extends TestCase
 
     public function test_unauthorized_access(): void
     {
-        $user = User::factory()->create(['role' => 'regular']);
+        $user = User::factory()->create(['role' => 'starcenter']);
         $token = $user->createToken('auth-token')->plainTextToken;
 
         $response = $this->withHeader('Authorization', "Bearer $token")

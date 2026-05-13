@@ -10,7 +10,6 @@ import {
     LogOut,
     ArrowLeft,
     Banknote,
-    Crown,
     Menu,
     X,
     ClipboardList,
@@ -35,7 +34,6 @@ export default function AdminLayout() {
         { name: 'Users / Center', path: '/admin/users', icon: Users },
         { name: 'Pengajuan Center', path: '/admin/applications', icon: ClipboardList },
         { name: 'Komisi', path: '/admin/commissions', icon: Banknote },
-        { name: 'Level / Tiers', path: '/admin/tiers', icon: Crown },
         { name: 'Rekening Pembayaran', path: '/admin/payment-settings', icon: CreditCard },
         { name: 'Testimoni', path: '/admin/testimonials', icon: MessageSquareQuote },
         { name: 'Tampilan Web', path: '/admin/settings', icon: Settings },
@@ -44,7 +42,7 @@ export default function AdminLayout() {
     const SidebarContent = () => (
         <>
             <div className="p-6 border-b border-gray-800 flex items-center justify-between">
-                <h1 className="text-xl font-bold text-white">SDP Admin<span className="text-[var(--color-accent)]">.</span></h1>
+                <h1 className="text-xl font-bold text-white">STARINC Admin<span className="text-[var(--color-accent)]">.</span></h1>
                 <button
                     onClick={() => setSidebarOpen(false)}
                     className="md:hidden text-gray-400 hover:text-white min-w-[44px] min-h-[44px] flex items-center justify-center"
@@ -124,7 +122,7 @@ export default function AdminLayout() {
                     >
                         <Menu size={22} />
                     </button>
-                    <span className="font-bold text-white">SDP Admin<span className="text-[var(--color-accent)]">.</span></span>
+                    <span className="font-bold text-white">STARINC Admin<span className="text-[var(--color-accent)]">.</span></span>
                 </div>
 
                 <div className="p-4 md:p-8">

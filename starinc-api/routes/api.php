@@ -13,9 +13,7 @@ use App\Http\Controllers\Api\ShippingController;
 use App\Http\Controllers\Api\StarCenterApplicationController;
 use App\Http\Controllers\Api\TestimonialController;
 use App\Http\Controllers\Api\WalletController;
-use App\Http\Controllers\Api\WebhookController;
 use App\Http\Middleware\EnsureIsAdmin;
-use App\Models\Tier;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -55,11 +53,6 @@ Route::get('/settings/payment', [SettingsController::class, 'paymentInfo']);
 // Referral code lookup (public — used on register form)
 Route::get('/referral/{code}', [AuthController::class, 'lookupReferral']);
 
-// Tiers list (public)
-Route::get('/tiers', function () {
-    return response()->json(Tier::orderBy('sort_order')->get());
-});
-
 // Testimonials (public)
 Route::get('/testimonials', [TestimonialController::class, 'index']);
 
@@ -69,9 +62,6 @@ Route::get('/products/{id}/pdf', [ProductController::class, 'streamPdf']);
 // Starcenter applications (public submission)
 Route::get('/starcenter-applications/check-name', [StarCenterApplicationController::class, 'checkCenterName']);
 Route::post('/starcenter-applications', [StarCenterApplicationController::class, 'store']);
-
-// Midtrans webhook (no auth — Midtrans does not send Bearer token)
-Route::post('/webhook/midtrans', [WebhookController::class, 'midtrans']);
 
 // Shipping — RajaOngkir proxy (public, no auth)
 Route::prefix('shipping')->group(function () {
@@ -96,7 +86,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Checkout & Orders
     Route::post('/checkout', [OrderController::class, 'checkout']);
-    Route::post('/orders/{orderNumber}/repay', [OrderController::class, 'repaySnapToken']);
     Route::post('/orders/{orderNumber}/cancel', [OrderController::class, 'cancelOrder']);
     Route::get('/user/orders', [OrderController::class, 'myOrders']);
     Route::get('/orders/{orderNumber}/invoice', [OrderController::class, 'invoice']);
@@ -127,6 +116,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Orders
         Route::get('/orders', [OrderController::class, 'adminIndex']);
+        Route::post('/orders', [OrderController::class, 'adminCreateOrder']);
         Route::put('/orders/{id}/status', [OrderController::class, 'updateStatus']);
         Route::put('/orders/{id}/payment', [OrderController::class, 'reviewPayment']);
         Route::put('/orders/{id}/tracking', [OrderController::class, 'updateTracking']);
@@ -150,8 +140,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/users/{id}', [AdminController::class, 'showUser']);
         Route::put('/users/{id}/role', [AdminController::class, 'updateUserRole']);
         Route::put('/users/{id}/password', [AdminController::class, 'updateUserPassword']);
-        Route::put('/users/{id}/tier', [AdminController::class, 'updateUserTier']);
         Route::get('/users/{id}/commissions', [AdminController::class, 'getUserCommissions']);
+        Route::put('/users/{id}/status', [AdminController::class, 'updateUserStatus']);
         Route::delete('/users/{id}', [AdminController::class, 'deleteUser']);
 
         // Commissions
@@ -184,7 +174,6 @@ Route::middleware('auth:sanctum')->group(function () {
         // Settings
         Route::get('/settings', [SettingsController::class, 'adminSettings']);
         Route::put('/settings', [SettingsController::class, 'updateSettings']);
-        Route::put('/settings/tiers/{id}', [SettingsController::class, 'updateTier']);
         Route::get('/appearance', [SettingsController::class, 'adminAppearance']);
         Route::put('/appearance', [SettingsController::class, 'updateAppearance']);
     });

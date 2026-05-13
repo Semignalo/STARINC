@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Mail\VerifyEmailMail;
 use App\Models\StarcenterNetwork;
-use App\Models\Tier;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -50,26 +49,13 @@ class AuthController extends Controller
             'referrer_id' => $referrerId,
         ]);
 
-        // Populate StarcenterNetwork closure table
+        // Populate StarcenterNetwork — depth 1 only (single-level)
         if ($referrerId) {
-            // Direct upline (depth 1)
             StarcenterNetwork::create([
-                'upline_id' => $referrerId,
+                'upline_id'   => $referrerId,
                 'downline_id' => $user->id,
-                'depth' => 1,
+                'depth'       => 1,
             ]);
-
-            // Indirect uplines (depth 2 to 7)
-            $uplines = StarcenterNetwork::where('downline_id', $referrerId)->get();
-            foreach ($uplines as $upline) {
-                if ($upline->depth < 7) {
-                    StarcenterNetwork::create([
-                        'upline_id' => $upline->upline_id,
-                        'downline_id' => $user->id,
-                        'depth' => $upline->depth + 1,
-                    ]);
-                }
-            }
         }
 
         // Send magic link verification email
@@ -201,32 +187,23 @@ class AuthController extends Controller
         return response()->json(['message' => 'Password berhasil diperbarui.']);
     }
 
-    /**
-     * Format user response with tier data.
-     */
     private function userResponse(User $user): array
     {
-        $user->load('tier');
-
         return [
-            'id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email,
-            'phone' => $user->phone,
-            'address' => $user->address,
-            'city' => $user->city,
-            'postal_code' => $user->postal_code,
-            'role' => $user->role,
-            'referral_code' => $user->referral_code,
+            'id'                  => $user->id,
+            'name'                => $user->name,
+            'email'               => $user->email,
+            'phone'               => $user->phone,
+            'address'             => $user->address,
+            'city'                => $user->city,
+            'postal_code'         => $user->postal_code,
+            'role'                => $user->role,
+            'status'              => $user->status,
+            'referral_code'       => $user->referral_code,
             'cumulative_spending' => (float) $user->cumulative_spending,
             'last_transaction_at' => $user->last_transaction_at?->toISOString(),
-            'created_at' => $user->created_at->toISOString(),
-            'tier' => $user->tier ? [
-                'slug' => $user->tier->slug,
-                'name' => $user->tier->name,
-                'discount_percent' => (float) $user->tier->discount_percent,
-                'min_spend' => (float) $user->tier->min_spend,
-            ] : null,
+            'created_at'          => $user->created_at->toISOString(),
+            'discount_percent'    => 23,
         ];
     }
 }

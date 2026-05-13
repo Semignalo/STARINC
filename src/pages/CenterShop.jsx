@@ -3,7 +3,6 @@ import { useAuth } from '../contexts/AuthContext';
 import { Navigate, Link } from 'react-router-dom';
 import { ShoppingBag, TrendingUp, Users, Banknote, Clock, ArrowRight, Crown, ChevronRight } from 'lucide-react';
 import { networkApi } from '../api/networkApi';
-import { getTierProgress, TIER_CONFIG } from '../lib/tierUtils';
 
 function StatCard({ icon, label, value, sub, colorClass = 'text-[var(--color-primary)]' }) {
     const IconComp = icon;
@@ -83,12 +82,6 @@ export default function CenterShop() {
 
     const totalDownlines = network?.total_referrals || 0;
 
-    // Tier progress
-    const tierSlug = userData?.tier?.slug || 'bronze';
-    const progressData = userData ? getTierProgress(tierSlug, userData.cumulative_spending || 0) : null;
-    const nextTierKey = TIER_CONFIG[tierSlug]?.nextTier;
-    const nextTierConfig = nextTierKey ? TIER_CONFIG[nextTierKey] : null;
-
     const fmt = (v) => `Rp ${parseFloat(v || 0).toLocaleString('id-ID')}`;
 
     return (
@@ -145,34 +138,6 @@ export default function CenterShop() {
                             sub="Anggota jaringan"
                             colorClass="text-purple-600"
                         />
-                    </div>
-                )}
-
-                {/* Tier Progress */}
-                {progressData && !progressData.maxReached && nextTierConfig && (
-                    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-8">
-                        <div className="flex justify-between items-center mb-3">
-                            <div>
-                                <p className="font-bold text-gray-900">Progress Tier</p>
-                                <p className="text-sm text-gray-500">
-                                    Menuju <span className="font-semibold capitalize">{nextTierConfig.name}</span> — butuh {fmt(progressData.needed)} lagi
-                                </p>
-                            </div>
-                            <span className="text-xs font-bold uppercase tracking-wider text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-                                {tierSlug}
-                            </span>
-                        </div>
-                        <div className="h-2.5 w-full bg-gray-100 rounded-full overflow-hidden">
-                            <div
-                                className="h-full rounded-full bg-gradient-to-r from-[var(--color-accent)] to-yellow-400 transition-all duration-700"
-                                style={{ width: `${Math.min(progressData.progress, 100)}%` }}
-                            />
-                        </div>
-                        <div className="flex justify-between mt-1.5">
-                            <span className="text-xs text-gray-500">{fmt(userData?.cumulative_spending || 0)}</span>
-                            <span className="text-xs font-bold text-[var(--color-accent)]">{Math.round(progressData.progress)}%</span>
-                            <span className="text-xs text-gray-500">{fmt(nextTierConfig?.minSpend)}</span>
-                        </div>
                     </div>
                 )}
 

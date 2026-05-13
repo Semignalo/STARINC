@@ -30,8 +30,6 @@ return [
         'http://192.168.1.70:5174',
         'http://192.168.1.196:5173',
         'http://192.168.1.196:5174',
-        'http://sdp-v2.test',
-        'http://SDP-V2.test',
         env('FRONTEND_URL'),
     ]),
 

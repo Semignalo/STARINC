@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Mail\CommissionDistributedMail;
 use App\Models\Commission;
 use App\Models\Order;
-use App\Models\StarcenterNetwork;
 use App\Models\SystemSetting;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
@@ -14,7 +13,8 @@ use Illuminate\Support\Facades\Log;
 class CommissionService
 {
     /**
-     * Distribute commissions when an order is completed.
+     * Distribute commission to the buyer's direct upline when an order completes.
+     * Rate: 5% for buyer's first completed order, 1% for subsequent orders.
      */
     public function distribute(Order $order): void
     {
@@ -24,59 +24,27 @@ class CommissionService
         }
 
         $referrer = User::find($buyer->referrer_id);
-        if (!$referrer) {
+        if (!$referrer || $referrer->role === 'admin') {
             return;
         }
 
-        $orderAmount = $order->subtotal;
+        // Determine rate based on whether this is buyer's first completed order
+        $hasPreviousOrder = Order::where('user_id', $buyer->id)
+            ->where('status', 'completed')
+            ->where('id', '!=', $order->id)
+            ->exists();
 
-        if ($referrer->role === 'regular') {
-            // SDP: Single-level commission only
-            $rate = (float) SystemSetting::getValue('sdp_commission_rate', 5);
-            $this->createCommission($referrer, $order, $buyer, $orderAmount, $rate, 1);
-            return;
-        }
+        $rateKey = $hasPreviousOrder ? 'starcenter_repeat_rate' : 'starcenter_first_order_rate';
+        $rate    = (float) SystemSetting::getValue($rateKey, $hasPreviousOrder ? 1 : 5);
 
-        if ($referrer->role === 'starcenter') {
-            // Starcenter: Multi-level commission (max 7 levels)
-            $this->distributeMLM($referrer, $order, $buyer, $orderAmount);
-        }
+        $this->createCommission($referrer, $order, $buyer, (float) $order->subtotal, $rate);
     }
 
-    /**
-     * Distribute MLM commissions up the starcenter chain.
-     */
-    private function distributeMLM(User $starcenter, Order $order, User $buyer, float $orderAmount): void
+    private function createCommission(User $earner, Order $order, User $buyer, float $orderAmount, float $rate): void
     {
-        $maxLevel = (int) SystemSetting::getValue('starcenter_max_level', 7);
-
-        // Fetch entire upline chain in single query (closure table)
-        $ancestors = StarcenterNetwork::where('downline_id', $buyer->id)
-            ->where('depth', '<=', $maxLevel)
-            ->orderBy('depth', 'asc')
-            ->with('upline')
-            ->get();
-
-        foreach ($ancestors as $ancestor) {
-            $level = $ancestor->depth;
-            $rateKey = "starcenter_level_{$level}_rate";
-            $rate = (float) SystemSetting::getValue($rateKey, 0);
-
-            if ($rate > 0) {
-                $this->createCommission($ancestor->upline, $order, $buyer, $orderAmount, $rate, $level);
-            }
-        }
-    }
-
-    /**
-     * Create a single commission record.
-     */
-    private function createCommission(User $earner, Order $order, User $buyer, float $orderAmount, float $rate, int $level): void
-    {
-        // Don't create duplicate commissions
         $exists = Commission::where('user_id', $earner->id)
             ->where('order_id', $order->id)
-            ->where('level', $level)
+            ->where('level', 1)
             ->exists();
 
         if ($exists) {
@@ -90,20 +58,19 @@ class CommissionService
             'order_amount'      => $orderAmount,
             'commission_rate'   => $rate,
             'commission_amount' => round($orderAmount * $rate / 100, 2),
-            'level'             => $level,
+            'level'             => 1,
             'status'            => 'pending',
         ]);
 
-        // Send commission notification email
         try {
             Mail::queue(new CommissionDistributedMail($commission));
-        } catch (\Exception $mailError) {
+        } catch (\Exception $e) {
             Log::warning('Failed to queue commission email', ['commission_id' => $commission->id]);
         }
     }
 
     /**
-     * Cancel commissions when an order is reversed from completed.
+     * Cancel pending commissions when an order is reversed from completed.
      */
     public function cancelForOrder(Order $order): void
     {

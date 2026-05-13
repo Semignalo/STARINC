@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Commission;
 use App\Models\Order;
 use App\Models\User;
-use App\Models\Tier;
 use App\Models\OrderItem;
 use App\Models\WalletLedger;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -101,8 +100,7 @@ class AdminController extends Controller
      */
     public function networkTree()
     {
-        $users = User::select('id', 'name', 'email', 'role', 'referrer_id', 'referral_code')
-            ->with('tier:id,slug')
+        $users = User::select('id', 'name', 'email', 'role', 'status', 'referrer_id', 'referral_code')
             ->orderBy('created_at')
             ->get()
             ->map(fn($u) => [
@@ -110,16 +108,15 @@ class AdminController extends Controller
                 'name'          => $u->name,
                 'email'         => $u->email,
                 'role'          => $u->role,
+                'status'        => $u->status,
                 'referrer_id'   => $u->referrer_id,
                 'referral_code' => $u->referral_code,
-                'tier'          => $u->tier?->slug,
             ]);
 
         $counts = [
             'total'      => $users->count(),
             'admin'      => $users->where('role', 'admin')->count(),
             'starcenter' => $users->where('role', 'starcenter')->count(),
-            'regular'    => $users->where('role', 'regular')->count(),
         ];
 
         return response()->json(['users' => $users->values(), 'counts' => $counts]);
@@ -130,7 +127,7 @@ class AdminController extends Controller
      */
     public function users(Request $request)
     {
-        $query = User::with('tier');
+        $query = User::query();
 
         if ($request->has('search')) {
             $search = $request->search;
@@ -140,7 +137,12 @@ class AdminController extends Controller
             });
         }
 
-        $users = $query->orderBy('created_at', 'desc')->paginate(30);
+        if ($request->has('role')) {
+            $query->where('role', $request->role);
+        }
+
+        $perPage = min((int) ($request->per_page ?? 30), 100);
+        $users   = $query->orderBy('created_at', 'desc')->paginate($perPage);
 
         return response()->json($users);
     }
@@ -150,7 +152,7 @@ class AdminController extends Controller
      */
     public function showUser($id)
     {
-        $user = User::with(['tier', 'referrer', 'orders' => function($q) {
+        $user = User::with(['referrer', 'orders' => function($q) {
             $q->orderBy('created_at', 'desc')->limit(20);
         }])->findOrFail($id);
 
@@ -208,23 +210,37 @@ class AdminController extends Controller
         $user = User::findOrFail($id);
 
         $validated = $request->validate([
-            'role' => 'required|in:regular,starcenter,admin',
+            'role' => 'required|in:starcenter,admin',
         ]);
 
-        $newRole = $validated['role'];
-        $user->role = $newRole;
-
-        // Force diamond tier for starcenter
-        if ($newRole === 'starcenter') {
-            $diamondTier = Tier::where('slug', 'diamond')->first();
-            $user->tier_id = $diamondTier?->id;
-        }
-
-        $user->save();
+        $user->update(['role' => $validated['role']]);
 
         return response()->json([
-            'message' => "Role berhasil diubah menjadi {$newRole}.",
-            'user'    => $user->load('tier'),
+            'message' => "Role berhasil diubah menjadi {$validated['role']}.",
+            'user'    => $user->fresh(),
+        ]);
+    }
+
+    /**
+     * Activate or deactivate a user account (admin).
+     */
+    public function updateUserStatus(Request $request, int $id)
+    {
+        $user = User::findOrFail($id);
+
+        if ($user->role === 'admin') {
+            return response()->json(['message' => 'Status akun admin tidak dapat diubah.'], 403);
+        }
+
+        $validated = $request->validate([
+            'status' => 'required|in:active,inactive',
+        ]);
+
+        $user->update(['status' => $validated['status']]);
+
+        return response()->json([
+            'message' => "Akun berhasil di" . ($validated['status'] === 'active' ? 'aktifkan' : 'nonaktifkan') . ".",
+            'user'    => $user->fresh(),
         ]);
     }
 
@@ -246,26 +262,6 @@ class AdminController extends Controller
         return response()->json([
             'message' => 'Password user berhasil diubah.',
             'user' => $user,
-        ]);
-    }
-
-    /**
-     * Update user tier (admin action).
-     */
-    public function updateUserTier(Request $request, int $id)
-    {
-        $user = User::findOrFail($id);
-
-        $validated = $request->validate([
-            'tier_id' => 'required|exists:tiers,id',
-        ]);
-
-        $tier = Tier::findOrFail($validated['tier_id']);
-        $user->update(['tier_id' => $tier->id]);
-
-        return response()->json([
-            'message' => "Tier user berhasil diubah menjadi {$tier->name}.",
-            'user' => $user->load('tier'),
         ]);
     }
 

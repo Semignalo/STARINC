@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { adminOrderApi } from '../../api/orderApi';
 import { adminApi } from '../../api/adminApi';
-import { Eye, Edit2, CheckCircle, XCircle, Search, Clock, Box, Rocket, Download, RefreshCw, ChevronLeft, ChevronRight, Calendar, FileText, Check, X } from 'lucide-react';
+import { Eye, Edit2, CheckCircle, XCircle, Search, Clock, Box, Rocket, Download, RefreshCw, ChevronLeft, ChevronRight, Calendar, FileText, Check, X, Printer, Plus } from 'lucide-react';
 import Swal from 'sweetalert2';
+import { printInvoice, printSuratJalan } from '../../utils/printOrder';
+import CreateOrderModal from '../../components/admin/CreateOrderModal';
 
 // Status enum values (backend)
 const STATUS_ENUM = {
@@ -35,6 +37,7 @@ export default function Orders() {
     const [lastPage, setLastPage] = useState(1);
     const [total, setTotal] = useState(0);
     const [exporting, setExporting] = useState(false);
+    const [createOrderModal, setCreateOrderModal] = useState(false);
 
     // Date range filter
     const [dateFrom, setDateFrom] = useState('');
@@ -279,6 +282,13 @@ export default function Orders() {
                         />
                     </div>
                     <button
+                        onClick={() => setCreateOrderModal(true)}
+                        className="bg-[var(--color-accent)] hover:opacity-90 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition"
+                    >
+                        <Plus size={16} />
+                        Buat Pesanan
+                    </button>
+                    <button
                         onClick={handleExport}
                         disabled={exporting}
                         className="bg-gray-800 hover:bg-black text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition"
@@ -404,13 +414,22 @@ export default function Orders() {
                                                     Rp. {Number(order.total || 0).toLocaleString('id-ID')}
                                                 </td>
                                                 <td className="p-4 text-right">
-                                                    <button
-                                                        onClick={() => openOrderDetails(order)}
-                                                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                                        title="Lihat Detail Pesanan"
-                                                    >
-                                                        <Eye size={18} />
-                                                    </button>
+                                                    <div className="flex items-center justify-end gap-1">
+                                                        <button
+                                                            onClick={() => openOrderDetails(order)}
+                                                            className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                                            title="Lihat Detail Pesanan"
+                                                        >
+                                                            <Eye size={18} />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => printInvoice(order)}
+                                                            className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                                                            title="Cetak Faktur"
+                                                        >
+                                                            <Printer size={18} />
+                                                        </button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         );
@@ -461,9 +480,25 @@ export default function Orders() {
                                 <h2 className="text-xl font-bold text-gray-900">Detail Pesanan</h2>
                                 <p className="text-sm text-gray-500">#{selectedOrder.order_number || String(selectedOrder.id)}</p>
                             </div>
-                            <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 bg-gray-100 p-2 rounded-full">
-                                <XCircle size={20} />
-                            </button>
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={() => printInvoice(selectedOrder)}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-800 hover:bg-black text-white rounded-lg text-xs font-semibold transition"
+                                    title="Cetak Faktur Penjualan"
+                                >
+                                    <Printer size={14} /> Faktur
+                                </button>
+                                <button
+                                    onClick={() => printSuratJalan(selectedOrder)}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-600 hover:bg-gray-700 text-white rounded-lg text-xs font-semibold transition"
+                                    title="Cetak Surat Jalan"
+                                >
+                                    <Printer size={14} /> Surat Jalan
+                                </button>
+                                <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 bg-gray-100 p-2 rounded-full">
+                                    <XCircle size={20} />
+                                </button>
+                            </div>
                         </div>
 
                         {/* Body - Scrollable */}
@@ -490,21 +525,8 @@ export default function Orders() {
                                 </div>
                             </div>
 
-                            {/* Midtrans Payment Info */}
-                            {selectedOrder.payment_method && (
-                                <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-                                    <h3 className="text-sm font-semibold text-green-900 mb-3">⚡ Pembayaran via Midtrans</h3>
-                                    <div className="space-y-1 text-sm text-green-800">
-                                        <p><span className="font-medium">Metode:</span> {selectedOrder.payment_method.replace(/_/g, ' ').toUpperCase()}</p>
-                                        {selectedOrder.midtrans_order_id && (
-                                            <p><span className="font-medium">Transaction ID:</span> <span className="font-mono text-xs">{selectedOrder.midtrans_order_id}</span></p>
-                                        )}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Payment Proof Review — hanya untuk transfer manual */}
-                            {selectedOrder.payment_proof && !selectedOrder.payment_method && (
+                            {/* Payment Proof Review */}
+                            {selectedOrder.payment_proof && (
                                 <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
                                     <h3 className="text-sm font-semibold text-blue-900 mb-3">📋 Bukti Pembayaran</h3>
                                     <div className="space-y-3">
@@ -802,6 +824,13 @@ export default function Orders() {
                     </div>
                 </div>
             )}
+
+            {/* Create Order Modal */}
+            <CreateOrderModal
+                isOpen={createOrderModal}
+                onClose={() => setCreateOrderModal(false)}
+                onOrderCreated={() => fetchOrders(currentPage)}
+            />
         </div>
     );
 }

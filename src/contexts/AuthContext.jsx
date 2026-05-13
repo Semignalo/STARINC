@@ -28,7 +28,7 @@ export function AuthProvider({ children }) {
         localStorage.setItem('auth_token', data.token);
         setCurrentUser(data.user);
         setUserData(data.user);
-        setUserRole(data.user.role || 'regular');
+        setUserRole(data.user.role || 'starcenter');
         return data.user;
     }, []);
 
@@ -67,7 +67,7 @@ export function AuthProvider({ children }) {
                     const data = await authApi.getProfile();
                     setCurrentUser(data.user);
                     setUserData(data.user);
-                    setUserRole(data.user.role || 'regular');
+                    setUserRole(data.user.role || 'starcenter');
                 } catch (error) {
                     console.error("Failed to fetch profile", error);
                     localStorage.removeItem('auth_token');
@@ -89,7 +89,7 @@ export function AuthProvider({ children }) {
                         const data = await authApi.getProfile();
                         setCurrentUser(data.user);
                         setUserData(data.user);
-                        setUserRole(data.user.role || 'regular');
+                        setUserRole(data.user.role || 'starcenter');
                     } catch (error) {
                         console.error("Token re-validation failed", error);
                         localStorage.removeItem('auth_token');

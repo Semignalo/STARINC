@@ -31,7 +31,8 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
-            'role' => 'regular',
+            'role' => 'starcenter',
+            'status' => 'active',
             'cumulative_spending' => 0,
             'last_transaction_at' => null,
         ];
@@ -82,10 +83,4 @@ class UserFactory extends Factory
         ]);
     }
 
-    public function atTier(\App\Models\Tier $tier): static
-    {
-        return $this->afterCreating(function (User $user) use ($tier) {
-            $user->update(['tier_id' => $tier->id]);
-        });
-    }
 }

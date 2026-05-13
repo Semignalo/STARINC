@@ -39,7 +39,6 @@ const AdminProducts = lazy(() => import('./pages/admin/Products'));
 const AdminUsers = lazy(() => import('./pages/admin/Users'));
 const AdminUserDetail = lazy(() => import('./pages/admin/UserDetail'));
 const AdminCommissions = lazy(() => import('./pages/admin/Commissions'));
-const AdminTiers = lazy(() => import('./pages/admin/Tiers'));
 const AdminApplications = lazy(() => import('./pages/admin/Applications'));
 const AdminTestimonials = lazy(() => import('./pages/admin/Testimonials'));
 
@@ -81,7 +80,6 @@ function App() {
           <Route path="users" element={<AdminUsers />} />
           <Route path="users/:id" element={<AdminUserDetail />} />
           <Route path="commissions" element={<AdminCommissions />} />
-          <Route path="tiers" element={<AdminTiers />} />
           <Route path="applications" element={<AdminApplications />} />
           <Route path="testimonials" element={<AdminTestimonials />} />
         </Route>

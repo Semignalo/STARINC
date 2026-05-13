@@ -4,7 +4,6 @@ namespace Tests\Unit;
 
 use App\Models\Commission;
 use App\Models\Order;
-use App\Models\StarcenterNetwork;
 use App\Models\SystemSetting;
 use App\Models\User;
 use App\Services\CommissionService;
@@ -18,26 +17,17 @@ class CommissionServiceTest extends TestCase
     {
         parent::setUp();
         $this->service = new CommissionService();
+        SystemSetting::setValue('starcenter_first_order_rate', '5');
+        SystemSetting::setValue('starcenter_repeat_rate', '1');
     }
 
-    private function makeOrder(User $buyer, float $subtotal): Order
+    private function makeOrder(User $buyer, float $subtotal, string $status = 'pending_payment'): Order
     {
         return Order::factory()
             ->forUser($buyer)
             ->withSubtotal($subtotal)
-            ->create()
+            ->create(['status' => $status])
             ->load('user');
-    }
-
-    private function buildNetwork(User $buyer, array $uplines): void
-    {
-        foreach ($uplines as $depth => $upline) {
-            StarcenterNetwork::create([
-                'upline_id'   => $upline->id,
-                'downline_id' => $buyer->id,
-                'depth'       => $depth + 1,
-            ]);
-        }
     }
 
     public function test_no_commission_when_buyer_has_no_referrer(): void
@@ -63,126 +53,59 @@ class CommissionServiceTest extends TestCase
         $this->assertDatabaseCount('commissions', 0);
     }
 
-    public function test_regular_referrer_creates_single_level_commission(): void
+    public function test_first_order_rate_is_five_percent(): void
     {
-        SystemSetting::setValue('sdp_commission_rate', '10');
-        $referrer = User::factory()->create(['role' => 'regular']);
+        $referrer = User::factory()->asStarcenter()->create();
         $buyer = User::factory()->withReferrer($referrer)->create();
-        $order = $this->makeOrder($buyer, 500000);
+        $order = $this->makeOrder($buyer, 1000000);
 
         $this->service->distribute($order);
 
         $this->assertDatabaseCount('commissions', 1);
         $this->assertDatabaseHas('commissions', [
-            'user_id'              => $referrer->id,
-            'order_id'             => $order->id,
-            'source_user_id'       => $buyer->id,
-            'level'                => 1,
-            'commission_rate'      => 10.0,
-            'commission_amount'    => 50000.00,
-            'status'               => 'pending',
+            'user_id'           => $referrer->id,
+            'order_id'          => $order->id,
+            'source_user_id'    => $buyer->id,
+            'level'             => 1,
+            'commission_rate'   => 5.0,
+            'commission_amount' => 50000.00,
+            'status'            => 'pending',
         ]);
     }
 
-    public function test_regular_referrer_commission_amount_formula(): void
+    public function test_repeat_order_rate_is_one_percent(): void
     {
-        SystemSetting::setValue('sdp_commission_rate', '15');
-        $referrer = User::factory()->create(['role' => 'regular']);
+        $referrer = User::factory()->asStarcenter()->create();
+        $buyer = User::factory()->withReferrer($referrer)->create();
+
+        $this->makeOrder($buyer, 1000000, 'completed');
+
+        $order = $this->makeOrder($buyer, 2000000);
+
+        $this->service->distribute($order);
+
+        $this->assertDatabaseCount('commissions', 1);
+        $this->assertDatabaseHas('commissions', [
+            'user_id'           => $referrer->id,
+            'commission_rate'   => 1.0,
+            'commission_amount' => 20000.00,
+        ]);
+    }
+
+    public function test_no_commission_when_referrer_is_admin(): void
+    {
+        $referrer = User::factory()->asAdmin()->create();
         $buyer = User::factory()->withReferrer($referrer)->create();
         $order = $this->makeOrder($buyer, 1000000);
 
         $this->service->distribute($order);
 
-        $commission = Commission::first();
-        $expected = round(1000000 * 15 / 100, 2);
-        $this->assertEquals($expected, $commission->commission_amount);
-    }
-
-    public function test_starcenter_referrer_creates_mlm_commissions_for_each_level(): void
-    {
-        SystemSetting::setValue('starcenter_level_1_rate', '5');
-        SystemSetting::setValue('starcenter_level_2_rate', '3');
-        SystemSetting::setValue('starcenter_level_3_rate', '2');
-
-        $l1 = User::factory()->asStarcenter()->create();
-        $l2 = User::factory()->asStarcenter()->create();
-        $l3 = User::factory()->asStarcenter()->create();
-        $buyer = User::factory()->withReferrer($l1)->create();
-
-        $this->buildNetwork($buyer, [$l1, $l2, $l3]);
-        $order = $this->makeOrder($buyer, 1000000);
-
-        $this->service->distribute($order);
-
-        $this->assertDatabaseCount('commissions', 3);
-
-        // Level 1: 1000000 * 5 / 100 = 50000
-        $this->assertDatabaseHas('commissions', [
-            'user_id' => $l1->id,
-            'level'   => 1,
-            'commission_amount' => 50000.00,
-        ]);
-
-        // Level 2: 1000000 * 3 / 100 = 30000
-        $this->assertDatabaseHas('commissions', [
-            'user_id' => $l2->id,
-            'level'   => 2,
-            'commission_amount' => 30000.00,
-        ]);
-
-        // Level 3: 1000000 * 2 / 100 = 20000
-        $this->assertDatabaseHas('commissions', [
-            'user_id' => $l3->id,
-            'level'   => 3,
-            'commission_amount' => 20000.00,
-        ]);
-    }
-
-    public function test_mlm_skips_level_with_zero_rate(): void
-    {
-        SystemSetting::setValue('starcenter_level_1_rate', '5');
-        SystemSetting::setValue('starcenter_level_2_rate', '0');
-        SystemSetting::setValue('starcenter_level_3_rate', '2');
-
-        $l1 = User::factory()->asStarcenter()->create();
-        $l2 = User::factory()->asStarcenter()->create();
-        $l3 = User::factory()->asStarcenter()->create();
-        $buyer = User::factory()->withReferrer($l1)->create();
-
-        $this->buildNetwork($buyer, [$l1, $l2, $l3]);
-        $order = $this->makeOrder($buyer, 1000000);
-
-        $this->service->distribute($order);
-
-        $this->assertDatabaseCount('commissions', 2);
-        $this->assertDatabaseMissing('commissions', ['user_id' => $l2->id]);
-    }
-
-    public function test_mlm_respects_max_level_setting(): void
-    {
-        SystemSetting::setValue('starcenter_max_level', '2');
-        SystemSetting::setValue('starcenter_level_1_rate', '5');
-        SystemSetting::setValue('starcenter_level_2_rate', '3');
-        SystemSetting::setValue('starcenter_level_3_rate', '2');
-
-        $l1 = User::factory()->asStarcenter()->create();
-        $l2 = User::factory()->asStarcenter()->create();
-        $l3 = User::factory()->asStarcenter()->create();
-        $buyer = User::factory()->withReferrer($l1)->create();
-
-        $this->buildNetwork($buyer, [$l1, $l2, $l3]);
-        $order = $this->makeOrder($buyer, 1000000);
-
-        $this->service->distribute($order);
-
-        $this->assertDatabaseCount('commissions', 2);
-        $this->assertDatabaseMissing('commissions', ['user_id' => $l3->id, 'level' => 3]);
+        $this->assertDatabaseCount('commissions', 0);
     }
 
     public function test_distribute_is_idempotent(): void
     {
-        SystemSetting::setValue('sdp_commission_rate', '10');
-        $referrer = User::factory()->create(['role' => 'regular']);
+        $referrer = User::factory()->asStarcenter()->create();
         $buyer = User::factory()->withReferrer($referrer)->create();
         $order = $this->makeOrder($buyer, 500000);
 
@@ -199,40 +122,30 @@ class CommissionServiceTest extends TestCase
         $order = Order::factory()->forUser($user)->create();
 
         Commission::create([
-            'user_id'         => $user->id,
-            'order_id'        => $order->id,
-            'source_user_id'  => $user->id,
-            'order_amount'    => 500000,
-            'commission_rate' => 5,
+            'user_id'           => $user->id,
+            'order_id'          => $order->id,
+            'source_user_id'    => $user->id,
+            'order_amount'      => 500000,
+            'commission_rate'   => 5,
             'commission_amount' => 25000,
-            'level'           => 1,
-            'status'          => 'pending',
+            'level'             => 1,
+            'status'            => 'pending',
         ]);
         Commission::create([
-            'user_id'         => $user->id,
-            'order_id'        => $order->id,
-            'source_user_id'  => $user->id,
-            'order_amount'    => 500000,
-            'commission_rate' => 3,
-            'commission_amount' => 15000,
-            'level'           => 2,
-            'status'          => 'pending',
-        ]);
-        Commission::create([
-            'user_id'         => $user->id,
-            'order_id'        => $order->id,
-            'source_user_id'  => $user->id,
-            'order_amount'    => 500000,
-            'commission_rate' => 2,
-            'commission_amount' => 10000,
-            'level'           => 3,
-            'status'          => 'paid',
+            'user_id'           => $user->id,
+            'order_id'          => $order->id,
+            'source_user_id'    => $user->id,
+            'order_amount'      => 500000,
+            'commission_rate'   => 1,
+            'commission_amount' => 5000,
+            'level'             => 1,
+            'status'            => 'paid',
         ]);
 
         $this->service->cancelForOrder($order);
 
-        $this->assertDatabaseCount('commissions', 3);
-        $this->assertEquals(2, Commission::where('status', 'cancelled')->count());
+        $this->assertDatabaseCount('commissions', 2);
+        $this->assertEquals(1, Commission::where('status', 'cancelled')->count());
         $this->assertEquals(1, Commission::where('status', 'paid')->count());
     }
 

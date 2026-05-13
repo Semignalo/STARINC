@@ -5,7 +5,6 @@ namespace Tests\Unit;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\SystemSetting;
-use App\Models\Tier;
 use App\Models\User;
 use App\Services\OrderService;
 use Tests\TestCase;
@@ -138,11 +137,10 @@ class OrderServiceTest extends TestCase
         $this->assertEquals(2, $variant->stock);
     }
 
-    public function test_create_order_applies_tier_discount(): void
+    public function test_create_order_applies_flat_discount_for_starcenter(): void
     {
-        $silverTier = Tier::where('slug', 'silver')->first();
-        $user = User::factory()->create();
-        $user->update(['tier_id' => $silverTier->id]);
+        SystemSetting::setValue('starcenter_discount', '23');
+        $user = User::factory()->asStarcenter()->withSpending(50000000)->create();
 
         $product = Product::factory()->priced(200000)->create();
         $items = [
@@ -155,16 +153,12 @@ class OrderServiceTest extends TestCase
 
         $order = $this->service->createOrder($user, $this->customerInfo, $items);
 
-        $this->assertEquals(15, (float)$order->discount_percent);
-        $this->assertEquals(30000, (float)$order->discount_amount);
-        $this->assertEquals(190000, (float)$order->total);
+        $this->assertEquals(23, (float)$order->discount_percent);
+        $this->assertEquals(46000, (float)$order->discount_amount);
     }
 
-    public function test_create_order_no_discount_without_tier(): void
+    public function test_create_order_no_discount_for_guest(): void
     {
-        $bronzeTier = Tier::where('slug', 'bronze')->first();
-        $user = User::factory()->create();
-        $user->update(['tier_id' => null]);
         $product = Product::factory()->priced(200000)->create();
         $items = [
             [
@@ -174,7 +168,7 @@ class OrderServiceTest extends TestCase
             ],
         ];
 
-        $order = $this->service->createOrder($user, $this->customerInfo, $items);
+        $order = $this->service->createOrder(null, $this->customerInfo, $items);
 
         $this->assertEquals(0, (float)$order->discount_percent);
         $this->assertEquals(0, (float)$order->discount_amount);
@@ -203,9 +197,9 @@ class OrderServiceTest extends TestCase
 
     public function test_create_order_starcenter_passes_moq_check(): void
     {
-        SystemSetting::setValue('starcenter_moq', '5000000');
+        SystemSetting::setValue('starcenter_moq_first', '50000000');
         $user = User::factory()->asStarcenter()->create();
-        $product = Product::factory()->priced(6000000)->create();
+        $product = Product::factory()->priced(60000000)->create();
         $items = [
             [
                 'product_id'  => $product->id,
@@ -217,7 +211,7 @@ class OrderServiceTest extends TestCase
         $order = $this->service->createOrder($user, $this->customerInfo, $items);
 
         $this->assertDatabaseCount('orders', 1);
-        $this->assertGreaterThanOrEqual(5000000, (float)$order->total);
+        $this->assertGreaterThanOrEqual(50000000, (float)$order->subtotal);
     }
 
     public function test_create_order_clamps_quantity_to_minimum_one(): void
@@ -255,7 +249,7 @@ class OrderServiceTest extends TestCase
 
     public function test_create_order_updates_user_last_transaction_at(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->withSpending(50000000)->create();
         $user->update(['last_transaction_at' => null]);
         $product = Product::factory()->create();
         $items = [
