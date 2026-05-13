@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { adminApi } from '../../api/adminApi';
 import {
-    Edit2, Search, Shield, Crown, Eye, Trash2,
+    Search, Shield, Crown, Eye, Trash2,
     List, GitBranch, ChevronRight, ChevronDown, ExternalLink,
 } from 'lucide-react';
 import Swal from 'sweetalert2';
@@ -150,37 +150,6 @@ export default function Users() {
         if (mode === 'network') loadNetworkView();
     };
 
-    const handleEditRole = async (user) => {
-        const { value: newRole } = await Swal.fire({
-            title: `Ubah Tipe User untuk ${user.name || user.email}`,
-            input: 'select',
-            inputOptions: {
-                starcenter: 'Official Starinc Distributor (Starcenter)',
-                admin:      'Admin',
-            },
-            inputPlaceholder: 'Pilih Tipe User',
-            inputValue: user.role || 'starcenter',
-            showCancelButton: true,
-            confirmButtonColor: '#0f172a',
-            cancelButtonColor: '#ef4444',
-            confirmButtonText: 'Simpan',
-            cancelButtonText: 'Batal',
-        });
-
-        if (newRole && newRole !== user.role) {
-            try {
-                await adminApi.updateUserRole(user.id, newRole);
-                setUsers(users.map(u => u.id === user.id ? { ...u, role: newRole } : u));
-                // invalidate network cache so it refreshes next time
-                setNetworkData(null);
-                Swal.fire({ title: 'Berhasil!', text: `Tipe diubah menjadi ${newRole.toUpperCase()}.`, icon: 'success', timer: 1500, showConfirmButton: false });
-            } catch (error) {
-                console.error('Error updating user role:', error);
-                Swal.fire('Error', 'Gagal mengubah tipe user.', 'error');
-            }
-        }
-    };
-
     const handleDeleteUser = async (user) => {
         const { isConfirmed } = await Swal.fire({
             title: 'Hapus User?',
@@ -321,13 +290,6 @@ export default function Users() {
                                                             title="Detail User"
                                                         >
                                                             <Eye size={18} />
-                                                        </button>
-                                                        <button
-                                                            onClick={() => handleEditRole(user)}
-                                                            className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
-                                                            title="Ubah Role"
-                                                        >
-                                                            <Edit2 size={18} />
                                                         </button>
                                                         {user.role !== 'admin' && (
                                                             <button

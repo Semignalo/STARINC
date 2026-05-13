@@ -266,6 +266,30 @@ class AdminController extends Controller
     }
 
     /**
+     * Update user profile data (admin action).
+     */
+    public function updateUserProfile(Request $request, int $id)
+    {
+        $user = User::findOrFail($id);
+
+        $validated = $request->validate([
+            'name'        => 'required|string|max:255',
+            'email'       => "required|email|unique:users,email,{$id}",
+            'phone'       => 'nullable|string|max:20',
+            'address'     => 'nullable|string|max:500',
+            'city'        => 'nullable|string|max:100',
+            'postal_code' => 'nullable|string|max:10',
+        ]);
+
+        $user->update($validated);
+
+        return response()->json([
+            'message' => 'Profil user berhasil diperbarui.',
+            'user'    => $user->fresh(),
+        ]);
+    }
+
+    /**
      * Delete a user account (admin action).
      * Blocked for: admin accounts and self-deletion.
      */

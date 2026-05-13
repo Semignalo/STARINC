@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { adminApi } from '../../api/adminApi';
-import { ArrowLeft, Lock, Shield, Users, Copy, Check, RefreshCw, ChevronRight, ChevronDown, GitBranch, List, ExternalLink, ToggleLeft, ToggleRight } from 'lucide-react';
+import { ArrowLeft, Lock, Shield, Users, Copy, Check, RefreshCw, ChevronRight, ChevronDown, GitBranch, List, ExternalLink, ToggleLeft, ToggleRight, Pencil, X } from 'lucide-react';
 import Swal from 'sweetalert2';
 
 // ─── Network tree helpers ─────────────────────────────────────────────────────
@@ -102,6 +102,8 @@ export default function UserDetail() {
     const [newRole, setNewRole] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [networkView, setNetworkView] = useState('tree');
+    const [editingProfile, setEditingProfile] = useState(false);
+    const [profileForm, setProfileForm] = useState({});
 
     useEffect(() => {
         fetchUserDetail();
@@ -114,6 +116,14 @@ export default function UserDetail() {
             setUser(data.user);
             setNetwork(data.network);
             setNewRole(data.user.role);
+            setProfileForm({
+                name: data.user.name || '',
+                email: data.user.email || '',
+                phone: data.user.phone || '',
+                address: data.user.address || '',
+                city: data.user.city || '',
+                postal_code: data.user.postal_code || '',
+            });
         } catch (error) {
             console.error("Error fetching user:", error);
             Swal.fire('Error', 'Gagal memuat data user.', 'error');
@@ -185,6 +195,21 @@ export default function UserDetail() {
         Swal.fire('Berhasil', 'Teks disalin ke clipboard.', 'success');
     };
 
+    const handleUpdateProfile = async () => {
+        try {
+            setSubmitting(true);
+            const response = await adminApi.updateUserProfile(id, profileForm);
+            setUser(response.user);
+            setEditingProfile(false);
+            Swal.fire('Berhasil', 'Profil user berhasil diperbarui.', 'success');
+        } catch (err) {
+            const msg = err.response?.data?.message || 'Gagal memperbarui profil.';
+            Swal.fire('Error', msg, 'error');
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
     if (loading) return <div className="p-6 text-center">Loading...</div>;
     if (!user) return <div className="p-6 text-center text-red-600">User tidak ditemukan.</div>;
 
@@ -234,42 +259,104 @@ export default function UserDetail() {
             {/* Profile Tab */}
             {activeTab === 'profile' && (
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-6">
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                        <div>
-                            <p className="text-xs font-semibold text-gray-600 uppercase mb-1">Nama</p>
-                            <p className="text-sm font-medium text-gray-900">{user.name || '-'}</p>
-                        </div>
-                        <div>
-                            <p className="text-xs font-semibold text-gray-600 uppercase mb-1">Email</p>
-                            <p className="text-sm font-medium text-gray-900">{user.email}</p>
-                        </div>
-                        <div>
-                            <p className="text-xs font-semibold text-gray-600 uppercase mb-1">Role</p>
-                            <p className="text-sm font-medium text-gray-900">{roleDisplay[user.role]?.label || user.role}</p>
-                        </div>
-                        <div>
-                            <p className="text-xs font-semibold text-gray-600 uppercase mb-1">Status Akun</p>
-                            <span className={`inline-block px-2 py-0.5 rounded text-xs font-bold uppercase ${user.status === 'inactive' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
-                                {user.status === 'inactive' ? 'Tidak Aktif' : 'Aktif'}
-                            </span>
-                        </div>
-                        <div>
-                            <p className="text-xs font-semibold text-gray-600 uppercase mb-1">Total Spending</p>
-                            <p className="text-sm font-medium text-gray-900">Rp. {Number(user.cumulative_spending || 0).toLocaleString('id-ID')}</p>
-                        </div>
-                        <div>
-                            <p className="text-xs font-semibold text-gray-600 uppercase mb-1">Referral Code</p>
-                            <div className="flex items-center gap-2">
-                                <code className="text-sm font-medium text-gray-900 bg-gray-50 px-2 py-1 rounded">{user.referral_code || '-'}</code>
-                                {user.referral_code && (
-                                    <button onClick={() => copyToClipboard(user.referral_code)}
-                                        className="p-1 min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-gray-100 rounded transition">
-                                        <Copy size={16} className="text-gray-400" />
-                                    </button>
-                                )}
+                    <div className="flex items-center justify-between">
+                        <h3 className="text-base font-bold text-gray-900">Data Profil</h3>
+                        {!editingProfile ? (
+                            <button onClick={() => setEditingProfile(true)}
+                                className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50 transition">
+                                <Pencil size={14} /> Edit
+                            </button>
+                        ) : (
+                            <button onClick={() => setEditingProfile(false)}
+                                className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-500 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+                                <X size={14} /> Batal
+                            </button>
+                        )}
+                    </div>
+
+                    {!editingProfile ? (
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                            <div>
+                                <p className="text-xs font-semibold text-gray-600 uppercase mb-1">Nama</p>
+                                <p className="text-sm font-medium text-gray-900">{user.name || '-'}</p>
+                            </div>
+                            <div>
+                                <p className="text-xs font-semibold text-gray-600 uppercase mb-1">Email</p>
+                                <p className="text-sm font-medium text-gray-900">{user.email}</p>
+                            </div>
+                            <div>
+                                <p className="text-xs font-semibold text-gray-600 uppercase mb-1">No. Telepon</p>
+                                <p className="text-sm font-medium text-gray-900">{user.phone || '-'}</p>
+                            </div>
+                            <div>
+                                <p className="text-xs font-semibold text-gray-600 uppercase mb-1">Alamat</p>
+                                <p className="text-sm font-medium text-gray-900">{user.address || '-'}</p>
+                            </div>
+                            <div>
+                                <p className="text-xs font-semibold text-gray-600 uppercase mb-1">Kota</p>
+                                <p className="text-sm font-medium text-gray-900">{user.city || '-'}</p>
+                            </div>
+                            <div>
+                                <p className="text-xs font-semibold text-gray-600 uppercase mb-1">Kode Pos</p>
+                                <p className="text-sm font-medium text-gray-900">{user.postal_code || '-'}</p>
+                            </div>
+                            <div>
+                                <p className="text-xs font-semibold text-gray-600 uppercase mb-1">Role</p>
+                                <p className="text-sm font-medium text-gray-900">{roleDisplay[user.role]?.label || user.role}</p>
+                            </div>
+                            <div>
+                                <p className="text-xs font-semibold text-gray-600 uppercase mb-1">Status Akun</p>
+                                <span className={`inline-block px-2 py-0.5 rounded text-xs font-bold uppercase ${user.status === 'inactive' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+                                    {user.status === 'inactive' ? 'Tidak Aktif' : 'Aktif'}
+                                </span>
+                            </div>
+                            <div>
+                                <p className="text-xs font-semibold text-gray-600 uppercase mb-1">Total Spending</p>
+                                <p className="text-sm font-medium text-gray-900">Rp. {Number(user.cumulative_spending || 0).toLocaleString('id-ID')}</p>
+                            </div>
+                            <div>
+                                <p className="text-xs font-semibold text-gray-600 uppercase mb-1">Referral Code</p>
+                                <div className="flex items-center gap-2">
+                                    <code className="text-sm font-medium text-gray-900 bg-gray-50 px-2 py-1 rounded">{user.referral_code || '-'}</code>
+                                    {user.referral_code && (
+                                        <button onClick={() => copyToClipboard(user.referral_code)}
+                                            className="p-1 min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-gray-100 rounded transition">
+                                            <Copy size={16} className="text-gray-400" />
+                                        </button>
+                                    )}
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    ) : (
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {[
+                                    { key: 'name', label: 'Nama Lengkap' },
+                                    { key: 'email', label: 'Email', type: 'email' },
+                                    { key: 'phone', label: 'No. Telepon' },
+                                    { key: 'city', label: 'Kota' },
+                                    { key: 'postal_code', label: 'Kode Pos' },
+                                ].map(({ key, label, type = 'text' }) => (
+                                    <div key={key}>
+                                        <label className="block text-xs font-semibold text-gray-600 uppercase mb-1">{label}</label>
+                                        <input type={type} value={profileForm[key] || ''} onChange={(e) => setProfileForm(f => ({ ...f, [key]: e.target.value }))}
+                                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" />
+                                    </div>
+                                ))}
+                                <div className="md:col-span-2">
+                                    <label className="block text-xs font-semibold text-gray-600 uppercase mb-1">Alamat</label>
+                                    <textarea value={profileForm.address || ''} onChange={(e) => setProfileForm(f => ({ ...f, address: e.target.value }))} rows={2}
+                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none" />
+                                </div>
+                            </div>
+                            <button onClick={handleUpdateProfile} disabled={submitting}
+                                className="flex items-center gap-2 px-5 py-2 bg-blue-600 text-white rounded-lg font-medium text-sm hover:bg-blue-700 disabled:opacity-50 transition">
+                                {submitting ? <RefreshCw size={14} className="animate-spin" /> : <Check size={14} />}
+                                Simpan Perubahan
+                            </button>
+                        </div>
+                    )}
+
                     {user.referrer && (
                         <div className="pt-4 border-t border-gray-200">
                             <p className="text-xs font-semibold text-gray-600 uppercase mb-2">Upline / Referrer</p>

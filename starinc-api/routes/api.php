@@ -141,6 +141,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/users/{id}/role', [AdminController::class, 'updateUserRole']);
         Route::put('/users/{id}/password', [AdminController::class, 'updateUserPassword']);
         Route::get('/users/{id}/commissions', [AdminController::class, 'getUserCommissions']);
+        Route::put('/users/{id}/profile', [AdminController::class, 'updateUserProfile']);
         Route::put('/users/{id}/status', [AdminController::class, 'updateUserStatus']);
         Route::delete('/users/{id}', [AdminController::class, 'deleteUser']);
 

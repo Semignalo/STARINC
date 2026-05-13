@@ -46,6 +46,11 @@ export const adminApi = {
         return response.data;
     },
 
+    updateUserProfile: async (id, data) => {
+        const response = await apiClient.put(`/admin/users/${id}/profile`, data);
+        return response.data;
+    },
+
     updateUserStatus: async (id, status) => {
         const response = await apiClient.put(`/admin/users/${id}/status`, { status });
         return response.data;
