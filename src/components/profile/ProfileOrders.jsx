@@ -237,11 +237,9 @@ export default function ProfileOrders() {
                                 {/* Items list */}
                                 <div className="flex-1 space-y-3">
                                     {order.items?.map((item, idx) => {
-                                        // Backend now returns main_image_url (accessor) or fallback to storage path
-                                        const imageUrl = item.product?.main_image_url
-                                            || (item.product?.main_image
-                                                ? `${import.meta.env.VITE_STORAGE_URL || 'http://localhost:8000/storage'}/${item.product.main_image}`
-                                                : '/logo.png');
+                                        // Backend kirim main_image_url (accessor) — pakai itu langsung.
+                                        // Tidak ada fallback ke localhost biar tidak bocor ke production.
+                                        const imageUrl = item.product?.main_image_url || '/logo.png';
 
                                         return (
                                             <div key={idx} className="flex items-center gap-3">

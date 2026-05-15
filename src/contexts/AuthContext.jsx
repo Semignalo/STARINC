@@ -12,7 +12,8 @@ export function AuthProvider({ children }) {
     const [currentUser, setCurrentUser] = useState(null);
     const [userData, setUserData] = useState(null);
     const [userRole, setUserRole] = useState(null);
-    const [loading, setLoading] = useState(true);
+    // Initial loading hanya true kalau ada token (perlu validasi). Tanpa token = langsung ready.
+    const [loading, setLoading] = useState(() => !!localStorage.getItem('auth_token'));
 
     const signup = useCallback(async (userData) => {
         const data = await authApi.register({
@@ -109,16 +110,17 @@ export function AuthProvider({ children }) {
         currentUser,
         userData,
         userRole,
+        loading,
         signup,
         login,
         logout,
         updateProfile,
         updatePassword: updatePasswordAction
-    }), [currentUser, userData, userRole, signup, login, logout, updateProfile, updatePasswordAction]);
+    }), [currentUser, userData, userRole, loading, signup, login, logout, updateProfile, updatePasswordAction]);
 
     return (
         <AuthContext.Provider value={value}>
-            {!loading && children}
+            {children}
         </AuthContext.Provider>
     );
 }

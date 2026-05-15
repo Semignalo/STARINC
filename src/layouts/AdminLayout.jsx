@@ -20,9 +20,16 @@ import { useAuth } from '../contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
 
 export default function AdminLayout() {
-    const { currentUser, userRole, logout } = useAuth();
+    const { currentUser, userRole, logout, loading } = useAuth();
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-white">
+                <div className="w-11 h-11 border-[3px] border-gray-200 border-t-[var(--color-accent)] rounded-full animate-spin" />
+            </div>
+        );
+    }
     if (!currentUser || userRole !== 'admin') {
         return <Navigate to="/login" replace />;
     }

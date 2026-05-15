@@ -11,9 +11,10 @@ import ProfileWallet from '../components/profile/ProfileWallet';
 const STARCENTER_DISCOUNT = 23;
 
 export default function Profile() {
-    const { currentUser, userData, userRole } = useAuth();
+    const { currentUser, userData, userRole, loading } = useAuth();
     const [activeTab, setActiveTab] = useState('overview');
 
+    if (loading) return <div className="min-h-screen pt-24 pb-12 text-center text-gray-500">Memuat profil...</div>;
     if (!currentUser) return <Navigate to="/login" replace />;
     if (!userData) return <div className="min-h-screen pt-24 pb-12 text-center text-gray-500">Memuat profil...</div>;
 

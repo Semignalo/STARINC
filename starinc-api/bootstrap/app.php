@@ -16,6 +16,17 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         // $middleware->statefulApi(); // Disabled because frontend uses stateless Bearer tokens in headers
 
+        // Trust Cloudflare + Nginx reverse proxy. Tanpa ini, Laravel
+        // mendeteksi request sebagai HTTP (bukan HTTPS) dan Storage::url()
+        // generate URL gambar dengan scheme http:// → mixed content blocked.
+        $middleware->trustProxies(at: '*', headers:
+            \Illuminate\Http\Request::HEADER_X_FORWARDED_FOR |
+            \Illuminate\Http\Request::HEADER_X_FORWARDED_HOST |
+            \Illuminate\Http\Request::HEADER_X_FORWARDED_PORT |
+            \Illuminate\Http\Request::HEADER_X_FORWARDED_PROTO |
+            \Illuminate\Http\Request::HEADER_X_FORWARDED_AWS_ELB
+        );
+
         // Global rate limit untuk semua API routes (60 req/min per IP)
         $middleware->api(append: [
             \Illuminate\Routing\Middleware\ThrottleRequests::class . ':60,1',

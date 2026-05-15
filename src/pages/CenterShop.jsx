@@ -21,7 +21,7 @@ function StatCard({ icon, label, value, sub, colorClass = 'text-[var(--color-pri
 }
 
 export default function CenterShop() {
-    const { currentUser, userRole, userData } = useAuth();
+    const { currentUser, userRole, userData, loading: authLoading } = useAuth();
     const [network, setNetwork] = useState(null);
     const [commissions, setCommissions] = useState(null);
     const [loadingStats, setLoadingStats] = useState(true);
@@ -48,6 +48,7 @@ export default function CenterShop() {
         fetchStats();
     }, [currentUser, isCenter]);
 
+    if (authLoading) return <div className="min-h-screen pt-24 text-center text-gray-500">Memuat...</div>;
     if (!currentUser) return <Navigate to="/login" replace />;
 
     if (!isCenter) {

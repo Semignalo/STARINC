@@ -80,9 +80,9 @@ export default function Home() {
                 <video
                     key={settings?.heroVideoUrl || 'default-vid'}
                     autoPlay loop muted playsInline
-                    preload="auto"
-                    poster={settings?.heroVideoPoster || undefined}
-                    className="absolute inset-0 w-full h-full object-cover"
+                    preload="metadata"
+                    poster={settings?.heroVideoPoster || '/logo.png'}
+                    className="absolute inset-0 w-full h-full object-cover bg-stone-900"
                 >
                     <source src={settings?.heroVideoUrl} type="video/mp4" />
                 </video>

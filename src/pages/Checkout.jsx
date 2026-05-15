@@ -53,10 +53,11 @@ const STARCENTER_DISCOUNT = 23;
 
 export default function Checkout() {
     const { cart, getCartTotal, clearCart } = useCart();
-    const { userData } = useAuth();
+    const { userData, loading: authLoading } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
 
+    if (authLoading) return <div className="min-h-screen pt-24 text-center text-gray-500">Memuat...</div>;
     if (!userData) return <Navigate to="/login" state={{ from: location }} replace />;
 
     const [loading, setLoading] = useState(false);
