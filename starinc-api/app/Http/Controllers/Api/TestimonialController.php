@@ -5,18 +5,28 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Testimonial;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class TestimonialController extends Controller
 {
     /** Public: active testimonials ordered by sort_order */
     public function index()
     {
-        $testimonials = Testimonial::where('is_active', true)
-            ->orderBy('sort_order')
-            ->orderBy('id')
-            ->get();
-
+        $version = (int) Cache::get('testimonials:version', 1);
+        $testimonials = Cache::remember(
+            "testimonials:public:v{$version}",
+            now()->addMinutes(10),
+            fn () => Testimonial::where('is_active', true)
+                ->orderBy('sort_order')
+                ->orderBy('id')
+                ->get(),
+        );
         return response()->json($testimonials);
+    }
+
+    private function bustCache(): void
+    {
+        Cache::increment('testimonials:version');
     }
 
     /** Admin: all testimonials */
@@ -40,6 +50,7 @@ class TestimonialController extends Controller
         ]);
 
         $t = Testimonial::create($data);
+        $this->bustCache();
         return response()->json($t, 201);
     }
 
@@ -58,12 +69,14 @@ class TestimonialController extends Controller
         ]);
 
         $t->update($data);
+        $this->bustCache();
         return response()->json($t);
     }
 
     public function destroy($id)
     {
         Testimonial::findOrFail($id)->delete();
+        $this->bustCache();
         return response()->json(['message' => 'Deleted']);
     }
 
@@ -80,6 +93,7 @@ class TestimonialController extends Controller
             Testimonial::where('id', $item['id'])->update(['sort_order' => $item['sort_order']]);
         }
 
+        $this->bustCache();
         return response()->json(['message' => 'Reordered']);
     }
 }

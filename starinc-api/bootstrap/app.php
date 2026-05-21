@@ -30,6 +30,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Global rate limit untuk semua API routes (60 req/min per IP)
         $middleware->api(append: [
             \Illuminate\Routing\Middleware\ThrottleRequests::class . ':60,1',
+            \App\Http\Middleware\CompressResponse::class,
         ]);
     })
     ->withSchedule(function (Schedule $schedule): void {

@@ -8,6 +8,7 @@ use App\Models\ProductMedia;
 use App\Models\ProductVariant;
 use App\Services\Media\MediaStorageService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
@@ -19,22 +20,32 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Product::with(['variants', 'media']);
+        // Cache hanya untuk request tanpa filter (paling sering di-hit dari homepage/katalog)
+        $cacheable = !$request->hasAny(['category', 'promo', 'search']);
+        $version   = (int) Cache::get('products:version', 1);
+        $cacheKey  = "products:list:v{$version}:page=" . $request->get('page', 1) . ':per=' . $request->get('per_page', 50);
 
-        if ($request->has('category')) {
-            $query->where('category', $request->category);
-        }
+        $fetch = function () use ($request) {
+            $query = Product::with(['variants', 'media']);
 
-        if ($request->has('promo')) {
-            $query->where('is_promo', true);
-        }
+            if ($request->has('category')) {
+                $query->where('category', $request->category);
+            }
+            if ($request->has('promo')) {
+                $query->where('is_promo', true);
+            }
+            if ($request->has('search')) {
+                $query->where('title', 'like', '%' . $request->search . '%');
+            }
 
-        if ($request->has('search')) {
-            $query->where('title', 'like', '%' . $request->search . '%');
-        }
+            // toArray agar bisa di-serialize ke cache database driver (Paginator object tidak safely cacheable)
+            return $query->orderBy('sort_order')->orderBy('created_at', 'desc')
+                ->paginate($request->get('per_page', 50))->toArray();
+        };
 
-        $products = $query->orderBy('sort_order')->orderBy('created_at', 'desc')
-            ->paginate($request->get('per_page', 50));
+        $products = $cacheable
+            ? Cache::remember($cacheKey, now()->addMinutes(5), $fetch)
+            : $fetch();
 
         return response()->json($products);
     }
@@ -44,8 +55,22 @@ class ProductController extends Controller
      */
     public function show(int $id)
     {
-        $product = Product::with(['variants', 'media'])->findOrFail($id);
+        $version = (int) Cache::get('products:version', 1);
+        $product = Cache::remember(
+            "product:v{$version}:{$id}",
+            now()->addMinutes(5),
+            fn () => Product::with(['variants', 'media'])->findOrFail($id)->toArray(),
+        );
         return response()->json($product);
+    }
+
+    /**
+     * Bump version key — efek: semua cache key dengan version lama jadi tidak ter-hit.
+     * Dipanggil setelah create/update/delete produk. Tidak butuh tag support.
+     */
+    private function bustProductCache(): void
+    {
+        Cache::increment('products:version');
     }
 
     /**
@@ -78,6 +103,8 @@ class ProductController extends Controller
                 $product->variants()->create($variant);
             }
         }
+
+        $this->bustProductCache();
 
         return response()->json([
             'message' => 'Produk berhasil ditambahkan.',
@@ -120,6 +147,8 @@ class ProductController extends Controller
             }
         }
 
+        $this->bustProductCache();
+
         return response()->json([
             'message' => 'Produk berhasil diperbarui.',
             'product' => $product->load(['variants', 'media']),
@@ -146,6 +175,7 @@ class ProductController extends Controller
         }
 
         $product->delete();
+        $this->bustProductCache();
 
         return response()->json(['message' => 'Produk berhasil dihapus.']);
     }
@@ -195,6 +225,8 @@ class ProductController extends Controller
             }
         }
 
+        $this->bustProductCache();
+
         return response()->json([
             'message' => count($uploaded) . ' file berhasil diunggah.',
             'media'   => $uploaded,
@@ -216,6 +248,7 @@ class ProductController extends Controller
             $product->media()->where('id', $item['id'])->update(['sort_order' => $item['sort_order']]);
         }
 
+        $this->bustProductCache();
         return response()->json(['message' => 'Media reordered.']);
     }
 
@@ -241,6 +274,7 @@ class ProductController extends Controller
         }
 
         $media->delete();
+        $this->bustProductCache();
 
         return response()->json(['message' => 'Media berhasil dihapus.']);
     }

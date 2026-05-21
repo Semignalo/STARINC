@@ -7,6 +7,7 @@ use App\Http\Requests\UploadAdminFileRequest;
 use App\Models\AppearanceSetting;
 use App\Models\SystemSetting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 class SettingsController extends Controller
@@ -18,7 +19,9 @@ class SettingsController extends Controller
      */
     public function appearance()
     {
-        return response()->json(AppearanceSetting::getAll());
+        $version = (int) Cache::get('appearance:version', 1);
+        $data = Cache::remember("appearance:v{$version}", now()->addHour(), fn () => AppearanceSetting::getAll());
+        return response()->json($data);
     }
 
     /**
@@ -26,11 +29,13 @@ class SettingsController extends Controller
      */
     public function paymentInfo()
     {
-        return response()->json([
+        $version = (int) Cache::get('payment_settings:version', 1);
+        $data = Cache::remember("payment_settings:v{$version}", now()->addHour(), fn () => [
             'bank_name'      => SystemSetting::getValue('payment_bank_name', 'BCA'),
             'account_number' => SystemSetting::getValue('payment_account_number', '888888888'),
             'account_name'   => SystemSetting::getValue('payment_account_name', 'PT BBK'),
         ]);
+        return response()->json($data);
     }
 
     /**
@@ -78,6 +83,8 @@ class SettingsController extends Controller
             );
         }
 
+        Cache::increment('payment_settings:version');
+
         return response()->json(['message' => 'Pengaturan berhasil disimpan.']);
     }
 
@@ -101,6 +108,8 @@ class SettingsController extends Controller
         foreach ($validated['settings'] as $key => $value) {
             AppearanceSetting::updateOrCreate(['key' => $key], ['value' => $value]);
         }
+
+        Cache::increment('appearance:version');
 
         return response()->json(['message' => 'Tampilan berhasil diperbarui.']);
     }
