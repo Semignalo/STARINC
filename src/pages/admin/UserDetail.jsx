@@ -3,6 +3,11 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { adminApi } from '../../api/adminApi';
 import { ArrowLeft, Lock, Shield, Users, Copy, Check, RefreshCw, ChevronRight, ChevronDown, GitBranch, List, ExternalLink, ToggleLeft, ToggleRight, Pencil, X } from 'lucide-react';
 import Swal from 'sweetalert2';
+import Button from '../../components/admin/ui/Button';
+import Card from '../../components/admin/ui/Card';
+import Input, { Textarea, Select } from '../../components/admin/ui/Input';
+import Badge from '../../components/admin/ui/Badge';
+import { cn } from '../../lib/utils';
 
 // ─── Network tree helpers ─────────────────────────────────────────────────────
 
@@ -219,26 +224,28 @@ export default function UserDetail() {
     };
 
     return (
-        <div className="p-6 max-w-6xl mx-auto">
+        <div className="max-w-6xl">
             {/* Header */}
-            <div className="flex items-center gap-4 mb-6">
-                <button onClick={() => navigate('/admin/users')} className="p-2 hover:bg-gray-100 rounded-lg transition">
-                    <ArrowLeft size={20} />
+            <div className="flex items-center gap-3 mb-5">
+                <button
+                    onClick={() => navigate('/admin/users')}
+                    className="w-8 h-8 inline-flex items-center justify-center rounded-md text-gray-400 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+                    aria-label="Kembali"
+                >
+                    <ArrowLeft size={16} />
                 </button>
-                <div className="flex-1">
-                    <h1 className="text-2xl font-bold text-gray-900">{user.name || user.email}</h1>
-                    <p className="text-sm text-gray-500">{user.email}</p>
+                <div className="flex-1 min-w-0">
+                    <h1 className="text-xl font-semibold text-gray-900 truncate">{user.name || user.email}</h1>
+                    <p className="text-xs text-gray-500 truncate">{user.email}</p>
                 </div>
-                <span className={`px-3 py-1 rounded-full text-xs font-medium ${roleDisplay[user.role]?.color || 'bg-gray-100 text-gray-700'}`}>
+                <Badge color={user.role === 'admin' ? 'danger' : 'accent'}>
                     {roleDisplay[user.role]?.label || user.role}
-                </span>
-                {user.status === 'inactive' && (
-                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700">Tidak Aktif</span>
-                )}
+                </Badge>
+                {user.status === 'inactive' && <Badge color="gray">Tidak Aktif</Badge>}
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-2 mb-6 border-b border-gray-200">
+            <div className="flex gap-1 mb-5 border-b border-gray-200">
                 {[
                     { key: 'profile', label: 'Profil' },
                     { key: 'access', label: 'Akses' },
@@ -247,10 +254,16 @@ export default function UserDetail() {
                     { key: 'orders', label: 'Pesanan' },
                     { key: 'commissions', label: 'Komisi' },
                 ].map(({ key, label }) => (
-                    <button key={key} onClick={() => setActiveTab(key)}
-                        className={`px-4 py-2 font-medium transition-colors border-b-2 ${
-                            activeTab === key ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-600 hover:text-gray-900'
-                        }`}>
+                    <button
+                        key={key}
+                        onClick={() => setActiveTab(key)}
+                        className={cn(
+                            'px-3 py-2 text-xs font-medium transition-colors border-b-2 -mb-px',
+                            activeTab === key
+                                ? 'border-[var(--admin-accent)] text-gray-900'
+                                : 'border-transparent text-gray-500 hover:text-gray-900',
+                        )}
+                    >
                         {label}
                     </button>
                 ))}
@@ -258,64 +271,62 @@ export default function UserDetail() {
 
             {/* Profile Tab */}
             {activeTab === 'profile' && (
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-6">
+                <Card className="space-y-5">
                     <div className="flex items-center justify-between">
-                        <h3 className="text-base font-bold text-gray-900">Data Profil</h3>
+                        <h3 className="text-sm font-semibold text-gray-900">Data Profil</h3>
                         {!editingProfile ? (
-                            <button onClick={() => setEditingProfile(true)}
-                                className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50 transition">
-                                <Pencil size={14} /> Edit
-                            </button>
+                            <Button variant="secondary" size="sm" icon={Pencil} onClick={() => setEditingProfile(true)}>
+                                Edit
+                            </Button>
                         ) : (
-                            <button onClick={() => setEditingProfile(false)}
-                                className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-500 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
-                                <X size={14} /> Batal
-                            </button>
+                            <Button variant="ghost" size="sm" icon={X} onClick={() => setEditingProfile(false)}>
+                                Batal
+                            </Button>
                         )}
                     </div>
 
                     {!editingProfile ? (
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
                             <div>
-                                <p className="text-xs font-semibold text-gray-600 uppercase mb-1">Nama</p>
+                                <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Nama</p>
                                 <p className="text-sm font-medium text-gray-900">{user.name || '-'}</p>
                             </div>
                             <div>
-                                <p className="text-xs font-semibold text-gray-600 uppercase mb-1">Email</p>
+                                <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Email</p>
                                 <p className="text-sm font-medium text-gray-900">{user.email}</p>
                             </div>
                             <div>
-                                <p className="text-xs font-semibold text-gray-600 uppercase mb-1">No. Telepon</p>
+                                <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">No. Telepon</p>
                                 <p className="text-sm font-medium text-gray-900">{user.phone || '-'}</p>
                             </div>
                             <div>
-                                <p className="text-xs font-semibold text-gray-600 uppercase mb-1">Alamat</p>
+                                <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Alamat</p>
                                 <p className="text-sm font-medium text-gray-900">{user.address || '-'}</p>
                             </div>
                             <div>
-                                <p className="text-xs font-semibold text-gray-600 uppercase mb-1">Kota</p>
+                                <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Kota</p>
                                 <p className="text-sm font-medium text-gray-900">{user.city || '-'}</p>
                             </div>
                             <div>
-                                <p className="text-xs font-semibold text-gray-600 uppercase mb-1">Kode Pos</p>
+                                <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Kode Pos</p>
                                 <p className="text-sm font-medium text-gray-900">{user.postal_code || '-'}</p>
                             </div>
                             <div>
-                                <p className="text-xs font-semibold text-gray-600 uppercase mb-1">Role</p>
+                                <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Role</p>
                                 <p className="text-sm font-medium text-gray-900">{roleDisplay[user.role]?.label || user.role}</p>
                             </div>
                             <div>
-                                <p className="text-xs font-semibold text-gray-600 uppercase mb-1">Status Akun</p>
+                                <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Status Akun</p>
                                 <span className={`inline-block px-2 py-0.5 rounded text-xs font-bold uppercase ${user.status === 'inactive' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
                                     {user.status === 'inactive' ? 'Tidak Aktif' : 'Aktif'}
                                 </span>
                             </div>
                             <div>
-                                <p className="text-xs font-semibold text-gray-600 uppercase mb-1">Total Spending</p>
+                                <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Total Spending</p>
                                 <p className="text-sm font-medium text-gray-900">Rp. {Number(user.cumulative_spending || 0).toLocaleString('id-ID')}</p>
                             </div>
                             <div>
-                                <p className="text-xs font-semibold text-gray-600 uppercase mb-1">Referral Code</p>
+                                <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Referral Code</p>
                                 <div className="flex items-center gap-2">
                                     <code className="text-sm font-medium text-gray-900 bg-gray-50 px-2 py-1 rounded">{user.referral_code || '-'}</code>
                                     {user.referral_code && (
@@ -329,7 +340,7 @@ export default function UserDetail() {
                         </div>
                     ) : (
                         <div className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 {[
                                     { key: 'name', label: 'Nama Lengkap' },
                                     { key: 'email', label: 'Email', type: 'email' },
@@ -337,121 +348,129 @@ export default function UserDetail() {
                                     { key: 'city', label: 'Kota' },
                                     { key: 'postal_code', label: 'Kode Pos' },
                                 ].map(({ key, label, type = 'text' }) => (
-                                    <div key={key}>
-                                        <label className="block text-xs font-semibold text-gray-600 uppercase mb-1">{label}</label>
-                                        <input type={type} value={profileForm[key] || ''} onChange={(e) => setProfileForm(f => ({ ...f, [key]: e.target.value }))}
-                                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" />
-                                    </div>
+                                    <Input
+                                        key={key}
+                                        label={label}
+                                        type={type}
+                                        value={profileForm[key] || ''}
+                                        onChange={(e) => setProfileForm(f => ({ ...f, [key]: e.target.value }))}
+                                    />
                                 ))}
                                 <div className="md:col-span-2">
-                                    <label className="block text-xs font-semibold text-gray-600 uppercase mb-1">Alamat</label>
-                                    <textarea value={profileForm.address || ''} onChange={(e) => setProfileForm(f => ({ ...f, address: e.target.value }))} rows={2}
-                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none" />
+                                    <Textarea
+                                        label="Alamat"
+                                        value={profileForm.address || ''}
+                                        onChange={(e) => setProfileForm(f => ({ ...f, address: e.target.value }))}
+                                        rows={2}
+                                    />
                                 </div>
                             </div>
-                            <button onClick={handleUpdateProfile} disabled={submitting}
-                                className="flex items-center gap-2 px-5 py-2 bg-blue-600 text-white rounded-lg font-medium text-sm hover:bg-blue-700 disabled:opacity-50 transition">
-                                {submitting ? <RefreshCw size={14} className="animate-spin" /> : <Check size={14} />}
+                            <Button variant="primary" size="md" icon={Check} loading={submitting} onClick={handleUpdateProfile}>
                                 Simpan Perubahan
-                            </button>
+                            </Button>
                         </div>
                     )}
 
                     {user.referrer && (
-                        <div className="pt-4 border-t border-gray-200">
-                            <p className="text-xs font-semibold text-gray-600 uppercase mb-2">Upline / Referrer</p>
-                            <div className="bg-gray-50 p-3 rounded-lg">
+                        <div className="pt-4 border-t border-gray-100">
+                            <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-2">Upline / Referrer</p>
+                            <div className="bg-gray-50/60 border border-gray-200 p-3 rounded-md">
                                 <p className="text-sm font-medium text-gray-900">{user.referrer.name}</p>
                                 <p className="text-xs text-gray-500">{user.referrer.email}</p>
                             </div>
                         </div>
                     )}
-                </div>
+                </Card>
             )}
 
             {/* Access Tab */}
             {activeTab === 'access' && (
-                <div className="space-y-6">
+                <div className="space-y-4 max-w-2xl">
                     {/* Status Toggle */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                        <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                            {user.status === 'active' ? <ToggleRight size={20} className="text-green-600" /> : <ToggleLeft size={20} className="text-red-500" />}
-                            Status Akun
-                        </h3>
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm text-gray-700">
-                                    Status saat ini: <span className={`font-bold ${user.status === 'inactive' ? 'text-red-600' : 'text-green-600'}`}>
-                                        {user.status === 'inactive' ? 'Tidak Aktif' : 'Aktif'}
-                                    </span>
-                                </p>
-                                <p className="text-xs text-gray-500 mt-1">
+                    <Card>
+                        <div className="flex items-start justify-between gap-4">
+                            <div className="min-w-0 flex-1">
+                                <h3 className="text-sm font-semibold text-gray-900 mb-1 flex items-center gap-2">
+                                    {user.status === 'active'
+                                        ? <ToggleRight size={14} className="text-emerald-600" />
+                                        : <ToggleLeft size={14} className="text-gray-400" />}
+                                    Status Akun
+                                </h3>
+                                <p className="text-xs text-gray-500 leading-relaxed">
                                     {user.status === 'inactive'
                                         ? 'User tidak bisa checkout. Aktifkan untuk memulihkan akses.'
                                         : 'User dapat melakukan pembelian. Nonaktifkan jika diperlukan.'}
                                 </p>
                             </div>
-                            <button
+                            <Button
+                                variant={user.status === 'active' ? 'danger' : 'primary'}
+                                size="sm"
                                 onClick={handleToggleStatus}
-                                disabled={submitting}
-                                className={`px-5 py-2 rounded-lg font-medium text-sm transition disabled:opacity-50 flex items-center gap-2
-                                    ${user.status === 'active'
-                                        ? 'bg-red-50 text-red-600 border border-red-200 hover:bg-red-100'
-                                        : 'bg-green-50 text-green-700 border border-green-200 hover:bg-green-100'}`}
+                                loading={submitting}
                             >
-                                {submitting ? <RefreshCw size={14} className="animate-spin" /> : null}
                                 {user.status === 'active' ? 'Nonaktifkan' : 'Aktifkan'}
-                            </button>
+                            </Button>
                         </div>
-                    </div>
+                    </Card>
 
                     {/* Role Change */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                        <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                            <Shield size={20} /> Ubah Role
+                    <Card>
+                        <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                            <Shield size={14} className="text-gray-400" /> Ubah Role
                         </h3>
                         <div className="space-y-3">
-                            <select value={newRole} onChange={(e) => setNewRole(e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+                            <Select value={newRole} onChange={(e) => setNewRole(e.target.value)}>
                                 <option value="starcenter">Starcenter (Distributor)</option>
                                 <option value="admin">Admin</option>
-                            </select>
-                            <button onClick={handleUpdateRole} disabled={submitting || newRole === user.role}
-                                className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2 transition">
-                                {submitting ? <RefreshCw size={16} className="animate-spin" /> : <Check size={16} />}
+                            </Select>
+                            <Button
+                                variant="primary"
+                                icon={Check}
+                                loading={submitting}
+                                disabled={newRole === user.role}
+                                onClick={handleUpdateRole}
+                                fullWidth
+                            >
                                 Simpan Role
-                            </button>
+                            </Button>
                         </div>
-                    </div>
+                    </Card>
                 </div>
             )}
 
             {/* Password Tab */}
             {activeTab === 'password' && (
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 max-w-md">
-                    <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                        <Lock size={20} /> Reset Password
+                <Card className="max-w-md">
+                    <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                        <Lock size={14} className="text-gray-400" /> Reset Password
                     </h3>
-                    <div className="space-y-4">
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Password Baru</label>
-                            <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)}
-                                placeholder="Minimal 8 karakter"
-                                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Konfirmasi Password</label>
-                            <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
-                                placeholder="Ulangi password"
-                                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" />
-                        </div>
-                        <button onClick={handleUpdatePassword} disabled={submitting || !newPassword || !confirmPassword}
-                            className="w-full px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 disabled:opacity-50 flex items-center justify-center gap-2 transition">
-                            {submitting ? <RefreshCw size={16} className="animate-spin" /> : <Lock size={16} />}
+                    <div className="space-y-3">
+                        <Input
+                            label="Password Baru"
+                            type="password"
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                            placeholder="Minimal 8 karakter"
+                        />
+                        <Input
+                            label="Konfirmasi Password"
+                            type="password"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            placeholder="Ulangi password"
+                        />
+                        <Button
+                            variant="danger"
+                            icon={Lock}
+                            loading={submitting}
+                            disabled={!newPassword || !confirmPassword}
+                            onClick={handleUpdatePassword}
+                            fullWidth
+                        >
                             Reset Password
-                        </button>
+                        </Button>
                     </div>
-                </div>
+                </Card>
             )}
 
             {/* Network Tab */}

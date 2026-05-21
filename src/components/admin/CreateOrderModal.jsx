@@ -184,34 +184,38 @@ export default function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
     const steps = ['Pilih Center', 'Info Penerima', 'Produk', 'Review'];
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-            <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[92vh] flex flex-col overflow-hidden">
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+            <div className="bg-white rounded-[10px] shadow-xl border border-gray-200 w-full max-w-2xl max-h-[92vh] flex flex-col overflow-hidden">
 
                 {/* Header */}
-                <div className="px-6 pt-5 pb-4 border-b border-gray-100 flex justify-between items-start">
-                    <div>
-                        <h2 className="text-lg font-bold text-gray-900">Buat Pesanan</h2>
-                        <div className="flex gap-2 mt-2">
-                            {steps.map((label, i) => (
-                                <div key={i} className="flex items-center gap-1">
-                                    <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold transition ${
-                                        i + 1 === step ? 'bg-[var(--color-accent)] text-white' :
-                                        i + 1 < step  ? 'bg-green-500 text-white' :
-                                        'bg-gray-200 text-gray-500'
-                                    }`}>{i + 1}</span>
-                                    <span className={`text-xs hidden sm:inline ${i + 1 === step ? 'font-semibold text-gray-800' : 'text-gray-400'}`}>{label}</span>
-                                    {i < steps.length - 1 && <ChevronRight size={12} className="text-gray-300" />}
-                                </div>
-                            ))}
-                        </div>
+                <div className="px-5 pt-4 pb-3 border-b border-gray-100">
+                    <div className="flex justify-between items-start">
+                        <h2 className="text-sm font-semibold text-gray-900">Buat Pesanan</h2>
+                        <button onClick={onClose} className="text-gray-400 hover:text-gray-700 -mt-0.5 -mr-1 p-1 rounded hover:bg-gray-100">
+                            <XCircle size={16} />
+                        </button>
                     </div>
-                    <button onClick={onClose} className="text-gray-400 hover:text-gray-600 bg-gray-100 hover:bg-gray-200 p-2 rounded-full transition">
-                        <XCircle size={20} />
-                    </button>
+                    <div className="flex gap-1.5 mt-2.5">
+                        {steps.map((label, i) => {
+                            const done = i + 1 < step;
+                            const active = i + 1 === step;
+                            return (
+                                <div key={i} className="flex items-center gap-1.5">
+                                    <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-semibold transition ${
+                                        active ? 'bg-gray-900 text-white' :
+                                        done ? 'bg-emerald-500 text-white' :
+                                        'bg-gray-100 text-gray-400'
+                                    }`}>{i + 1}</span>
+                                    <span className={`text-[11px] hidden sm:inline ${active ? 'font-medium text-gray-900' : 'text-gray-400'}`}>{label}</span>
+                                    {i < steps.length - 1 && <ChevronRight size={11} className="text-gray-300" />}
+                                </div>
+                            );
+                        })}
+                    </div>
                 </div>
 
                 {/* Body */}
-                <div className="flex-1 overflow-y-auto px-6 py-5">
+                <div className="flex-1 overflow-y-auto px-5 py-4">
 
                     {/* ── Step 1: Pilih Starcenter ── */}
                     {step === 1 && (
@@ -497,12 +501,12 @@ export default function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
                 </div>
 
                 {/* Footer nav */}
-                <div className="px-6 py-4 border-t border-gray-100 flex justify-between items-center">
+                <div className="px-5 py-3 border-t border-gray-100 flex justify-between items-center bg-gray-50/40 rounded-b-[10px]">
                     <button
                         onClick={() => step > 1 ? setStep(s => s - 1) : onClose()}
-                        className="flex items-center gap-1.5 px-4 py-2 text-sm text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                        className="h-8 px-3 inline-flex items-center gap-1.5 border border-gray-200 rounded-[6px] text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-300 transition-colors"
                     >
-                        <ChevronLeft size={16} />
+                        <ChevronLeft size={14} />
                         {step === 1 ? 'Batal' : 'Kembali'}
                     </button>
 
@@ -514,17 +518,17 @@ export default function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
                                 (step === 2 && (!customerInfo.name || !customerInfo.phone || !customerInfo.address || !customerInfo.city)) ||
                                 (step === 3 && cart.length === 0)
                             }
-                            className="flex items-center gap-1.5 px-5 py-2 text-sm font-semibold bg-[var(--color-accent)] hover:opacity-90 text-white rounded-lg transition disabled:opacity-40 disabled:cursor-not-allowed"
+                            className="h-8 px-3 inline-flex items-center gap-1.5 bg-gray-900 hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-[6px] text-sm font-medium transition"
                         >
-                            Lanjut <ChevronRight size={16} />
+                            Lanjut <ChevronRight size={14} />
                         </button>
                     ) : (
                         <button
                             onClick={handleSubmit}
                             disabled={submitting}
-                            className="flex items-center gap-1.5 px-5 py-2 text-sm font-semibold bg-[var(--color-accent)] hover:opacity-90 text-white rounded-lg transition disabled:opacity-40"
+                            className="h-8 px-3 inline-flex items-center gap-1.5 bg-gray-900 hover:bg-gray-800 disabled:opacity-50 text-white rounded-[6px] text-sm font-medium transition"
                         >
-                            {submitting ? 'Memproses...' : 'Buat Pesanan'}
+                            {submitting ? 'Memproses…' : 'Buat Pesanan'}
                         </button>
                     )}
                 </div>
