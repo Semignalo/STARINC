@@ -10,7 +10,7 @@ class PaymentProof extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['order_id', 'file_path', 'admin_notes', 'status', 'reviewed_at'];
+    protected $fillable = ['order_id', 'file_path', 'driver', 'public_id', 'admin_notes', 'status', 'reviewed_at'];
 
     protected $casts = ['reviewed_at' => 'datetime'];
 

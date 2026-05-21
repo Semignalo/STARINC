@@ -6,11 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductMedia;
 use App\Models\ProductVariant;
+use App\Services\Media\MediaStorageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
+    public function __construct(private MediaStorageService $media) {}
+
     /**
      * List all products (public).
      */
@@ -57,6 +60,7 @@ class ProductController extends Controller
             'discount_label' => 'nullable|string|max:50',
             'category'       => 'required|string|max:100',
             'description'    => 'nullable|string',
+            'video_url'      => 'nullable|url|max:500',
             'is_promo'       => 'boolean',
             'sort_order'     => 'integer',
             'stock'          => 'nullable|integer|min:0',
@@ -95,6 +99,7 @@ class ProductController extends Controller
             'discount_label' => 'nullable|string|max:50',
             'category'       => 'sometimes|string|max:100',
             'description'    => 'nullable|string',
+            'video_url'      => 'nullable|url|max:500',
             'is_promo'       => 'boolean',
             'sort_order'     => 'integer',
             'stock'          => 'nullable|integer|min:0',
@@ -134,7 +139,7 @@ class ProductController extends Controller
 
         if (!$hasOrders) {
             foreach ($product->media as $media) {
-                Storage::disk('public')->delete($media->file_path);
+                $this->media->delete($media->driver, $media->driver === 'cloudinary' ? $media->public_id : $media->file_path);
             }
             $product->media()->delete();
             $product->variants()->delete();
@@ -155,25 +160,38 @@ class ProductController extends Controller
         $request->validate([
             'files'   => 'required|array',
             'files.*' => 'file|mimes:jpg,jpeg,png,webp,gif,mp4,webm|max:20480', // 20MB max
+            'driver'  => 'nullable|in:local,cloudinary',
         ]);
 
+        $driver   = $request->input('driver');
         $uploaded = [];
 
         foreach ($request->file('files') as $file) {
-            $path = $file->store('products', 'public');
-            $type = str_starts_with($file->getMimeType(), 'video/') ? 'video' : 'image';
+            $result = $this->media->upload($file, 'products', $product->id, $driver);
+            $type   = str_starts_with($file->getMimeType() ?? '', 'video/') ? 'video' : 'image';
 
             $media = $product->media()->create([
-                'file_path'  => $path,
+                'file_path'  => $result->url,        // simpan URL siap pakai (untuk cloudinary) atau path (untuk local kalau driver=local kita override di bawah)
+                'driver'     => $result->driver,
+                'public_id'  => $result->publicId,
                 'type'       => $type,
                 'sort_order' => $product->media()->count(),
             ]);
 
-            $uploaded[] = $media;
+            // Untuk local, simpan path relatif (bukan URL absolut) agar accessor bisa generate URL via Storage
+            if ($result->driver === 'local') {
+                $media->update(['file_path' => $result->path]);
+            }
 
-            // Set as main image if product doesn't have one
-            if (!$product->main_image) {
-                $product->update(['main_image' => $path]);
+            $uploaded[] = $media->fresh();
+
+            // Set sebagai main image bila produk belum punya
+            if (!$product->main_image && $type === 'image') {
+                $product->update([
+                    'main_image'           => $result->driver === 'local' ? $result->path : $result->url,
+                    'main_image_driver'    => $result->driver,
+                    'main_image_public_id' => $result->publicId,
+                ]);
             }
         }
 
@@ -207,11 +225,19 @@ class ProductController extends Controller
         $product = Product::findOrFail($productId);
         $media   = $product->media()->findOrFail($mediaId);
 
-        Storage::disk('public')->delete($media->file_path);
+        $this->media->delete($media->driver, $media->driver === 'cloudinary' ? $media->public_id : $media->file_path);
 
-        if ($product->main_image === $media->file_path) {
-            $next = $product->media()->where('id', '!=', $mediaId)->first();
-            $product->update(['main_image' => $next?->file_path]);
+        // Jika media ini juga main_image, fallback ke media berikutnya
+        $wasMain = $product->main_image === $media->file_path
+            || ($media->driver === 'cloudinary' && $product->main_image_public_id === $media->public_id);
+
+        if ($wasMain) {
+            $next = $product->media()->where('id', '!=', $mediaId)->where('type', 'image')->first();
+            $product->update([
+                'main_image'           => $next ? ($next->driver === 'local' ? $next->file_path : $next->file_path) : null,
+                'main_image_driver'    => $next?->driver ?? 'local',
+                'main_image_public_id' => $next?->public_id,
+            ]);
         }
 
         $media->delete();

@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductMedia extends Model
 {
-    protected $fillable = ['product_id', 'file_path', 'type', 'sort_order'];
+    protected $fillable = ['product_id', 'file_path', 'driver', 'public_id', 'type', 'sort_order'];
 
     protected $appends = ['url'];
 
@@ -23,6 +23,10 @@ class ProductMedia extends Model
      */
     public function getUrlAttribute(): string
     {
+        // Cloudinary: file_path sudah berupa secure_url absolut.
+        if ($this->driver === 'cloudinary') {
+            return $this->file_path;
+        }
         return Storage::disk('public')->url($this->file_path);
     }
 }

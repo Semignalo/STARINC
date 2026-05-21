@@ -114,17 +114,29 @@ class SettingsController extends Controller
      *
      * Returns { url: string } — a publicly accessible URL to the stored file.
      */
-    public function upload(UploadAdminFileRequest $request)
+    public function upload(UploadAdminFileRequest $request, \App\Services\Media\MediaStorageService $media)
     {
+        $driver = $request->input('driver'); // null = pakai default dari config
         $folder = $request->input('folder', 'uploads');
-        // Sanitise: strip leading/trailing slashes, collapse any double-slashes
+
+        // Untuk Cloudinary, route ke tipe 'appearance' agar masuk folder starinc/appearance/{folder}
+        // Untuk local, gunakan folder seperti sebelumnya (backward-compatible)
+        if ($driver === 'cloudinary' || ($driver === null && config('media.default_driver') === 'cloudinary')) {
+            $result = $media->upload($request->file('file'), 'appearance', $folder, 'cloudinary');
+            return response()->json([
+                'url'       => $result->url,
+                'driver'    => $result->driver,
+                'public_id' => $result->publicId,
+            ]);
+        }
+
+        // Local (backward-compatible): pakai folder lama
         $folder = trim(preg_replace('#/+#', '/', $folder), '/');
-
         $path = $request->file('file')->store($folder, 'public');
-
-        $url = Storage::disk('public')->url($path);
-
-        return response()->json(['url' => $url]);
+        return response()->json([
+            'url'    => Storage::disk('public')->url($path),
+            'driver' => 'local',
+        ]);
     }
 
     /**

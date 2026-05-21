@@ -21,6 +21,14 @@ dist
 dist-ssr
 *.local
 
+# Backend Laravel
+starinc-api/vendor/
+starinc-api/storage/framework/cache/data/
+starinc-api/storage/framework/sessions/
+starinc-api/storage/framework/views/
+starinc-api/storage/logs/
+starinc-api/bootstrap/cache/*.php
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
