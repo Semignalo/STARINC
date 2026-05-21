@@ -39,9 +39,10 @@ export const adminProductApi = {
         return response.data;
     },
 
-    uploadMedia: async (id, files) => {
+    uploadMedia: async (id, files, driver = null) => {
         const formData = new FormData();
         files.forEach(file => formData.append('files[]', file));
+        if (driver) formData.append('driver', driver);
         const response = await apiClient.post(`/admin/products/${id}/media`, formData, {
             headers: { 'Content-Type': 'multipart/form-data' }
         });

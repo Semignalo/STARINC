@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { adminProductApi, productApi } from '../../api/productApi';
-import { Plus, LayoutGrid, List, Search, Filter } from 'lucide-react';
+import { Plus, LayoutGrid, List, Search } from 'lucide-react';
 import Swal from 'sweetalert2';
 import ProductTable from '../../components/admin/ProductTable';
 import ProductFormModal from '../../components/admin/ProductFormModal';
+import Button from '../../components/admin/ui/Button';
+import Input from '../../components/admin/ui/Input';
+import { cn } from '../../lib/utils';
 
 const DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1629198688000-71f23e745b6e?auto=format&fit=crop&q=80&w=800';
 
@@ -14,6 +17,8 @@ const EMPTY_FORM = {
     discount: '',
     category: 'The Act',
     description: '',
+    videoUrl: '',
+    uploadDriver: '', // '' = pakai default server, 'local' atau 'cloudinary' = override
     image: DEFAULT_IMAGE,
     media: [],
     variants: [],
@@ -110,6 +115,8 @@ export default function Products() {
             discount: product.discount_label || product.discount || '',
             category: product.category || 'The Act',
             description: product.description || '',
+            videoUrl: product.video_url || '',
+            uploadDriver: '',
             image: product.main_image_url || product.main_image || product.image || '',
             media: initialMedia,
             variants: product.variants
@@ -192,6 +199,7 @@ export default function Products() {
                 discount_label: formData.discount,
                 category: formData.category,
                 description: formData.description,
+                video_url: formData.videoUrl || null,
                 is_promo: formData.isPromo,
                 stock: formData.stock !== '' ? parseInt(formData.stock, 10) : null,
                 weight: formData.weight !== '' ? parseInt(formData.weight, 10) : null,
@@ -234,7 +242,7 @@ export default function Products() {
 
             if (filesToUpload.length > 0 && productId) {
                 setUploadProgress(50);
-                await adminProductApi.uploadMedia(productId, filesToUpload);
+                await adminProductApi.uploadMedia(productId, filesToUpload, formData.uploadDriver || null);
                 setFilesToUpload([]);
             }
 
@@ -360,88 +368,78 @@ export default function Products() {
     };
 
     return (
-        <div className="p-6">
+        <div className="max-w-7xl">
             {/* Header */}
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex items-end justify-between mb-5">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-800">Products</h1>
-                    <p className="text-sm text-gray-500">Manage your product inventory</p>
+                    <h1 className="text-xl font-semibold text-gray-900">Produk</h1>
+                    <p className="text-xs text-gray-500 mt-1">Kelola katalog produk STARINC</p>
                 </div>
-                <div className="flex gap-3 items-center">
-                    {/* View Toggle */}
-                    <div className="flex bg-gray-100 p-1 rounded-lg mr-2">
+                <div className="flex items-center gap-2">
+                    <div className="flex border border-gray-200 rounded-[6px] p-0.5 bg-white">
                         <button
                             onClick={() => setIsGridView(false)}
-                            className={`p-2 rounded-md transition-all ${!isGridView ? 'bg-white shadow-sm text-gray-900' : 'text-gray-400 hover:text-gray-600'}`}
-                            title="List View"
+                            className={cn('w-7 h-7 rounded flex items-center justify-center transition-colors',
+                                !isGridView ? 'bg-gray-100 text-gray-900' : 'text-gray-400 hover:text-gray-700')}
+                            title="List"
                         >
-                            <List size={20} />
+                            <List size={14} />
                         </button>
                         <button
                             onClick={() => setIsGridView(true)}
-                            className={`p-2 rounded-md transition-all ${isGridView ? 'bg-white shadow-sm text-gray-900' : 'text-gray-400 hover:text-gray-600'}`}
-                            title="Grid View"
+                            className={cn('w-7 h-7 rounded flex items-center justify-center transition-colors',
+                                isGridView ? 'bg-gray-100 text-gray-900' : 'text-gray-400 hover:text-gray-700')}
+                            title="Grid"
                         >
-                            <LayoutGrid size={20} />
+                            <LayoutGrid size={14} />
                         </button>
                     </div>
-
-                    <button
-                        onClick={openAddModal}
-                        className="bg-[var(--color-accent)] text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-[var(--color-accent-dark)] transition-colors"
-                    >
-                        <Plus size={20} />
-                        Add Product
-                    </button>
+                    <Button variant="primary" size="md" icon={Plus} onClick={openAddModal}>
+                        Tambah Produk
+                    </Button>
                 </div>
             </div>
 
-            {/* Search & Filter Bar */}
+            {/* Search & Filter */}
             <div className="flex flex-col sm:flex-row gap-3 mb-4">
-                <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                    <input
+                <div className="flex-1 max-w-md">
+                    <Input
+                        icon={Search}
                         type="text"
                         placeholder="Cari produk..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/30 focus:border-[var(--color-accent)]"
                     />
                 </div>
                 {categories.length > 0 && (
-                    <div className="flex items-center gap-2">
-                        <Filter size={16} className="text-gray-400 flex-shrink-0" />
-                        <div className="flex gap-1 flex-wrap">
+                    <div className="flex items-center gap-1 flex-wrap">
+                        <button
+                            onClick={() => setCategoryFilter('all')}
+                            className={cn('px-2.5 h-9 inline-flex items-center rounded-[6px] text-xs font-medium transition-colors border',
+                                categoryFilter === 'all'
+                                    ? 'bg-gray-900 text-white border-gray-900'
+                                    : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300')}
+                        >
+                            Semua ({products.length})
+                        </button>
+                        {categories.map(cat => (
                             <button
-                                onClick={() => setCategoryFilter('all')}
-                                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                                    categoryFilter === 'all'
-                                        ? 'bg-gray-900 text-white'
-                                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                                }`}
+                                key={cat}
+                                onClick={() => setCategoryFilter(cat)}
+                                className={cn('px-2.5 h-9 inline-flex items-center rounded-[6px] text-xs font-medium transition-colors border',
+                                    categoryFilter === cat
+                                        ? 'bg-gray-900 text-white border-gray-900'
+                                        : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300')}
                             >
-                                Semua ({products.length})
+                                {cat} ({products.filter(p => p.category === cat).length})
                             </button>
-                            {categories.map(cat => (
-                                <button
-                                    key={cat}
-                                    onClick={() => setCategoryFilter(cat)}
-                                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                                        categoryFilter === cat
-                                            ? 'bg-gray-900 text-white'
-                                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                                    }`}
-                                >
-                                    {cat} ({products.filter(p => p.category === cat).length})
-                                </button>
-                            ))}
-                        </div>
+                        ))}
                     </div>
                 )}
             </div>
 
             {/* Product List */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden min-h-[400px]">
+            <div className="bg-white border border-gray-200 rounded-[8px] overflow-hidden">
                 <ProductTable
                     products={filteredProducts}
                     isGridView={isGridView}

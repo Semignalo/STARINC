@@ -1,99 +1,82 @@
 import React from 'react';
-import { Edit2, Trash2, LayoutGrid, List } from 'lucide-react';
+import { Edit2, Trash2 } from 'lucide-react';
+import DataTable from './ui/Table';
+import Badge from './ui/Badge';
+import OptimizedImage from '../OptimizedImage';
 
 /**
- * ProductTable - Komponen untuk menampilkan daftar produk dalam mode tabel atau grid.
- *
- * @param {Object[]} products - Array data produk dari API
- * @param {boolean} isGridView - Mode tampilan (true = grid, false = tabel)
- * @param {Function} onEdit - Callback saat tombol edit diklik
- * @param {Function} onDelete - Callback saat tombol hapus diklik
- * @param {boolean} loading - Status loading
+ * ProductTable — Linear-style tabel/grid produk dengan komponen baru.
  */
 export default function ProductTable({ products, isGridView, onEdit, onDelete, loading }) {
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-64 text-gray-500">
-                Loading products...
+            <div className="flex items-center justify-center h-64 text-sm text-gray-400">
+                Memuat produk…
             </div>
         );
     }
 
     if (products.length === 0) {
         return (
-            <div className="flex items-center justify-center h-64 text-gray-500">
-                No products found. Add your first one!
+            <div className="flex items-center justify-center h-64 text-sm text-gray-400">
+                Belum ada produk. Tambah produk pertamamu.
             </div>
         );
     }
 
     if (isGridView) {
         return (
-            <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="p-4 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
                 {products.map((product) => {
-                    const productImage = product.main_image_url || product.main_image || product.image || '/logo.png';
+                    const productImage = product.main_image_url || product.main_image || '/logo.png';
                     const discountLabel = product.discount_label || product.discount;
                     const originalPrice = product.original_price || product.originalPrice;
+                    const isOutOfStock = product.stock !== undefined && product.stock <= 0;
 
                     return (
-                        <div key={product.id} className="group border border-gray-100 rounded-xl overflow-hidden hover:shadow-md transition-shadow">
-                            <div className="aspect-square bg-gray-100 relative overflow-hidden">
-                                <img
+                        <div
+                            key={product.id}
+                            className="bg-white border border-gray-200 rounded-[8px] overflow-hidden hover:border-gray-300 transition-colors"
+                        >
+                            <div className="aspect-square bg-gray-50 relative overflow-hidden">
+                                <OptimizedImage
                                     src={productImage}
                                     alt={product.title}
-                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                    loading="lazy"
+                                    width={300}
+                                    height={300}
+                                    wrapperClassName="absolute inset-0"
                                     onError={(e) => { e.target.src = '/logo.png'; }}
                                 />
                                 {discountLabel && (
-                                    <div className="absolute top-2 right-2 bg-red-100 text-red-600 text-xs font-bold px-2 py-1 rounded">
+                                    <span className="absolute top-2 left-2 bg-white border border-gray-200 text-[10px] font-medium px-1.5 py-0.5 rounded">
                                         {discountLabel}
-                                    </div>
+                                    </span>
                                 )}
-                                {product.stock !== undefined && product.stock <= 0 && (
-                                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                                        <span className="bg-white text-gray-800 text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wide">
-                                            Habis
-                                        </span>
+                                {isOutOfStock && (
+                                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                                        <Badge color="danger">Habis</Badge>
                                     </div>
                                 )}
                             </div>
-                            <div className="p-4">
-                                <div className="text-xs text-gray-500 mb-1">{product.category}</div>
-                                <h3 className="font-bold text-gray-900 mb-2 truncate">
+                            <div className="p-3">
+                                <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">{product.category}</p>
+                                <h3 className="text-sm font-medium text-gray-900 truncate mb-1.5">
                                     {product.title}
-                                    {product.is_promo && (
-                                        <span className="ml-2 text-[10px] bg-[var(--color-primary)] text-white px-1.5 py-0.5 rounded uppercase font-bold">
-                                            Promo
-                                        </span>
-                                    )}
                                 </h3>
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <div className="font-bold text-[var(--color-primary)]">
-                                            Rp. {parseFloat(product.price).toLocaleString('id-ID')}
-                                        </div>
+                                <div className="flex items-end justify-between gap-2">
+                                    <div className="min-w-0">
+                                        <p className="text-sm font-semibold text-gray-900 tabular-nums">
+                                            Rp{parseFloat(product.price).toLocaleString('id-ID')}
+                                        </p>
                                         {originalPrice && (
-                                            <div className="text-xs text-gray-400 line-through">
-                                                Rp. {parseFloat(originalPrice).toLocaleString('id-ID')}
-                                            </div>
+                                            <p className="text-[11px] text-gray-400 line-through tabular-nums">
+                                                Rp{parseFloat(originalPrice).toLocaleString('id-ID')}
+                                            </p>
                                         )}
                                     </div>
-                                    <div className="flex gap-1">
-                                        <button
-                                            onClick={() => onEdit(product)}
-                                            className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
-                                            title="Edit produk"
-                                        >
-                                            <Edit2 size={16} />
-                                        </button>
-                                        <button
-                                            onClick={() => onDelete(product.id)}
-                                            className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
-                                            title="Hapus produk"
-                                        >
-                                            <Trash2 size={16} />
-                                        </button>
+                                    <div className="flex gap-0.5 shrink-0">
+                                        <IconBtn icon={Edit2} onClick={() => onEdit(product)} label="Edit" />
+                                        <IconBtn icon={Trash2} onClick={() => onDelete(product.id)} label="Hapus" danger />
                                     </div>
                                 </div>
                             </div>
@@ -104,109 +87,97 @@ export default function ProductTable({ products, isGridView, onEdit, onDelete, l
         );
     }
 
-    // List/Table view
     return (
-        <div className="overflow-x-auto">
-            <table className="w-full text-left">
-                <thead className="bg-gray-50 text-gray-600 font-medium border-b border-gray-100">
-                    <tr>
-                        <th className="p-4">Product</th>
-                        <th className="p-4">Category</th>
-                        <th className="p-4">Description</th>
-                        <th className="p-4">Price</th>
-                        <th className="p-4">Discount</th>
-                        <th className="p-4">Stock</th>
-                        <th className="p-4 text-right">Actions</th>
-                    </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                    {products.map((product) => {
-                        const productImage = product.main_image_url || product.main_image || product.image || '/logo.png';
-                        const discountLabel = product.discount_label || product.discount;
-                        const originalPrice = product.original_price || product.originalPrice;
-                        const isOutOfStock = product.stock !== undefined && product.stock <= 0;
+        <table className="w-full text-sm">
+            <thead className="bg-gray-50/60 border-b border-gray-200">
+                <tr>
+                    <th className="px-4 py-2.5 text-[11px] font-medium uppercase tracking-wider text-gray-500 text-left">Produk</th>
+                    <th className="px-4 py-2.5 text-[11px] font-medium uppercase tracking-wider text-gray-500 text-left">Kategori</th>
+                    <th className="px-4 py-2.5 text-[11px] font-medium uppercase tracking-wider text-gray-500 text-right">Harga</th>
+                    <th className="px-4 py-2.5 text-[11px] font-medium uppercase tracking-wider text-gray-500 text-left">Diskon</th>
+                    <th className="px-4 py-2.5 text-[11px] font-medium uppercase tracking-wider text-gray-500 text-left">Stok</th>
+                    <th className="px-4 py-2.5 text-[11px] font-medium uppercase tracking-wider text-gray-500 text-right">Aksi</th>
+                </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+                {products.map((product) => {
+                    const productImage = product.main_image_url || product.main_image || '/logo.png';
+                    const discountLabel = product.discount_label || product.discount;
+                    const originalPrice = product.original_price || product.originalPrice;
+                    const isOutOfStock = product.stock !== undefined && product.stock !== null && product.stock <= 0;
 
-                        return (
-                            <tr key={product.id} className="hover:bg-gray-50 transition-colors">
-                                <td className="p-4">
-                                    <div className="flex items-center gap-3">
-                                        <div className="relative">
-                                            <img
-                                                src={productImage}
-                                                alt={product.title}
-                                                className="w-12 h-12 rounded-lg object-cover bg-gray-100"
-                                                loading="lazy"
-                                                onError={(e) => { e.target.src = '/logo.png'; }}
-                                            />
-                                            {isOutOfStock && (
-                                                <div className="absolute inset-0 bg-black/40 rounded-lg flex items-center justify-center">
-                                                    <span className="text-white text-[8px] font-bold">HABIS</span>
-                                                </div>
-                                            )}
-                                        </div>
-                                        <span className="font-medium text-gray-900">
-                                            {product.title}
-                                            {product.is_promo && (
-                                                <span className="ml-2 text-[10px] bg-[var(--color-primary)] text-white px-1.5 py-0.5 rounded uppercase font-bold">
-                                                    Promo
-                                                </span>
-                                            )}
-                                        </span>
+                    return (
+                        <tr key={product.id} className="hover:bg-gray-50/60 transition-colors">
+                            <td className="px-4 py-2.5">
+                                <div className="flex items-center gap-3 min-w-0">
+                                    <div className="w-9 h-9 rounded-md overflow-hidden bg-gray-50 shrink-0 relative">
+                                        <OptimizedImage
+                                            src={productImage}
+                                            alt={product.title}
+                                            width={36}
+                                            height={36}
+                                            blur={false}
+                                            wrapperClassName="absolute inset-0"
+                                            onError={(e) => { e.target.src = '/logo.png'; }}
+                                        />
                                     </div>
-                                </td>
-                                <td className="p-4 text-gray-600">{product.category}</td>
-                                <td className="p-4 text-gray-500 text-sm max-w-xs truncate">
-                                    {product.description || '-'}
-                                </td>
-                                <td className="p-4 font-medium">
-                                    <div>Rp. {parseFloat(product.price).toLocaleString('id-ID')}</div>
-                                    {originalPrice && (
-                                        <div className="text-xs text-gray-400 line-through">
-                                            Rp. {parseFloat(originalPrice).toLocaleString('id-ID')}
+                                    <div className="min-w-0">
+                                        <div className="flex items-center gap-1.5">
+                                            <span className="font-medium text-gray-900 truncate">{product.title}</span>
+                                            {product.is_promo && <Badge color="accent">Promo</Badge>}
                                         </div>
-                                    )}
-                                </td>
-                                <td className="p-4">
-                                    {discountLabel ? (
-                                        <span className="bg-red-100 text-red-600 px-2 py-1 rounded text-xs font-bold">
-                                            {discountLabel}
-                                        </span>
-                                    ) : (
-                                        <span className="text-gray-400 text-sm">-</span>
-                                    )}
-                                </td>
-                                <td className="p-4">
-                                    {product.stock !== undefined ? (
-                                        <span className={`px-2 py-1 rounded text-xs font-bold ${isOutOfStock ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-700'}`}>
-                                            {isOutOfStock ? 'Habis' : product.stock}
-                                        </span>
-                                    ) : (
-                                        <span className="text-gray-400 text-sm">-</span>
-                                    )}
-                                </td>
-                                <td className="p-4 text-right">
-                                    <div className="flex justify-end gap-2">
-                                        <button
-                                            onClick={() => onEdit(product)}
-                                            className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                            title="Edit produk"
-                                        >
-                                            <Edit2 size={18} />
-                                        </button>
-                                        <button
-                                            onClick={() => onDelete(product.id)}
-                                            className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                            title="Hapus produk"
-                                        >
-                                            <Trash2 size={18} />
-                                        </button>
+                                        {product.description && (
+                                            <p className="text-xs text-gray-400 truncate max-w-[280px]">{product.description}</p>
+                                        )}
                                     </div>
-                                </td>
-                            </tr>
-                        );
-                    })}
-                </tbody>
-            </table>
-        </div>
+                                </div>
+                            </td>
+                            <td className="px-4 py-2.5 text-gray-600">{product.category}</td>
+                            <td className="px-4 py-2.5 text-right tabular-nums">
+                                <div className="font-medium text-gray-900">Rp{parseFloat(product.price).toLocaleString('id-ID')}</div>
+                                {originalPrice && (
+                                    <div className="text-xs text-gray-400 line-through">
+                                        Rp{parseFloat(originalPrice).toLocaleString('id-ID')}
+                                    </div>
+                                )}
+                            </td>
+                            <td className="px-4 py-2.5">
+                                {discountLabel ? <Badge color="danger">{discountLabel}</Badge> : <span className="text-gray-300">—</span>}
+                            </td>
+                            <td className="px-4 py-2.5">
+                                {product.stock === null || product.stock === undefined ? (
+                                    <span className="text-gray-300">—</span>
+                                ) : isOutOfStock ? (
+                                    <Badge color="danger" dot>Habis</Badge>
+                                ) : (
+                                    <span className="text-gray-700 tabular-nums">{product.stock}</span>
+                                )}
+                            </td>
+                            <td className="px-4 py-2.5">
+                                <div className="flex justify-end gap-0.5">
+                                    <IconBtn icon={Edit2} onClick={() => onEdit(product)} label="Edit" />
+                                    <IconBtn icon={Trash2} onClick={() => onDelete(product.id)} label="Hapus" danger />
+                                </div>
+                            </td>
+                        </tr>
+                    );
+                })}
+            </tbody>
+        </table>
+    );
+}
+
+function IconBtn({ icon: Icon, onClick, label, danger }) {
+    return (
+        <button
+            onClick={onClick}
+            title={label}
+            aria-label={label}
+            className={`w-7 h-7 inline-flex items-center justify-center rounded-md text-gray-400 transition-colors ${
+                danger ? 'hover:text-red-600 hover:bg-red-50' : 'hover:text-gray-900 hover:bg-gray-100'
+            }`}
+        >
+            <Icon size={14} strokeWidth={2} />
+        </button>
     );
 }

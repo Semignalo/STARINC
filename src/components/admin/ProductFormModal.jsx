@@ -1,25 +1,15 @@
 import React, { useRef } from 'react';
-import { X, Loader2, FileText, Trash2 } from 'lucide-react';
+import { Loader2, FileText, Trash2, Plus, X, Cloud, Server, Youtube } from 'lucide-react';
 import ProductMediaUploader from './ProductMediaUploader';
-
-const DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1629198688000-71f23e745b6e?auto=format&fit=crop&q=80&w=800';
+import Modal from './ui/Modal';
+import Button from './ui/Button';
+import Input, { Textarea, Select } from './ui/Input';
+import { parseVideoUrl } from '../VideoEmbed';
+import { cn } from '../../lib/utils';
 
 /**
- * ProductFormModal - Modal form untuk tambah / edit produk.
- *
- * @param {boolean} isOpen - Apakah modal terbuka
- * @param {boolean} isEditing - Mode edit (true) atau tambah baru (false)
- * @param {Object} formData - Data form produk
- * @param {Function} onFormChange - Callback perubahan input biasa (event)
- * @param {Function} onVariantChange - Callback perubahan varian (index, field, value)
- * @param {Function} onAddVariant - Callback tambah varian
- * @param {Function} onRemoveVariant - Callback hapus varian (index)
- * @param {Function} onMediaChange - Callback perubahan media (newMedia, newMainImage)
- * @param {Function} onFilesSelected - Callback saat file dipilih
- * @param {Function} onSubmit - Callback submit form
- * @param {Function} onClose - Callback tutup modal
- * @param {boolean} isUploading - Status uploading
- * @param {number} uploadProgress - Progress upload (0-100)
+ * ProductFormModal — Linear-style monochrome.
+ * Tambahan fitur: field video_url + toggle storage driver (Local | Cloudinary).
  */
 export default function ProductFormModal({
     isOpen,
@@ -36,211 +26,185 @@ export default function ProductFormModal({
     onSubmit,
     onClose,
     isUploading,
-    uploadProgress
+    uploadProgress,
 }) {
-    if (!isOpen) return null;
     const pdfInputRef = useRef();
 
-    const inputClass = "w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/20 focus:border-[var(--color-accent)] transition-all";
+    if (!isOpen) return null;
+
+    const setField = (name, value) => onFormChange({ target: { name, value } });
+    const videoMeta = formData.videoUrl ? parseVideoUrl(formData.videoUrl) : null;
 
     return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl p-6 relative animate-in fade-in zoom-in duration-200 max-h-[90vh] overflow-y-auto">
-                <button
-                    onClick={onClose}
-                    className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
-                    title="Tutup"
-                >
-                    <X size={24} />
-                </button>
-
-                <h2 className="text-xl font-bold mb-6 text-gray-800">
-                    {isEditing ? 'Edit Product' : 'Add New Product'}
-                </h2>
-
-                <form onSubmit={onSubmit} className="space-y-4">
-                    {/* Product Title */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Product Title</label>
-                        <input
+        <Modal
+            open={isOpen}
+            onClose={onClose}
+            title={isEditing ? 'Edit Produk' : 'Tambah Produk Baru'}
+            size="xl"
+            footer={
+                <>
+                    <Button variant="ghost" onClick={onClose} disabled={isUploading}>Batal</Button>
+                    <Button variant="primary" onClick={onSubmit} loading={isUploading} icon={!isUploading ? Plus : null}>
+                        {isEditing ? 'Update Produk' : 'Simpan Produk'}
+                    </Button>
+                </>
+            }
+        >
+            <form onSubmit={onSubmit} className="space-y-5">
+                {/* Identity */}
+                <Section title="Identitas Produk">
+                    <Input
+                        label="Nama Produk"
+                        type="text"
+                        name="title"
+                        value={formData.title}
+                        onChange={onFormChange}
+                        required
+                        placeholder="contoh: Starinc Glow Set"
+                    />
+                    <div className="grid grid-cols-2 gap-3">
+                        <Input
+                            label="Kategori"
                             type="text"
-                            name="title"
-                            value={formData.title}
+                            name="category"
+                            value={formData.category}
                             onChange={onFormChange}
-                            required
-                            className={inputClass}
-                            placeholder="e.g. Starinc Glow Set"
+                            placeholder="The Act"
+                        />
+                        <Input
+                            label="Label Diskon (opsional)"
+                            type="text"
+                            name="discount"
+                            value={formData.discount}
+                            onChange={onFormChange}
+                            placeholder="20%"
                         />
                     </div>
 
-                    {/* Promo Toggle */}
-                    <div className="flex items-center gap-2 bg-blue-50/50 p-3 rounded-lg border border-blue-100">
+                    <label className="inline-flex items-center gap-2 cursor-pointer select-none">
                         <input
                             type="checkbox"
-                            id="isPromo"
-                            name="isPromo"
                             checked={formData.isPromo}
-                            onChange={(e) => onFormChange({ target: { name: 'isPromo', value: e.target.checked } })}
-                            className="w-4 h-4 text-[var(--color-primary)] rounded border-gray-300 focus:ring-[var(--color-primary)]"
+                            onChange={(e) => setField('isPromo', e.target.checked)}
+                            className="w-3.5 h-3.5 rounded border-gray-300 text-gray-900 focus:ring-1 focus:ring-[var(--admin-accent)]"
                         />
-                        <label htmlFor="isPromo" className="text-sm font-medium text-gray-700 cursor-pointer">
-                            Tampilkan di Kolom Promo
-                        </label>
-                    </div>
+                        <span className="text-xs text-gray-700">Tampilkan di kolom Promo (homepage)</span>
+                    </label>
+                </Section>
 
-                    {/* Price & Original Price */}
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Price (Rp)</label>
-                            <input
-                                type="text"
-                                name="price"
-                                value={formData.price}
-                                onChange={onFormChange}
-                                required
-                                className={inputClass}
-                                placeholder="e.g. 1,250,000"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Original Price <span className="text-gray-400 font-normal">(Optional)</span>
-                            </label>
-                            <input
-                                type="text"
-                                name="originalPrice"
-                                value={formData.originalPrice}
-                                onChange={onFormChange}
-                                className={inputClass}
-                                placeholder="e.g. 1,500,000"
-                            />
-                        </div>
-                    </div>
-
-                    {/* Category & Discount */}
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                            <input
-                                type="text"
-                                name="category"
-                                value={formData.category}
-                                onChange={onFormChange}
-                                className={inputClass}
-                                placeholder="e.g. The Act"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Discount Label</label>
-                            <input
-                                type="text"
-                                name="discount"
-                                value={formData.discount}
-                                onChange={onFormChange}
-                                className={inputClass}
-                                placeholder="e.g. 20%"
-                            />
-                        </div>
-                    </div>
-
-                    {/* Stock & Weight */}
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Stock <span className="text-gray-400 font-normal">(Kosongkan = unlimited)</span>
-                            </label>
-                            <input
-                                type="number"
-                                name="stock"
-                                value={formData.stock}
-                                onChange={onFormChange}
-                                min="0"
-                                className={inputClass}
-                                placeholder="e.g. 100"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Berat <span className="text-gray-400 font-normal">(gram, default 500g)</span>
-                            </label>
-                            <input
-                                type="number"
-                                name="weight"
-                                value={formData.weight}
-                                onChange={onFormChange}
-                                min="1"
-                                className={inputClass}
-                                placeholder="e.g. 500"
-                            />
-                        </div>
-                    </div>
-
-                    {/* Description */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Description / Details</label>
-                        <textarea
-                            name="description"
-                            value={formData.description}
+                {/* Pricing & Inventory */}
+                <Section title="Harga & Inventory">
+                    <div className="grid grid-cols-2 gap-3">
+                        <Input
+                            label="Harga (Rp)"
+                            type="text"
+                            name="price"
+                            value={formData.price}
                             onChange={onFormChange}
-                            rows="4"
-                            className={`${inputClass} resize-none`}
-                            placeholder="Enter product description and details..."
+                            required
+                            placeholder="1250000"
+                            prefix="Rp"
+                        />
+                        <Input
+                            label="Harga Asli (opsional)"
+                            type="text"
+                            name="originalPrice"
+                            value={formData.originalPrice}
+                            onChange={onFormChange}
+                            placeholder="1500000"
+                            prefix="Rp"
                         />
                     </div>
-
-                    {/* Variants */}
-                    <div className="border border-gray-200 rounded-lg p-4 bg-gray-50/50">
-                        <div className="flex justify-between items-center mb-3">
-                            <label className="block text-sm font-medium text-gray-700">
-                                Product Variants <span className="text-gray-400 font-normal">(Optional)</span>
-                            </label>
-                            <button
-                                type="button"
-                                onClick={onAddVariant}
-                                className="text-xs font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-md transition-colors"
-                            >
-                                + Add Variant
-                            </button>
-                        </div>
-                        <p className="text-xs text-gray-500 mb-4">
-                            Adding variants will allow users to choose options (e.g. Size 50ml, Size 100ml) with independent pricing.
-                        </p>
-
-                        {formData.variants.length > 0 && (
-                            <div className="space-y-3">
-                                {formData.variants.map((variant, index) => (
-                                    <div key={index} className="flex gap-3 items-center">
-                                        <input
-                                            type="text"
-                                            placeholder="Variant Name (e.g. Besar 100ml)"
-                                            value={variant.name}
-                                            onChange={(e) => onVariantChange(index, 'name', e.target.value)}
-                                            required
-                                            className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                        />
-                                        <input
-                                            type="text"
-                                            placeholder="Price (Rp)"
-                                            value={variant.price}
-                                            onChange={(e) => onVariantChange(index, 'price', e.target.value)}
-                                            required
-                                            className="w-32 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={() => onRemoveVariant(index)}
-                                            className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                                            title="Hapus varian"
-                                        >
-                                            <X size={16} />
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
+                    <div className="grid grid-cols-2 gap-3">
+                        <Input
+                            label="Stok"
+                            type="number"
+                            name="stock"
+                            value={formData.stock}
+                            onChange={onFormChange}
+                            min="0"
+                            placeholder="kosong = unlimited"
+                            hint="Kosongkan untuk stok tak terbatas"
+                        />
+                        <Input
+                            label="Berat (gram)"
+                            type="number"
+                            name="weight"
+                            value={formData.weight}
+                            onChange={onFormChange}
+                            min="1"
+                            placeholder="500"
+                            hint="Default 500g jika kosong"
+                        />
                     </div>
+                </Section>
 
-                    {/* Media Uploader */}
+                {/* Description */}
+                <Section title="Deskripsi">
+                    <Textarea
+                        name="description"
+                        value={formData.description}
+                        onChange={onFormChange}
+                        rows={4}
+                        placeholder="Tulis deskripsi produk..."
+                    />
+                </Section>
+
+                {/* Variants */}
+                <Section
+                    title="Varian Produk (opsional)"
+                    action={
+                        <Button type="button" variant="secondary" size="xs" icon={Plus} onClick={onAddVariant}>
+                            Tambah Varian
+                        </Button>
+                    }
+                >
+                    <p className="text-xs text-gray-500 -mt-2">
+                        Tambahkan varian agar user bisa pilih opsi (mis. 50ml / 100ml) dengan harga sendiri.
+                    </p>
+                    {formData.variants.length > 0 ? (
+                        <div className="space-y-2">
+                            {formData.variants.map((v, idx) => (
+                                <div key={idx} className="flex gap-2 items-start">
+                                    <Input
+                                        placeholder="Nama varian"
+                                        value={v.name}
+                                        onChange={(e) => onVariantChange(idx, 'name', e.target.value)}
+                                        required
+                                        className="flex-1"
+                                    />
+                                    <Input
+                                        placeholder="Harga"
+                                        prefix="Rp"
+                                        value={v.price}
+                                        onChange={(e) => onVariantChange(idx, 'price', e.target.value)}
+                                        required
+                                        className="w-32"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => onRemoveVariant(idx)}
+                                        className="w-9 h-9 rounded-md text-gray-400 hover:text-red-600 hover:bg-red-50 flex items-center justify-center mt-0"
+                                        aria-label="Hapus varian"
+                                    >
+                                        <X size={14} />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    ) : null}
+                </Section>
+
+                {/* Media + Storage driver */}
+                <Section
+                    title="Foto Produk"
+                    action={
+                        <StorageDriverToggle
+                            value={formData.uploadDriver}
+                            onChange={(v) => setField('uploadDriver', v)}
+                        />
+                    }
+                >
                     <ProductMediaUploader
                         media={formData.media}
                         mainImage={formData.image}
@@ -249,72 +213,109 @@ export default function ProductFormModal({
                         onMediaChange={onMediaChange}
                         onFilesSelected={onFilesSelected}
                     />
+                </Section>
 
-                    {/* PDF Brochure */}
-                    <div className="border border-dashed border-gray-200 rounded-lg p-4 bg-gray-50/50">
-                        <p className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                            <FileText size={16} className="text-gray-400" />
-                            PDF Penjelasan Produk <span className="text-gray-400 font-normal">(Opsional)</span>
-                        </p>
-                        {formData.pdfUrl ? (
-                            <div className="flex items-center gap-3 bg-white border border-gray-200 rounded-lg px-3 py-2">
-                                <FileText size={18} className="text-blue-500 shrink-0" />
-                                <a href={formData.pdfUrl} target="_blank" rel="noreferrer" className="text-sm text-blue-600 underline flex-1 truncate">
-                                    Lihat PDF saat ini
-                                </a>
-                                {onPdfRemove && (
-                                    <button type="button" onClick={onPdfRemove} className="p-1 text-red-400 hover:text-red-600 shrink-0">
-                                        <Trash2 size={15} />
-                                    </button>
-                                )}
-                            </div>
-                        ) : formData.pdfFile ? (
-                            <div className="flex items-center gap-3 bg-white border border-gray-200 rounded-lg px-3 py-2">
-                                <FileText size={18} className="text-amber-500 shrink-0" />
-                                <span className="text-sm text-gray-700 flex-1 truncate">{formData.pdfFile.name}</span>
-                                <button type="button" onClick={() => onPdfSelected(null)} className="p-1 text-red-400 hover:text-red-600 shrink-0">
-                                    <Trash2 size={15} />
-                                </button>
-                            </div>
-                        ) : (
-                            <button
-                                type="button"
-                                onClick={() => pdfInputRef.current?.click()}
-                                className="w-full text-sm text-gray-500 hover:text-gray-700 py-2 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 transition-colors"
-                            >
-                                + Upload PDF
+                {/* Video URL (YouTube/Vimeo) */}
+                <Section title="Video Demo (opsional)">
+                    <Input
+                        icon={Youtube}
+                        type="url"
+                        name="videoUrl"
+                        value={formData.videoUrl}
+                        onChange={onFormChange}
+                        placeholder="https://youtube.com/watch?v=... atau https://vimeo.com/..."
+                        hint={
+                            formData.videoUrl
+                                ? videoMeta
+                                    ? `✓ Terdeteksi: ${videoMeta.provider} (id: ${videoMeta.id})`
+                                    : 'URL tidak dikenal — pakai link YouTube atau Vimeo'
+                                : 'Tempel URL YouTube/Vimeo. Akan tampil sebagai video player lazy-load.'
+                        }
+                    />
+                </Section>
+
+                {/* PDF Brochure */}
+                <Section title="PDF Brosur (opsional)">
+                    {formData.pdfUrl ? (
+                        <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-md px-3 py-2">
+                            <FileText size={14} className="text-gray-400 shrink-0" />
+                            <a href={formData.pdfUrl} target="_blank" rel="noreferrer" className="text-xs text-gray-700 underline flex-1 truncate">
+                                Lihat PDF saat ini
+                            </a>
+                            <button type="button" onClick={onPdfRemove} className="text-gray-400 hover:text-red-600" aria-label="Hapus PDF">
+                                <Trash2 size={14} />
                             </button>
-                        )}
-                        <input
-                            ref={pdfInputRef}
-                            type="file"
-                            accept=".pdf"
-                            className="hidden"
-                            onChange={e => onPdfSelected && onPdfSelected(e.target.files[0] || null)}
-                        />
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="pt-4 flex gap-3">
-                        <button
+                        </div>
+                    ) : formData.pdfFile ? (
+                        <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-md px-3 py-2">
+                            <FileText size={14} className="text-amber-500 shrink-0" />
+                            <span className="text-xs text-gray-700 flex-1 truncate">{formData.pdfFile.name}</span>
+                            <button type="button" onClick={() => onPdfSelected(null)} className="text-gray-400 hover:text-red-600" aria-label="Batal">
+                                <Trash2 size={14} />
+                            </button>
+                        </div>
+                    ) : (
+                        <Button
                             type="button"
-                            onClick={onClose}
-                            className="flex-1 bg-gray-100 text-gray-700 font-bold py-3 rounded-lg hover:bg-gray-200 transition-colors"
-                            disabled={isUploading}
+                            variant="secondary"
+                            size="sm"
+                            icon={FileText}
+                            onClick={() => pdfInputRef.current?.click()}
+                            fullWidth
                         >
-                            Cancel
-                        </button>
-                        <button
-                            type="submit"
-                            className="flex-1 bg-[var(--color-accent)] text-white font-bold py-3 rounded-lg hover:bg-[var(--color-accent-dark)] transition-colors flex items-center justify-center gap-2 disabled:opacity-60"
-                            disabled={isUploading}
-                        >
-                            {isUploading && <Loader2 size={18} className="animate-spin" />}
-                            {isEditing ? 'Update Product' : 'Save Product'}
-                        </button>
-                    </div>
-                </form>
+                            Upload PDF
+                        </Button>
+                    )}
+                    <input
+                        ref={pdfInputRef}
+                        type="file"
+                        accept=".pdf"
+                        className="hidden"
+                        onChange={(e) => onPdfSelected?.(e.target.files[0] || null)}
+                    />
+                </Section>
+            </form>
+        </Modal>
+    );
+}
+
+function Section({ title, action, children }) {
+    return (
+        <section className="space-y-3">
+            <div className="flex items-center justify-between gap-3">
+                <h4 className="text-xs font-semibold text-gray-900 uppercase tracking-wider">{title}</h4>
+                {action}
             </div>
+            <div className="space-y-3">{children}</div>
+        </section>
+    );
+}
+
+function StorageDriverToggle({ value, onChange }) {
+    const opts = [
+        { key: '',          label: 'Default',    icon: null,   tip: 'Pakai driver default server' },
+        { key: 'local',     label: 'Local',      icon: Server, tip: 'Simpan di server STARINC' },
+        { key: 'cloudinary', label: 'Cloudinary', icon: Cloud, tip: 'Upload ke Cloudinary CDN' },
+    ];
+    return (
+        <div className="flex border border-gray-200 rounded-[6px] p-0.5 bg-gray-50">
+            {opts.map((o) => (
+                <button
+                    key={o.key}
+                    type="button"
+                    onClick={() => onChange(o.key)}
+                    title={o.tip}
+                    className={cn(
+                        'inline-flex items-center gap-1 px-2 h-6 rounded text-[11px] font-medium transition-colors',
+                        value === o.key
+                            ? 'bg-white text-gray-900 shadow-sm border border-gray-200'
+                            : 'text-gray-500 hover:text-gray-900',
+                    )}
+                >
+                    {o.icon && <o.icon size={11} />}
+                    {o.label}
+                </button>
+            ))}
         </div>
     );
 }
