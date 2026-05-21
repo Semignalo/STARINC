@@ -6,6 +6,7 @@ import { t } from '../locales/home';
 import { productApi } from '../api/productApi';
 import { testimonialsApi } from '../api/settingsApi';
 import { ArrowRight, ArrowLeft, Star, Quote } from 'lucide-react';
+import OptimizedImage from '../components/OptimizedImage';
 
 /* ─────────────────────────────────────────────────────────────
    Home Product Card  (Aesop-style)
@@ -26,10 +27,13 @@ function HomeProductCard({ id, title, price, main_image_url, main_image, image, 
                         <span className="text-white text-[10px] uppercase tracking-[0.2em]">{outOfStockLabel}</span>
                     </div>
                 )}
-                <img
+                <OptimizedImage
                     src={imageUrl || '/logo.png'} alt={title}
-                    className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-700"
-                    loading="lazy" onError={e => { e.target.src = '/logo.png'; }}
+                    width={400} height={400}
+                    sizes="(min-width: 768px) 33vw, 46vw"
+                    className="group-hover:scale-[1.04] transition-transform duration-700"
+                    wrapperClassName="absolute inset-0"
+                    onError={e => { e.target.src = '/logo.png'; }}
                 />
             </div>
             <div className="text-center flex-1 flex flex-col px-1">
@@ -212,8 +216,10 @@ export default function Home() {
             <section className="flex flex-col md:flex-row min-h-[420px] md:min-h-[540px]">
                 <div className="w-full md:w-1/2 h-[300px] md:h-auto overflow-hidden">
                     {settings?.skinTypeImageUrl ? (
-                        <img src={settings.skinTypeImageUrl} alt={settings?.skinTypeTitle || ''}
-                            className="w-full h-full object-cover" />
+                        <OptimizedImage src={settings.skinTypeImageUrl} alt={settings?.skinTypeTitle || ''}
+                            width={800} height={600}
+                            sizes="(min-width: 768px) 50vw, 100vw"
+                            wrapperClassName="w-full h-full" />
                     ) : (
                         <div className="w-full h-full bg-stone-200 flex items-center justify-center min-h-[300px]">
                             <span className="text-stone-400 text-sm">Gambar belum diatur</span>
@@ -294,8 +300,10 @@ export default function Home() {
                 </div>
                 <div className="w-full md:w-[55%] h-[300px] md:h-auto overflow-hidden">
                     {settings?.editorialImageUrl ? (
-                        <img src={settings.editorialImageUrl} alt={settings?.editorialTitle || ''}
-                            className="w-full h-full object-cover" />
+                        <OptimizedImage src={settings.editorialImageUrl} alt={settings?.editorialTitle || ''}
+                            width={900} height={600}
+                            sizes="(min-width: 768px) 55vw, 100vw"
+                            wrapperClassName="w-full h-full" />
                     ) : (
                         <div className="w-full h-full bg-stone-200 flex items-center justify-center min-h-[300px]">
                             <span className="text-stone-400 text-sm">

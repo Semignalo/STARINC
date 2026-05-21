@@ -3,6 +3,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { orderApi } from '../../api/orderApi';
 import { Package, ExternalLink, Printer, Upload, CheckCircle, Clock, Truck, XCircle, AlertCircle, Ban } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import OptimizedImage from '../OptimizedImage';
 import Swal from 'sweetalert2';
 import { getErrorMessage } from '../../api/client';
 
@@ -244,7 +245,7 @@ export default function ProfileOrders() {
                                         return (
                                             <div key={idx} className="flex items-center gap-3">
                                                 <div className="w-14 h-14 bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm flex-shrink-0">
-                                                    <img src={imageUrl} alt={item.product_title} className="w-full h-full object-cover" />
+                                                    <OptimizedImage src={imageUrl} alt={item.product_title} width={56} height={56} blur={false} wrapperClassName="w-full h-full" />
                                                 </div>
                                                 <div className="flex-1 min-w-0">
                                                     <p className="text-sm font-bold text-gray-900 truncate">{item.product_title}</p>

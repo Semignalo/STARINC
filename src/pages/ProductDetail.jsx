@@ -6,6 +6,7 @@ import { Star, Truck, ShieldCheck, Leaf, FileText, ChevronLeft, ChevronRight, Qu
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
 import SdpRedirectModal from '../components/SdpRedirectModal';
+import OptimizedImage from '../components/OptimizedImage';
 
 const PdfViewer = lazy(() => import('../components/PdfViewer'));
 
@@ -96,10 +97,14 @@ export default function ProductDetail() {
                                 playsInline
                             />
                         ) : (
-                            <img
+                            <OptimizedImage
                                 src={mainImage}
                                 alt={product.title}
-                                className="w-full h-full object-cover object-center"
+                                width={900}
+                                height={900}
+                                priority
+                                sizes="(min-width: 768px) 50vw, 100vw"
+                                wrapperClassName="absolute inset-0"
                             />
                         )}
                     </div>
@@ -118,7 +123,7 @@ export default function ProductDetail() {
                                         {isVideo ? (
                                             <video src={itemUrl} className="w-full h-full object-cover pointer-events-none" muted />
                                         ) : (
-                                            <img src={itemUrl} alt={`View ${idx}`} className="w-full h-full object-cover" />
+                                            <OptimizedImage src={itemUrl} alt={`View ${idx}`} width={200} height={200} wrapperClassName="absolute inset-0" blur={false} />
                                         )}
                                         {isVideo && (
                                             <div className="absolute inset-0 flex items-center justify-center bg-black/20">

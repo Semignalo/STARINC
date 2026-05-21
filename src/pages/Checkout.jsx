@@ -7,6 +7,7 @@ import { shippingApi } from '../api/shippingApi';
 import { getErrorMessage } from '../api/client';
 import { CheckCircle2, MapPin, ShoppingBag, CreditCard, Truck, Clock, ChevronDown, AlertTriangle } from 'lucide-react';
 import Swal from 'sweetalert2';
+import OptimizedImage from '../components/OptimizedImage';
 
 function CheckoutStepper({ currentStep }) {
     const steps = [
@@ -416,7 +417,7 @@ export default function Checkout() {
                             {cart.map((item, idx) => (
                                 <div key={idx} className="flex gap-4">
                                     <div className="w-16 h-16 rounded-sm bg-white overflow-hidden border border-gray-100 flex-shrink-0 relative">
-                                        <img src={item.main_image_url || item.main_image || item.image} alt={item.title} className="w-full h-full object-cover" />
+                                        <OptimizedImage src={item.main_image_url || item.main_image || item.image} alt={item.title} width={64} height={64} blur={false} wrapperClassName="w-full h-full" />
                                         <div className="absolute -top-2 -right-2 bg-gray-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-bold">
                                             {item.quantity}
                                         </div>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { cn } from '../lib/utils';
+import OptimizedImage from './OptimizedImage';
 
 /**
  * ProductCard - Menampilkan kartu produk di halaman katalog dan home.
@@ -65,15 +66,18 @@ export default function ProductCard({
                     </div>
                 )}
 
-                <img
+                <OptimizedImage
                     src={imageUrl || '/logo.png'}
                     alt={title}
+                    width={600}
+                    height={800}
+                    sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
                     className={cn(
-                        'w-full h-full object-cover object-center transition-transform duration-700',
+                        'transition-transform duration-700',
                         !isOutOfStock && 'group-hover:scale-105',
                         isOutOfStock && 'grayscale opacity-70'
                     )}
-                    loading="lazy"
+                    wrapperClassName="absolute inset-0"
                     onError={(e) => { e.target.src = '/logo.png'; }}
                 />
 
