@@ -7,6 +7,7 @@ import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
 import SdpRedirectModal from '../components/SdpRedirectModal';
 import OptimizedImage from '../components/OptimizedImage';
+import VideoEmbed from '../components/VideoEmbed';
 
 const PdfViewer = lazy(() => import('../components/PdfViewer'));
 
@@ -268,6 +269,14 @@ export default function ProductDetail() {
                     </div>
                 </div>
             </div>
+
+            {/* ── Video Demo (YouTube/Vimeo) ────────────────────── */}
+            {product.video_url && (
+                <div className="mt-12 border-t border-gray-100 pt-10">
+                    <h2 className="text-lg font-serif text-gray-900 mb-6">Video Produk</h2>
+                    <VideoEmbed url={product.video_url} title={product.title} className="max-w-3xl mx-auto" />
+                </div>
+            )}
 
             {/* ── PDF Brochure ─────────────────────────────────── */}
             {product.pdf_url && (
