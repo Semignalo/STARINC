@@ -62,10 +62,11 @@ export const adminSettingsApi = {
      * @param {string} folder - Subfolder di storage (e.g. 'appearance')
      * @param {function} onProgress - Callback (percent: number) => void
      */
-    uploadFile: async (file, folder = 'appearance', onProgress = null) => {
+    uploadFile: async (file, folder = 'appearance', onProgress = null, driver = null) => {
         const formData = new FormData();
         formData.append('file', file);
         formData.append('folder', folder);
+        if (driver) formData.append('driver', driver);
 
         const response = await apiClient.post('/admin/upload', formData, {
             headers: { 'Content-Type': 'multipart/form-data' },

@@ -130,44 +130,50 @@ export default function Commissions() {
     };
 
     return (
-        <div className="p-6">
-            <div className="flex flex-col md:flex-row justify-between md:items-end gap-4 mb-6">
+        <div className="max-w-7xl">
+            <div className="flex flex-col md:flex-row justify-between md:items-end gap-3 mb-5">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-800">Manajemen Komisi</h1>
-                    <p className="text-sm text-gray-500">Otorisasi pencairan komisi dan riwayat</p>
+                    <h1 className="text-xl font-semibold text-gray-900">Komisi</h1>
+                    <p className="text-xs text-gray-500 mt-1">Otorisasi pencairan komisi dan riwayat</p>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-3">
+                <div className="flex flex-wrap items-center gap-2">
                     <select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
-                        className="bg-white border border-gray-200 px-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+                        className="h-9 px-3 pr-8 bg-white border border-gray-200 rounded-[6px] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--admin-accent)]/30 focus:border-[var(--admin-accent)] appearance-none"
+                        style={{
+                            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%239ca3af'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 111.08 1.04l-4.25 4.39a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z' clip-rule='evenodd'/%3E%3C/svg%3E")`,
+                            backgroundRepeat: 'no-repeat',
+                            backgroundSize: '16px',
+                            backgroundPosition: 'right 8px center',
+                        }}
                     >
                         <option value="">Semua Status</option>
-                        <option value="pending">Menunggu (Pending)</option>
-                        <option value="paid">Lunas (Paid)</option>
+                        <option value="pending">Pending</option>
+                        <option value="paid">Paid</option>
                     </select>
 
-                    <button 
+                    <button
                         onClick={handleBulkPay}
                         disabled={selectedIds.length === 0}
-                        className="bg-green-600 hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition"
+                        className="h-9 px-3 inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-[6px] text-sm font-medium transition"
                     >
-                        <CheckCircle size={16} /> Bayar Terpilih ({selectedIds.length})
+                        <CheckCircle size={14} /> Bayar Terpilih ({selectedIds.length})
                     </button>
 
-                    <button 
+                    <button
                         onClick={handleExport}
                         disabled={exporting}
-                        className="bg-gray-800 hover:bg-black text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition"
+                        className="h-9 px-3 inline-flex items-center gap-1.5 bg-gray-900 hover:bg-gray-800 disabled:opacity-50 text-white rounded-[6px] text-sm font-medium transition"
                     >
-                        {exporting ? <RefreshCw size={16} className="animate-spin" /> : <Download size={16} />}
+                        {exporting ? <RefreshCw size={14} className="animate-spin" /> : <Download size={14} />}
                         Export CSV
                     </button>
                 </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="bg-white border border-gray-200 rounded-[8px] overflow-hidden">
                 {loading ? (
                     <div className="flex items-center justify-center min-h-[300px]">
                         <RefreshCw className="animate-spin text-gray-400" size={32} />

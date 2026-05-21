@@ -5,6 +5,10 @@ import { Eye, Edit2, CheckCircle, XCircle, Search, Clock, Box, Rocket, Download,
 import Swal from 'sweetalert2';
 import { printInvoice, printSuratJalan } from '../../utils/printOrder';
 import CreateOrderModal from '../../components/admin/CreateOrderModal';
+import Button from '../../components/admin/ui/Button';
+import Input from '../../components/admin/ui/Input';
+import Badge from '../../components/admin/ui/Badge';
+import { cn } from '../../lib/utils';
 
 // Status enum values (backend)
 const STATUS_ENUM = {
@@ -17,11 +21,11 @@ const STATUS_ENUM = {
 
 // Display labels in Indonesian
 const STATUS_DISPLAY = {
-    pending_payment: { label: 'Menunggu Pembayaran', color: 'bg-yellow-100 text-yellow-800 border-yellow-200', icon: Clock },
-    processing: { label: 'Pesanan Diproses', color: 'bg-blue-100 text-blue-800 border-blue-200', icon: Box },
-    shipped: { label: 'Dikirim', color: 'bg-purple-100 text-purple-800 border-purple-200', icon: Rocket },
-    completed: { label: 'Selesai', color: 'bg-green-100 text-green-800 border-green-200', icon: CheckCircle },
-    rejected: { label: 'Ditolak', color: 'bg-red-100 text-red-800 border-red-200', icon: XCircle }
+    pending_payment: { label: 'Menunggu Pembayaran', badge: 'warning', icon: Clock },
+    processing: { label: 'Diproses', badge: 'info', icon: Box },
+    shipped: { label: 'Dikirim', badge: 'info', icon: Rocket },
+    completed: { label: 'Selesai', badge: 'success', icon: CheckCircle },
+    rejected: { label: 'Ditolak', badge: 'danger', icon: XCircle }
 };
 
 const ALL_STATUSES = Object.keys(STATUS_ENUM).map(key => STATUS_ENUM[key]);
@@ -263,84 +267,71 @@ export default function Orders() {
     });
 
     return (
-        <div className="p-6">
-            <div className="flex justify-between items-center mb-6">
+        <div className="max-w-7xl">
+            <div className="flex justify-between items-end mb-5">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-800">Orders</h1>
-                    <p className="text-sm text-gray-500">Kelola pesanan dari customer</p>
+                    <h1 className="text-xl font-semibold text-gray-900">Pesanan</h1>
+                    <p className="text-xs text-gray-500 mt-1">Kelola pesanan dari customer</p>
                 </div>
 
-                <div className="flex items-center gap-3">
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                        <input
+                <div className="flex items-center gap-2">
+                    <div className="w-64">
+                        <Input
+                            icon={Search}
                             type="text"
-                            placeholder="Cari ID Pesanan / Nama..."
+                            placeholder="Cari ID / Nama..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm w-64 focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/20 focus:border-[var(--color-accent)] transition-all"
                         />
                     </div>
-                    <button
-                        onClick={() => setCreateOrderModal(true)}
-                        className="bg-[var(--color-accent)] hover:opacity-90 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition"
-                    >
-                        <Plus size={16} />
+                    <Button variant="secondary" icon={Plus} onClick={() => setCreateOrderModal(true)}>
                         Buat Pesanan
-                    </button>
-                    <button
-                        onClick={handleExport}
-                        disabled={exporting}
-                        className="bg-gray-800 hover:bg-black text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition"
-                    >
-                        {exporting ? <RefreshCw size={16} className="animate-spin" /> : <Download size={16} />}
+                    </Button>
+                    <Button variant="primary" icon={exporting ? RefreshCw : Download} onClick={handleExport} disabled={exporting}>
                         Export
-                    </button>
+                    </Button>
                 </div>
             </div>
 
-            {/* Filters */}
-            <div className="bg-white rounded-lg p-4 mb-4 border border-gray-100 space-y-3">
-                <div className="flex gap-3 items-end flex-wrap">
+            {/* Date Filter */}
+            <div className="bg-white border border-gray-200 rounded-[8px] p-3 mb-4">
+                <div className="flex gap-2 items-end flex-wrap">
                     <div>
-                        <label className="text-xs font-semibold text-gray-600">Dari Tanggal</label>
+                        <label className="text-[11px] font-medium text-gray-700 block mb-1">Dari</label>
                         <input
                             type="date"
                             value={dateFrom}
                             onChange={(e) => setDateFrom(e.target.value)}
-                            className="mt-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/20"
+                            className="h-9 px-3 border border-gray-200 rounded-[6px] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--admin-accent)]/30 focus:border-[var(--admin-accent)]"
                         />
                     </div>
                     <div>
-                        <label className="text-xs font-semibold text-gray-600">Sampai Tanggal</label>
+                        <label className="text-[11px] font-medium text-gray-700 block mb-1">Sampai</label>
                         <input
                             type="date"
                             value={dateTo}
                             onChange={(e) => setDateTo(e.target.value)}
-                            className="mt-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/20"
+                            className="h-9 px-3 border border-gray-200 rounded-[6px] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--admin-accent)]/30 focus:border-[var(--admin-accent)]"
                         />
                     </div>
-                    <button
-                        onClick={() => { setDateFrom(''); setDateTo(''); }}
-                        className="px-3 py-2 text-xs font-medium text-gray-600 hover:bg-gray-100 rounded-lg border border-gray-200"
-                    >
-                        Reset Tanggal
-                    </button>
+                    <Button variant="ghost" size="sm" onClick={() => { setDateFrom(''); setDateTo(''); }}>
+                        Reset
+                    </Button>
                 </div>
             </div>
 
             {/* Status Filter Tabs */}
-            <div className="flex gap-2 mb-4 overflow-x-auto pb-1 scrollbar-hide">
+            <div className="flex gap-1.5 mb-4 overflow-x-auto pb-1 scrollbar-hide">
                 <button
                     onClick={() => setStatusFilter('all')}
-                    className={`px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors flex items-center gap-1.5 ${
+                    className={cn('px-2.5 h-8 inline-flex items-center gap-1.5 rounded-[6px] text-xs font-medium whitespace-nowrap transition-colors border',
                         statusFilter === 'all'
-                            ? 'bg-gray-800 text-white'
-                            : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
-                    }`}
+                            ? 'bg-gray-900 text-white border-gray-900'
+                            : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300')}
                 >
                     Semua
-                    <span className={`text-xs px-1.5 py-0.5 rounded-md font-bold ${statusFilter === 'all' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'}`}>
+                    <span className={cn('text-[10px] px-1.5 py-0.5 rounded font-semibold',
+                        statusFilter === 'all' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500')}>
                         {total}
                     </span>
                 </button>
@@ -351,16 +342,16 @@ export default function Orders() {
                         <button
                             key={status}
                             onClick={() => setStatusFilter(status)}
-                            className={`px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors flex items-center gap-1.5 ${
+                            className={cn('px-2.5 h-8 inline-flex items-center gap-1.5 rounded-[6px] text-xs font-medium whitespace-nowrap transition-colors border',
                                 statusFilter === status
-                                    ? 'bg-gray-800 text-white'
-                                    : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
-                            }`}
+                                    ? 'bg-gray-900 text-white border-gray-900'
+                                    : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300')}
                         >
-                            <Icon size={14} />
+                            <Icon size={12} />
                             {display.label}
                             {statusCounts[status] > 0 && (
-                                <span className={`text-xs px-1.5 py-0.5 rounded-md font-bold ${statusFilter === status ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'}`}>
+                                <span className={cn('text-[10px] px-1.5 py-0.5 rounded font-semibold',
+                                    statusFilter === status ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500')}>
                                     {statusCounts[status]}
                                 </span>
                             )}
@@ -369,65 +360,64 @@ export default function Orders() {
                 })}
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden min-h-[400px]">
+            <div className="bg-white border border-gray-200 rounded-[8px] overflow-hidden">
                 {loading ? (
-                    <div className="flex items-center justify-center h-64 text-gray-500">Memuat pesanan...</div>
+                    <div className="flex items-center justify-center h-64 text-sm text-gray-400">Memuat pesanan…</div>
                 ) : filteredOrders.length === 0 ? (
-                    <div className="flex items-center justify-center h-64 text-gray-500">Tidak ada pesanan ditemukan.</div>
+                    <div className="flex items-center justify-center h-64 text-sm text-gray-400">Tidak ada pesanan.</div>
                 ) : (
                     <>
                         <div className="overflow-x-auto">
-                            <table className="w-full text-left">
-                                <thead className="bg-gray-50 text-gray-600 font-medium border-b border-gray-100 text-sm">
+                            <table className="w-full text-sm">
+                                <thead className="bg-gray-50/60 border-b border-gray-200">
                                     <tr>
-                                        <th className="p-4">Tanggal / ID</th>
-                                        <th className="p-4">Customer</th>
-                                        <th className="p-4">Status</th>
-                                        <th className="p-4">Total</th>
-                                        <th className="p-4 text-right">Aksi</th>
+                                        <th className="px-4 py-2.5 text-[11px] font-medium uppercase tracking-wider text-gray-500 text-left">Tanggal / ID</th>
+                                        <th className="px-4 py-2.5 text-[11px] font-medium uppercase tracking-wider text-gray-500 text-left">Customer</th>
+                                        <th className="px-4 py-2.5 text-[11px] font-medium uppercase tracking-wider text-gray-500 text-left">Status</th>
+                                        <th className="px-4 py-2.5 text-[11px] font-medium uppercase tracking-wider text-gray-500 text-right">Total</th>
+                                        <th className="px-4 py-2.5 text-[11px] font-medium uppercase tracking-wider text-gray-500 text-right">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-100">
                                     {filteredOrders.map((order) => {
-                                        const dateStr = order.created_at ? new Date(order.created_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Tanggal tidak tersedia';
+                                        const dateStr = order.created_at ? new Date(order.created_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—';
                                         const orderId = order.order_number || order.id;
                                         const customer = order.customer_info || order.customer || {};
                                         const display = STATUS_DISPLAY[order.status];
 
                                         return (
-                                            <tr key={order.id} className="hover:bg-gray-50 transition-colors">
-                                                <td className="p-4">
-                                                    <div className="text-xs text-gray-400 mb-1">{dateStr}</div>
-                                                    <div className="text-sm font-medium text-gray-900">#{String(orderId).slice(-6).toUpperCase()}</div>
+                                            <tr key={order.id} className="hover:bg-gray-50/60 transition-colors">
+                                                <td className="px-4 py-2.5">
+                                                    <div className="text-[11px] text-gray-400">{dateStr}</div>
+                                                    <div className="text-sm font-mono text-gray-900">#{String(orderId).slice(-6).toUpperCase()}</div>
                                                 </td>
-                                                <td className="p-4">
+                                                <td className="px-4 py-2.5">
                                                     <div className="text-sm font-medium text-gray-900">{customer.name}</div>
                                                     <div className="text-xs text-gray-500">{customer.city}</div>
                                                 </td>
-                                                <td className="p-4">
-                                                    <span className={`px-3 py-1 rounded-full text-xs font-medium border flex items-center w-max ${display.color}`}>
-                                                        <display.icon size={14} className="mr-1" />
-                                                        {display.label}
-                                                    </span>
+                                                <td className="px-4 py-2.5">
+                                                    <Badge color={display?.badge || 'gray'} dot>
+                                                        {display?.label || order.status}
+                                                    </Badge>
                                                 </td>
-                                                <td className="p-4 text-sm font-bold text-gray-900">
-                                                    Rp. {Number(order.total || 0).toLocaleString('id-ID')}
+                                                <td className="px-4 py-2.5 text-right font-medium text-gray-900 tabular-nums">
+                                                    Rp{Number(order.total || 0).toLocaleString('id-ID')}
                                                 </td>
-                                                <td className="p-4 text-right">
-                                                    <div className="flex items-center justify-end gap-1">
+                                                <td className="px-4 py-2.5">
+                                                    <div className="flex items-center justify-end gap-0.5">
                                                         <button
                                                             onClick={() => openOrderDetails(order)}
-                                                            className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                                            title="Lihat Detail Pesanan"
+                                                            className="w-7 h-7 inline-flex items-center justify-center rounded-md text-gray-400 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+                                                            title="Detail"
                                                         >
-                                                            <Eye size={18} />
+                                                            <Eye size={14} />
                                                         </button>
                                                         <button
                                                             onClick={() => printInvoice(order)}
-                                                            className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                                                            className="w-7 h-7 inline-flex items-center justify-center rounded-md text-gray-400 hover:text-gray-900 hover:bg-gray-100 transition-colors"
                                                             title="Cetak Faktur"
                                                         >
-                                                            <Printer size={18} />
+                                                            <Printer size={14} />
                                                         </button>
                                                     </div>
                                                 </td>

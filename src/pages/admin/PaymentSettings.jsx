@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { adminSettingsApi } from '../../api/settingsApi';
 import { Save, Building2, CreditCard, User } from 'lucide-react';
 import Swal from 'sweetalert2';
+import Button from '../../components/admin/ui/Button';
+import Input from '../../components/admin/ui/Input';
+import Card from '../../components/admin/ui/Card';
 
 export default function PaymentSettings() {
     const [config, setConfig] = useState({
@@ -75,71 +78,48 @@ export default function PaymentSettings() {
     };
 
     if (loading) {
-        return <div className="p-6 text-gray-500">Memuat pengaturan...</div>;
+        return <div className="text-sm text-gray-400">Memuat pengaturan…</div>;
     }
 
     return (
-        <div className="p-6 max-w-2xl mx-auto">
-            <div className="flex justify-between items-center mb-6">
+        <div className="max-w-2xl">
+            <div className="flex justify-between items-end mb-5">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-800">Payment Settings</h1>
-                    <p className="text-sm text-gray-500">Atur rekening bank tujuan transfer pembayaran customer</p>
+                    <h1 className="text-xl font-semibold text-gray-900">Rekening Pembayaran</h1>
+                    <p className="text-xs text-gray-500 mt-1">Rekening bank tujuan transfer customer</p>
                 </div>
-                <button
-                    onClick={handleSave}
-                    disabled={saving}
-                    className="bg-[#047857] text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-[#065F46] transition-colors disabled:opacity-50"
-                >
-                    <Save size={20} />
-                    {saving ? 'Loading...' : 'Save Settings'}
-                </button>
+                <Button variant="primary" icon={Save} onClick={handleSave} loading={saving}>
+                    {saving ? 'Menyimpan…' : 'Simpan'}
+                </Button>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-6">
-
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                        <Building2 size={16} /> Nama Bank
-                    </label>
-                    <input
-                        type="text"
-                        name="bankName"
-                        value={config.bankName}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/20 focus:border-[var(--color-accent)] transition-all uppercase"
-                        placeholder="Contoh: BCA, BNI, MANDIRI"
-                    />
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                        <CreditCard size={16} /> Nomor Rekening
-                    </label>
-                    <input
-                        type="text"
-                        name="accountNumber"
-                        value={config.accountNumber}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/20 focus:border-[var(--color-accent)] transition-all font-mono tracking-wider"
-                        placeholder="Contoh: 888888888"
-                    />
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                        <User size={16} /> Nama Pemilik Rekening (A/N)
-                    </label>
-                    <input
-                        type="text"
-                        name="accountName"
-                        value={config.accountName}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/20 focus:border-[var(--color-accent)] transition-all uppercase"
-                        placeholder="Contoh: PT BBK"
-                    />
-                </div>
-
-            </div>
+            <Card className="space-y-5">
+                <Input
+                    icon={Building2}
+                    label="Nama Bank"
+                    name="bankName"
+                    value={config.bankName}
+                    onChange={handleInputChange}
+                    placeholder="BCA, BNI, MANDIRI"
+                />
+                <Input
+                    icon={CreditCard}
+                    label="Nomor Rekening"
+                    name="accountNumber"
+                    value={config.accountNumber}
+                    onChange={handleInputChange}
+                    placeholder="888888888"
+                    className="font-mono tracking-wider"
+                />
+                <Input
+                    icon={User}
+                    label="Nama Pemilik Rekening (A/N)"
+                    name="accountName"
+                    value={config.accountName}
+                    onChange={handleInputChange}
+                    placeholder="PT BBK"
+                />
+            </Card>
         </div>
     );
 }

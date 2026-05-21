@@ -6,6 +6,7 @@ import {
     List, GitBranch, ChevronRight, ChevronDown, ExternalLink,
 } from 'lucide-react';
 import Swal from 'sweetalert2';
+import Input from '../../components/admin/ui/Input';
 
 // ── Network tree helpers ──────────────────────────────────────────────────────
 
@@ -176,20 +177,20 @@ export default function Users() {
 
     const getRoleBadge = (user) => {
         if (user.role === 'admin') return (
-            <span className="px-3 py-1 rounded-full text-xs font-medium border bg-red-100 text-red-800 border-red-200 flex items-center w-max gap-1">
-                <Shield size={14} /> Admin
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-medium rounded-md ring-1 ring-inset bg-red-50 text-red-700 ring-red-200">
+                <Shield size={11} /> Admin
             </span>
         );
         return (
-            <span className="px-3 py-1 rounded-full text-xs font-medium border bg-blue-100 text-blue-800 border-blue-200 flex items-center w-max gap-1">
-                <Crown size={14} /> Distributor
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-medium rounded-md ring-1 ring-inset bg-[var(--admin-accent-soft)] text-[var(--admin-accent-hover)] ring-[var(--admin-accent)]/20">
+                <Crown size={11} /> Starcenter
             </span>
         );
     };
 
     const getStatusBadge = (status) => status === 'inactive'
-        ? <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-red-100 text-red-600">Inactive</span>
-        : <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-green-100 text-green-700">Aktif</span>;
+        ? <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-medium rounded-md ring-1 ring-inset bg-gray-100 text-gray-600 ring-gray-200">Inactive</span>
+        : <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-medium rounded-md ring-1 ring-inset bg-emerald-50 text-emerald-700 ring-emerald-200"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />Aktif</span>;
 
     const filteredUsers = users.filter(u =>
         u.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -200,43 +201,42 @@ export default function Users() {
     const counts = networkData?.counts;
 
     return (
-        <div className="p-6">
+        <div className="max-w-7xl">
             {/* Header */}
-            <div className="flex flex-wrap justify-between items-start gap-4 mb-6">
+            <div className="flex flex-wrap justify-between items-end gap-4 mb-5">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-800">Manajemen Pengguna</h1>
-                    <p className="text-sm text-gray-500">Kelola akun dan role distributor</p>
+                    <h1 className="text-xl font-semibold text-gray-900">Pengguna</h1>
+                    <p className="text-xs text-gray-500 mt-1">Kelola akun dan role distributor</p>
                 </div>
 
-                <div className="flex items-center gap-3 flex-wrap">
-                    {/* View toggle */}
-                    <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                <div className="flex items-center gap-2 flex-wrap">
+                    <div className="flex border border-gray-200 rounded-[6px] p-0.5 bg-white">
                         <button
                             onClick={() => handleSwitchView('table')}
-                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition
-                                ${viewMode === 'table' ? 'bg-white shadow text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
+                            className={`inline-flex items-center gap-1 px-2 h-7 rounded text-xs font-medium transition-colors ${
+                                viewMode === 'table' ? 'bg-gray-100 text-gray-900' : 'text-gray-400 hover:text-gray-700'
+                            }`}
                         >
-                            <List size={13} /> Table
+                            <List size={12} /> Table
                         </button>
                         <button
                             onClick={() => handleSwitchView('network')}
-                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition
-                                ${viewMode === 'network' ? 'bg-white shadow text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
+                            className={`inline-flex items-center gap-1 px-2 h-7 rounded text-xs font-medium transition-colors ${
+                                viewMode === 'network' ? 'bg-gray-100 text-gray-900' : 'text-gray-400 hover:text-gray-700'
+                            }`}
                         >
-                            <GitBranch size={13} /> Jaringan
+                            <GitBranch size={12} /> Jaringan
                         </button>
                     </div>
 
-                    {/* Search — only in table mode */}
                     {viewMode === 'table' && (
-                        <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                            <input
+                        <div className="w-64">
+                            <Input
+                                icon={Search}
                                 type="text"
                                 placeholder="Cari Nama / Email..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm w-64 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)] transition-all"
                             />
                         </div>
                     )}
@@ -245,57 +245,57 @@ export default function Users() {
 
             {/* ── TABLE VIEW ── */}
             {viewMode === 'table' && (
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden min-h-[400px]">
+                <div className="bg-white border border-gray-200 rounded-[8px] overflow-hidden">
                     {loading ? (
-                        <div className="flex items-center justify-center h-64 text-gray-500">Memuat data pengguna...</div>
+                        <div className="flex items-center justify-center h-64 text-sm text-gray-400">Memuat data pengguna…</div>
                     ) : filteredUsers.length === 0 ? (
-                        <div className="flex items-center justify-center h-64 text-gray-500">Tidak ada pengguna ditemukan.</div>
+                        <div className="flex items-center justify-center h-64 text-sm text-gray-400">Tidak ada pengguna.</div>
                     ) : (
                         <div className="overflow-x-auto">
-                            <table className="w-full text-left">
-                                <thead className="bg-gray-50 text-gray-600 font-medium border-b border-gray-100 text-sm">
+                            <table className="w-full text-sm">
+                                <thead className="bg-gray-50/60 border-b border-gray-200">
                                     <tr>
-                                        <th className="p-4">Nama Lengkap</th>
-                                        <th className="p-4">Email</th>
-                                        <th className="p-4">Tanggal Daftar</th>
-                                        <th className="p-4">Tipe User & Status</th>
-                                        <th className="p-4">Total Spending</th>
-                                        <th className="p-4 text-right">Aksi</th>
+                                        <th className="px-4 py-2.5 text-[11px] font-medium uppercase tracking-wider text-gray-500 text-left">Nama</th>
+                                        <th className="px-4 py-2.5 text-[11px] font-medium uppercase tracking-wider text-gray-500 text-left">Email</th>
+                                        <th className="px-4 py-2.5 text-[11px] font-medium uppercase tracking-wider text-gray-500 text-left">Tanggal Daftar</th>
+                                        <th className="px-4 py-2.5 text-[11px] font-medium uppercase tracking-wider text-gray-500 text-left">Role / Status</th>
+                                        <th className="px-4 py-2.5 text-[11px] font-medium uppercase tracking-wider text-gray-500 text-right">Total Spending</th>
+                                        <th className="px-4 py-2.5 text-[11px] font-medium uppercase tracking-wider text-gray-500 text-right">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-100">
                                     {filteredUsers.map((user) => {
                                         const dateStr = user.created_at
                                             ? new Date(user.created_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' })
-                                            : '-';
+                                            : '—';
                                         return (
-                                            <tr key={user.id} className="hover:bg-gray-50 transition-colors">
-                                                <td className="p-4 text-sm font-medium text-gray-900">{user.name || '-'}</td>
-                                                <td className="p-4 text-sm text-gray-600">{user.email}</td>
-                                                <td className="p-4 text-sm text-gray-500">{dateStr}</td>
-                                                <td className="p-4">
-                                                    <div className="flex flex-col gap-2 items-start">
+                                            <tr key={user.id} className="hover:bg-gray-50/60 transition-colors">
+                                                <td className="px-4 py-2.5 font-medium text-gray-900">{user.name || '—'}</td>
+                                                <td className="px-4 py-2.5 text-gray-600">{user.email}</td>
+                                                <td className="px-4 py-2.5 text-gray-500">{dateStr}</td>
+                                                <td className="px-4 py-2.5">
+                                                    <div className="flex gap-1.5 items-center flex-wrap">
                                                         {getRoleBadge(user)}
                                                         {user.role !== 'admin' && getStatusBadge(user.status)}
                                                     </div>
                                                 </td>
-                                                <td className="p-4 text-sm font-bold text-gray-900">
-                                                    Rp {Number(user.cumulative_spending || user.cumulativeSpending || 0).toLocaleString('id-ID')}
+                                                <td className="px-4 py-2.5 text-right font-medium text-gray-900 tabular-nums">
+                                                    Rp{Number(user.cumulative_spending || user.cumulativeSpending || 0).toLocaleString('id-ID')}
                                                 </td>
-                                                <td className="p-4 text-right">
-                                                    <div className="flex items-center justify-end gap-2">
+                                                <td className="px-4 py-2.5 text-right">
+                                                    <div className="flex items-center justify-end gap-0.5">
                                                         <button
                                                             onClick={() => navigate(`/admin/users/${user.id}`)}
-                                                            className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                                            title="Detail User"
+                                                            className="w-7 h-7 inline-flex items-center justify-center rounded-md text-gray-400 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+                                                            title="Detail"
                                                         >
-                                                            <Eye size={18} />
+                                                            <Eye size={14} />
                                                         </button>
                                                         {user.role !== 'admin' && (
                                                             <button
                                                                 onClick={() => handleDeleteUser(user)}
-                                                                className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                                                title="Hapus User"
+                                                                className="w-7 h-7 inline-flex items-center justify-center rounded-md text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                                                                title="Hapus"
                                                             >
                                                                 <Trash2 size={18} />
                                                             </button>

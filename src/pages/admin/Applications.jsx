@@ -305,34 +305,30 @@ export default function Applications() {
     const pendingCount = apps.filter(a => a.status === 'pending').length;
 
     return (
-        <div>
+        <div className="max-w-7xl">
             {/* Header */}
-            <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-                        <Building2 size={20} className="text-primary" />
-                    </div>
-                    <div>
-                        <h1 className="text-xl font-bold text-gray-900">Pengajuan Center</h1>
-                        <p className="text-sm text-gray-500">Review dan approval pendaftaran starcenter</p>
-                    </div>
+            <div className="flex items-end justify-between mb-5">
+                <div>
+                    <h1 className="text-xl font-semibold text-gray-900">Pengajuan Center</h1>
+                    <p className="text-xs text-gray-500 mt-1">Review dan approval pendaftaran starcenter</p>
                 </div>
                 {pendingCount > 0 && statusFilter !== 'pending' && (
-                    <span className="bg-amber-100 text-amber-700 text-xs font-bold px-3 py-1.5 rounded-full">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-medium rounded-md ring-1 ring-inset bg-amber-50 text-amber-700 ring-amber-200">
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
                         {pendingCount} menunggu
                     </span>
                 )}
             </div>
 
             {/* Status tabs */}
-            <div className="flex gap-1 bg-gray-100 p-1 rounded-xl w-fit mb-6">
+            <div className="flex gap-1 mb-4 border border-gray-200 rounded-[6px] p-0.5 bg-white w-fit">
                 {STATUS_TAB.map(tab => (
                     <button
                         key={tab.key}
                         onClick={() => { setStatusFilter(tab.key); setPage(1); }}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                        className={`px-2.5 h-7 inline-flex items-center rounded text-xs font-medium transition-colors ${
                             statusFilter === tab.key
-                                ? 'bg-white text-gray-900 shadow-sm'
+                                ? 'bg-gray-100 text-gray-900'
                                 : 'text-gray-500 hover:text-gray-700'
                         }`}
                     >
@@ -342,7 +338,7 @@ export default function Applications() {
             </div>
 
             {/* Table */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="bg-white border border-gray-200 rounded-[8px] overflow-hidden">
                 {loading ? (
                     <div className="flex items-center justify-center py-20">
                         <Loader2 size={28} className="animate-spin text-gray-300" />

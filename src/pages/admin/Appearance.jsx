@@ -273,23 +273,28 @@ export default function AdminAppearance() {
         }
     };
 
-    if (loading) return <div className="text-gray-500">Loading settings...</div>;
+    if (loading) return <div className="text-sm text-gray-400">Memuat pengaturan…</div>;
 
     return (
-        <div>
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
+        <div className="max-w-6xl">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-3 mb-5">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-800">Concept Appearance</h1>
-                    <p className="text-gray-500 mt-1">Sesuaikan tampilan halaman depan website Anda.</p>
+                    <h1 className="text-xl font-semibold text-gray-900">Tampilan Web</h1>
+                    <p className="text-xs text-gray-500 mt-1">Sesuaikan branding, hero, dan section homepage</p>
                 </div>
                 <button
                     onClick={handleSave}
                     disabled={saving}
-                    className="flex items-center justify-center gap-2 bg-[#111827] hover:bg-black text-white px-6 py-2.5 rounded-lg font-medium transition-all disabled:opacity-50 shadow-sm shrink-0"
+                    className="h-9 px-3 inline-flex items-center justify-center gap-1.5 bg-gray-900 hover:bg-gray-800 text-white rounded-[6px] text-sm font-medium transition disabled:opacity-50"
                 >
-                    <Save size={18} />
-                    {saving ? 'Menyimpan...' : 'Simpan Perubahan'}
+                    <Save size={14} />
+                    {saving ? 'Menyimpan…' : 'Simpan Perubahan'}
                 </button>
+            </div>
+
+            <div className="mb-4 px-3 py-2 bg-[var(--admin-accent-soft)] border border-[var(--admin-accent)]/20 text-[var(--admin-accent-hover)] text-xs rounded-[6px]">
+                Upload media di halaman ini pakai driver default server (atur via <code className="font-mono bg-white/60 px-1 rounded">MEDIA_DEFAULT_DRIVER</code> di <code className="font-mono bg-white/60 px-1 rounded">.env</code>).
+                Untuk upload ke Cloudinary, set <code className="font-mono bg-white/60 px-1 rounded">MEDIA_DEFAULT_DRIVER=cloudinary</code>.
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

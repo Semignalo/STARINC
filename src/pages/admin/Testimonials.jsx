@@ -174,17 +174,17 @@ export default function AdminTestimonials() {
     };
 
     return (
-        <div>
-            <div className="flex items-center justify-between mb-6">
+        <div className="max-w-4xl">
+            <div className="flex items-end justify-between mb-5">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Testimoni</h1>
-                    <p className="text-sm text-gray-500 mt-1">Kelola ulasan pelanggan yang tampil di homepage.</p>
+                    <h1 className="text-xl font-semibold text-gray-900">Testimoni</h1>
+                    <p className="text-xs text-gray-500 mt-1">Ulasan pelanggan yang tampil di homepage</p>
                 </div>
                 <button
                     onClick={() => setModal('add')}
-                    className="flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                    className="h-8 px-3 inline-flex items-center gap-1.5 bg-gray-900 hover:bg-gray-800 text-white rounded-[6px] text-sm font-medium transition"
                 >
-                    <Plus size={16} /> Tambah
+                    <Plus size={14} /> Tambah
                 </button>
             </div>
 
