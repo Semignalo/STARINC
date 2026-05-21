@@ -62,6 +62,59 @@
 }
 
 /* =====================================================
+   ADMIN — Design tokens (Linear/Notion-style monochrome)
+   Diaktifkan di dalam .admin-shell scope
+   ===================================================== */
+.admin-shell {
+  --admin-bg:           #FAFAFA;
+  --admin-surface:      #FFFFFF;
+  --admin-sidebar-bg:   #FFFFFF;
+  --admin-border:       #E5E7EB;
+  --admin-border-hover: #D1D5DB;
+
+  --admin-text:         #111827;
+  --admin-text-muted:   #6B7280;
+  --admin-text-subtle:  #9CA3AF;
+  --admin-text-on-dark: #F9FAFB;
+
+  --admin-accent:       #C5A059;
+  --admin-accent-hover: #B08F46;
+  --admin-accent-soft:  #FAF6EB;
+
+  --admin-success:      #059669;
+  --admin-warning:      #D97706;
+  --admin-danger:       #DC2626;
+  --admin-info:         #2563EB;
+
+  --admin-radius:       6px;
+  --admin-radius-sm:    4px;
+  --admin-radius-lg:    8px;
+
+  --admin-shadow-sm:    0 1px 2px 0 rgb(0 0 0 / 0.04);
+  --admin-shadow:       0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.04);
+
+  --admin-font-size:    14px;
+
+  background: var(--admin-bg);
+  color: var(--admin-text);
+  font-size: var(--admin-font-size);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-feature-settings: 'cv11', 'ss01';
+  -webkit-font-smoothing: antialiased;
+}
+
+.admin-shell h1,
+.admin-shell h2,
+.admin-shell h3,
+.admin-shell h4,
+.admin-shell h5,
+.admin-shell h6 {
+  font-family: 'Inter', system-ui, sans-serif;
+  letter-spacing: -0.01em;
+  color: var(--admin-text);
+}
+
+/* =====================================================
    FOCUS INDICATORS — WCAG 2.1 AA Compliant
    Visible focus ring untuk semua interactive elements
    ===================================================== */
