@@ -49,14 +49,49 @@ export default defineConfig({
     host: true
   },
   build: {
+    target: 'es2020',
+    cssCodeSplit: true,
+    sourcemap: false,
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          charts: ['recharts'],
-          ui: ['sweetalert2'],
-        }
-      }
-    }
+        manualChunks: (id) => {
+          // React core — wajib di semua route, separate dari vendor lain biar cache stabil
+          if (id.includes('node_modules/react/') ||
+              id.includes('node_modules/react-dom/') ||
+              id.includes('node_modules/scheduler/')) {
+            return 'react-core';
+          }
+          if (id.includes('node_modules/react-router')) {
+            return 'router';
+          }
+          // Charts — hanya di admin dashboard
+          if (id.includes('node_modules/recharts') || id.includes('node_modules/d3-')) {
+            return 'charts';
+          }
+          // PDF viewer — hanya di product detail bila ada PDF
+          if (id.includes('node_modules/react-pdf') || id.includes('node_modules/pdfjs-dist')) {
+            return 'pdf';
+          }
+          // OCR — hanya di DaftarCenter (sudah dynamic import)
+          if (id.includes('node_modules/tesseract')) {
+            return 'ocr';
+          }
+          // UI utilities
+          if (id.includes('node_modules/sweetalert2')) {
+            return 'ui';
+          }
+          // Icons — di-share lintas route
+          if (id.includes('node_modules/lucide-react')) {
+            return 'icons';
+          }
+          // Axios + utility kecil — bundle ke vendor umum
+          if (id.includes('node_modules/axios') ||
+              id.includes('node_modules/clsx') ||
+              id.includes('node_modules/tailwind-merge')) {
+            return 'vendor';
+          }
+        },
+      },
+    },
   }
 })
