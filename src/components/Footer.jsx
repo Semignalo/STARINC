@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Instagram, Facebook, Youtube, MessageCircle } from 'lucide-react';
+import { Instagram, Facebook, Youtube, MessageCircle, ShoppingBag } from 'lucide-react';
 import { useAppearance } from '../contexts/AppearanceContext';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -29,6 +29,7 @@ const SOCIAL = [
 ];
 
 const MARKETPLACE = [
+    { label: 'SDP',       icon: ShoppingBag,   href: '#' },
     { label: 'Shopee',    icon: ShopeeIcon,    href: 'https://shopee.co.id/STARINCOFFICIAL' },
     { label: 'Tokopedia', icon: TokopediaIcon, href: 'https://tokopedia.com/search?q=starinc+official+store' },
 ];
@@ -52,6 +53,11 @@ export default function Footer() {
                             {isId
                                 ? 'Kecantikan holistik dari luar & dalam.    Dibuat untuk Indonesia.'
                                 : 'Holistic beauty, inside & out.    Made for Indonesia.'}
+                        </p>
+                        <p className="text-white/30 text-[10px] leading-relaxed text-center md:text-left max-w-[210px]">
+                            {isId
+                                ? 'Pembelian retail melalui marketplace SDP. Akses pembelian langsung khusus untuk member Starcenter.'
+                                : 'Retail purchases via SDP marketplace. Direct purchasing reserved for Starcenter members.'}
                         </p>
                     </div>
 

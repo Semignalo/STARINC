@@ -59,6 +59,24 @@ export default function Checkout() {
 
     if (authLoading) return <div className="min-h-screen pt-24 text-center text-gray-500">Memuat...</div>;
     if (!userData) return <Navigate to="/login" state={{ from: location }} replace />;
+    if (userData.role !== 'starcenter' && userData.role !== 'admin') {
+        return (
+            <div className="min-h-screen pt-24 px-4 max-w-md mx-auto text-center">
+                <h2 className="text-2xl font-serif text-gray-900 mb-3">Pembelian khusus Starcenter</h2>
+                <p className="text-sm text-gray-600 mb-6">
+                    Checkout di STARINC hanya untuk akun Starcenter. Untuk pembelian retail, kunjungi marketplace SDP.
+                </p>
+                <a
+                    href="#"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block px-6 py-3 bg-[var(--color-accent)] text-white font-semibold text-sm rounded-md hover:opacity-90"
+                >
+                    Beli di SDP
+                </a>
+            </div>
+        );
+    }
 
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({

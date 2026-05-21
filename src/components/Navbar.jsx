@@ -173,15 +173,17 @@ export default function Navbar() {
                                 </Link>
                             )}
 
-                            <button
-                                onClick={openCart}
-                                className="min-w-[36px] min-h-[36px] flex items-center justify-center hover:bg-gray-50 rounded-full transition-colors relative active:scale-95"
-                            >
-                                <ShoppingBag size={20} strokeWidth={1.5} className="text-gray-900" />
-                                <span className="absolute top-0 right-0 bg-[var(--color-accent)] text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-bold">
-                                    {getCartCount()}
-                                </span>
-                            </button>
+                            {(userRole === 'starcenter' || userRole === 'admin') && (
+                                <button
+                                    onClick={openCart}
+                                    className="min-w-[36px] min-h-[36px] flex items-center justify-center hover:bg-gray-50 rounded-full transition-colors relative active:scale-95"
+                                >
+                                    <ShoppingBag size={20} strokeWidth={1.5} className="text-gray-900" />
+                                    <span className="absolute top-0 right-0 bg-[var(--color-accent)] text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-bold">
+                                        {getCartCount()}
+                                    </span>
+                                </button>
+                            )}
 
                         </div>
                     </div>

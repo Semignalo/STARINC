@@ -4,18 +4,23 @@ import { productApi } from '../api/productApi';
 import { testimonialsApi } from '../api/settingsApi';
 import { Star, Truck, ShieldCheck, Leaf, FileText, ChevronLeft, ChevronRight, Quote } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
+import { useAuth } from '../contexts/AuthContext';
+import SdpRedirectModal from '../components/SdpRedirectModal';
 
 const PdfViewer = lazy(() => import('../components/PdfViewer'));
 
 export default function ProductDetail() {
     const { id } = useParams();
     const { addToCart } = useCart();
+    const { currentUser, userRole } = useAuth();
+    const canCheckout = userRole === 'starcenter' || userRole === 'admin';
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [mainImage, setMainImage] = useState(null);
     const [selectedVariant, setSelectedVariant] = useState(null);
     const [testimonials, setTestimonials] = useState([]);
     const [testimIdx, setTestimIdx] = useState(0);
+    const [sdpModalOpen, setSdpModalOpen] = useState(false);
 
     const isOutOfStock = product
         ? selectedVariant
@@ -63,6 +68,12 @@ export default function ProductDetail() {
     }
 
     return (
+        <>
+        <SdpRedirectModal
+            open={sdpModalOpen}
+            onClose={() => setSdpModalOpen(false)}
+            isLoggedIn={!!currentUser}
+        />
         <div className="container mx-auto px-4 py-8 md:py-12">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
 
@@ -202,6 +213,10 @@ export default function ProductDetail() {
                         <button
                             onClick={() => {
                                 if (isOutOfStock) return;
+                                if (!canCheckout) {
+                                    setSdpModalOpen(true);
+                                    return;
+                                }
                                 const productToAdd = {
                                     ...product,
                                     cartItemId: selectedVariant ? `${product.id}-${selectedVariant.id}` : product.id,
@@ -218,8 +233,17 @@ export default function ProductDetail() {
                                     : 'border-black text-black hover:bg-black hover:text-white'
                             }`}
                         >
-                            {isOutOfStock ? 'Stok Habis' : 'Add to Cart'}
+                            {isOutOfStock
+                                ? 'Stok Habis'
+                                : canCheckout
+                                    ? 'Add to Cart'
+                                    : 'Beli Sekarang'}
                         </button>
+                        {!canCheckout && !isOutOfStock && (
+                            <p className="text-xs text-gray-500 text-center -mt-1">
+                                Pembelian dilayani via marketplace SDP
+                            </p>
+                        )}
                     </div>
 
                     {/* Trust Badges */}
@@ -321,5 +345,6 @@ export default function ProductDetail() {
                 </div>
             )}
         </div>
+        </>
     );
 }
