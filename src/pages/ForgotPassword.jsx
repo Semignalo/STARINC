@@ -14,60 +14,43 @@ export default function ForgotPassword() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-
         try {
             await authApi.forgotPassword(email);
             setSubmitted(true);
-            Swal.fire({
-                icon: 'success',
-                title: 'Email Terkirim',
-                text: 'Silakan periksa email Anda untuk link reset password',
-                timer: 2000,
-                showConfirmButton: false
-            });
+            Swal.fire({ icon: 'success', title: 'Email Terkirim', text: 'Periksa email Anda untuk link reset password', timer: 2000, showConfirmButton: false });
         } catch (error) {
-            console.error(error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: getErrorMessage(error)
-            });
+            Swal.fire({ icon: 'error', title: 'Oops...', text: getErrorMessage(error) });
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen bg-neutral-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden transform transition-all">
-                {/* Header */}
-                <div className="bg-primary text-white p-8 text-center">
-                    <h2 className="text-3xl font-bold mb-2">Reset Password</h2>
-                    <p className="text-emerald-100/80 text-sm">
-                        Masukkan email Anda untuk menerima link reset password
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 py-12">
+            <div className="w-full max-w-md">
+                <div className="text-center mb-8">
+                    <p className="text-[10px] uppercase tracking-[0.3em] text-gray-400 mb-3">Account Recovery</p>
+                    <h1 className="text-3xl font-medium text-gray-900 tracking-tight mb-2">Reset Password</h1>
+                    <p className="text-sm text-gray-500">
+                        Masukkan email untuk menerima link reset password
                     </p>
                 </div>
 
-                {/* Form Section */}
-                <div className="p-8">
+                <div className="bg-white border border-gray-200 p-7">
                     {!submitted ? (
-                        <form onSubmit={handleSubmit} className="space-y-5">
+                        <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-neutral-700 mb-1">
-                                    Email Address
-                                </label>
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">Email Address</label>
                                 <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <Mail className="h-5 w-5 text-neutral-400" />
-                                    </div>
+                                    <Mail className="h-4 w-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                                     <input
                                         type="email"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         required
-                                        className="pl-10 w-full rounded-xl border-neutral-300 bg-neutral-50 p-3 text-base focus:ring-primary focus:border-primary border transition"
                                         autoComplete="email"
                                         placeholder="kamu@email.com"
+                                        className="w-full h-11 pl-9 pr-3 bg-white border border-gray-200 text-sm placeholder:text-gray-400 focus:ring-1 focus:ring-gray-900 focus:border-gray-900 outline-none transition-colors"
                                     />
                                 </div>
                             </div>
@@ -75,43 +58,38 @@ export default function ForgotPassword() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full bg-primary hover:bg-primary/90 text-white p-3 rounded-xl font-medium transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full h-11 bg-gray-900 hover:bg-gray-800 disabled:bg-gray-300 text-white text-xs uppercase tracking-[0.2em] transition-colors"
                             >
-                                {loading ? (
-                                    <span className="animate-pulse">Mengirim...</span>
-                                ) : (
-                                    'Kirim Link Reset'
-                                )}
+                                {loading ? 'Mengirim…' : 'Kirim Link Reset'}
                             </button>
                         </form>
                     ) : (
                         <div className="text-center py-4">
-                            <div className="flex justify-center mb-4">
-                                <div className="bg-green-100 p-4 rounded-full">
-                                    <CheckCircle className="h-8 w-8 text-green-600" />
+                            <div className="flex justify-center mb-5">
+                                <div className="w-12 h-12 border border-gray-200 rounded-full flex items-center justify-center">
+                                    <CheckCircle className="h-5 w-5 text-gray-900" />
                                 </div>
                             </div>
-                            <h3 className="text-lg font-semibold text-neutral-800 mb-2">Email Terkirim!</h3>
-                            <p className="text-sm text-neutral-600 mb-4">
-                                Silakan periksa email Anda untuk tautan reset password. Link berlaku selama 1 jam.
+                            <h3 className="text-base font-medium text-gray-900 mb-2">Email Terkirim</h3>
+                            <p className="text-sm text-gray-600 mb-4">
+                                Periksa email Anda untuk tautan reset password. Link berlaku 1 jam.
                             </p>
-                            <p className="text-xs text-neutral-500 mb-4">
-                                Email dikirim ke: <span className="font-medium">{email}</span>
+                            <p className="text-xs text-gray-500">
+                                Dikirim ke: <span className="font-medium text-gray-900">{email}</span>
                             </p>
                         </div>
                     )}
+                </div>
 
-                    {/* Back to Login Link */}
-                    <div className="mt-6 text-center">
-                        <button
-                            type="button"
-                            onClick={() => navigate('/login')}
-                            className="inline-flex items-center gap-2 text-primary hover:underline font-medium text-sm"
-                        >
-                            <ArrowLeft size={18} />
-                            Kembali ke Login
-                        </button>
-                    </div>
+                <div className="mt-6 text-center">
+                    <button
+                        type="button"
+                        onClick={() => navigate('/login')}
+                        className="inline-flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-900 transition-colors"
+                    >
+                        <ArrowLeft size={12} />
+                        Kembali ke Login
+                    </button>
                 </div>
             </div>
         </div>
