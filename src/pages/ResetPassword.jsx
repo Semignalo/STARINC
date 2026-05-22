@@ -132,7 +132,7 @@ export default function ResetPassword() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full h-11 bg-gray-900 hover:bg-gray-800 disabled:bg-gray-300 text-white text-xs uppercase tracking-[0.2em] transition-colors"
+                                className="w-full h-11 btn-primary text-xs uppercase tracking-[0.2em]"
                             >
                                 {loading ? 'Mereset…' : 'Reset Password'}
                             </button>

@@ -9,15 +9,40 @@
 
   /* Soft Gold Accent Palette */
   --color-accent: #C5A059;
-  /* Soft Gold / Champagne */
   --color-accent-light: #E5D1A3;
   --color-accent-dark: #997B3D;
   --color-accent-foreground: #FFFFFF;
+
+  /* Dark Navy Palette — untuk button primary, footer, dark sections */
+  --color-navy: #0F172A;
+  --color-navy-deep: #020617;
+  --color-navy-soft: #1E293B;
 
   --color-sale: #E53E3E;
 
   --color-muted: #F9FAFB;
   --color-muted-foreground: #6B7280;
+}
+
+@layer components {
+  /* Primary CTA button — dark navy gradient + gold underline accent */
+  .btn-primary {
+    background-image: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+    color: #ffffff;
+    border-bottom: 2px solid #C5A059;
+    transition: all 200ms ease;
+  }
+  .btn-primary:hover:not(:disabled) {
+    background-image: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
+    border-bottom-color: #E5D1A3;
+  }
+  .btn-primary:disabled {
+    background-image: none;
+    background-color: #E5E7EB;
+    color: #9CA3AF;
+    border-bottom-color: transparent;
+    cursor: not-allowed;
+  }
 }
 
 @layer base {

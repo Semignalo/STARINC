@@ -40,7 +40,10 @@ export default function Footer() {
     const isId = lang === 'id';
 
     return (
-        <footer className="bg-[#111] text-white">
+        <footer
+            className="text-white relative"
+            style={{ backgroundImage: 'linear-gradient(180deg, #0F172A 0%, #020617 100%)' }}
+        >
 
             {/* ── Main ─────────────────────────────── */}
             <div className="container mx-auto px-6 py-14 max-w-6xl">
@@ -63,29 +66,29 @@ export default function Footer() {
 
                     {/* Shop */}
                     <div>
-                        <h4 className="text-[10px] uppercase tracking-[0.25em] text-white/50 mb-5 font-semibold">
+                        <h4 className="text-[10px] uppercase tracking-[0.25em] text-[var(--color-accent)] mb-5 font-semibold">
                             {isId ? 'Belanja' : 'Shop'}
                         </h4>
                         <ul className="space-y-3 text-sm text-white/70">
-                            <li><Link to="/products" className="hover:text-white transition-colors">{isId ? 'Semua Produk' : 'All Products'}</Link></li>
+                            <li><Link to="/products" className="hover:text-[var(--color-accent)] transition-colors">{isId ? 'Semua Produk' : 'All Products'}</Link></li>
                         </ul>
                     </div>
 
                     {/* Support */}
                     <div>
-                        <h4 className="text-[10px] uppercase tracking-[0.25em] text-white/50 mb-5 font-semibold">
+                        <h4 className="text-[10px] uppercase tracking-[0.25em] text-[var(--color-accent)] mb-5 font-semibold">
                             {isId ? 'Bantuan' : 'Support'}
                         </h4>
                         <ul className="space-y-3 text-sm text-white/70">
-                            <li><Link to="/faq" className="hover:text-white transition-colors">FAQ</Link></li>
-                            <li><Link to="/partnership" className="hover:text-white transition-colors">{isId ? 'Jadi Mitra' : 'Become Center'}</Link></li>
-                            <li><Link to="/about" className="hover:text-white transition-colors">{isId ? 'Tentang Kami' : 'Our Concept'}</Link></li>
+                            <li><Link to="/faq" className="hover:text-[var(--color-accent)] transition-colors">FAQ</Link></li>
+                            <li><Link to="/partnership" className="hover:text-[var(--color-accent)] transition-colors">{isId ? 'Jadi Mitra' : 'Become Center'}</Link></li>
+                            <li><Link to="/about" className="hover:text-[var(--color-accent)] transition-colors">{isId ? 'Tentang Kami' : 'Our Concept'}</Link></li>
                         </ul>
                     </div>
 
                     {/* Social + Marketplace */}
                     <div>
-                        <h4 className="text-[10px] uppercase tracking-[0.25em] text-white/50 mb-5 font-semibold">
+                        <h4 className="text-[10px] uppercase tracking-[0.25em] text-[var(--color-accent)] mb-5 font-semibold">
                             {isId ? 'Temukan Kami' : 'Find Us'}
                         </h4>
 

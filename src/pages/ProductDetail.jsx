@@ -226,10 +226,10 @@ export default function ProductDetail() {
                                 addToCart(productToAdd);
                             }}
                             disabled={isOutOfStock}
-                            className={`w-full h-12 text-xs uppercase tracking-[0.2em] transition-colors ${
+                            className={`w-full h-12 text-xs uppercase tracking-[0.2em] ${
                                 isOutOfStock
                                     ? 'bg-gray-100 text-gray-300 cursor-not-allowed'
-                                    : 'bg-gray-900 text-white hover:bg-gray-800'
+                                    : 'btn-primary'
                             }`}
                         >
                             {isOutOfStock ? 'Stok Habis' : canCheckout ? 'Add to Cart' : 'Beli Sekarang'}

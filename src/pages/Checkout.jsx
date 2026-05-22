@@ -401,8 +401,8 @@ export default function Checkout() {
                             )}
 
                             <button type="submit" disabled={!canSubmit}
-                                className={`w-full h-12 text-xs uppercase tracking-[0.2em] transition-colors mt-6 ${
-                                    !canSubmit ? 'bg-gray-100 text-gray-300 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-800 text-white'
+                                className={`w-full h-12 text-xs uppercase tracking-[0.2em] mt-6 ${
+                                    !canSubmit ? 'bg-gray-100 text-gray-300 cursor-not-allowed' : 'btn-primary'
                                 }`}>
                                 {loading ? 'Memproses…' : isInactive ? 'Akun Tidak Aktif' : (rajaOngkirEnabled && !selectedShipping) ? 'Pilih Pengiriman' : 'Place Order'}
                             </button>

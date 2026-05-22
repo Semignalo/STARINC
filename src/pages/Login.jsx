@@ -371,7 +371,7 @@ export default function Login() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full flex items-center justify-center gap-2 h-11 bg-gray-900 hover:bg-gray-800 disabled:bg-gray-300 text-white text-xs uppercase tracking-[0.2em] transition-colors"
+                            className="w-full flex items-center justify-center gap-2 h-11 btn-primary text-xs uppercase tracking-[0.2em]"
                         >
                             {loading ? (
                                 <span>{tx.processing}</span>
