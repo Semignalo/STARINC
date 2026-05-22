@@ -5,7 +5,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { t } from '../locales/home';
 import { productApi } from '../api/productApi';
 import { testimonialsApi } from '../api/settingsApi';
-import { ArrowRight, Star, Quote } from 'lucide-react';
+import { ArrowRight, Star, Quote, Instagram } from 'lucide-react';
 import OptimizedImage from '../components/OptimizedImage';
 
 /* ─────────────────────────────────────────────────────────────
@@ -90,6 +90,71 @@ function FeaturedSplit({ mediaUrl, mediaIsVideo, label, title, description, ctaT
                         )}
                     </div>
                 </div>
+            </div>
+        </section>
+    );
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Instagram Feed — manual content via Appearance Settings
+───────────────────────────────────────────────────────────── */
+function InstagramFeed({ settings }) {
+    const handle = settings?.instagramHandle?.trim();
+    if (!handle) return null;
+
+    const posts = Array.from({ length: 5 }, (_, i) => ({
+        image: settings?.[`instagramPost${i + 1}Image`],
+        url:   settings?.[`instagramPost${i + 1}Url`] || `https://instagram.com/${handle}`,
+    })).filter(p => p.image);
+
+    if (posts.length === 0) return null;
+
+    const profileUrl = `https://instagram.com/${handle}`;
+
+    return (
+        <section className="border-t border-gray-100 py-16 md:py-20">
+            <div className="text-center mb-10 px-4">
+                <a
+                    href={profileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-base md:text-lg text-gray-900 hover:text-gray-600 transition-colors"
+                >
+                    <Instagram size={18} strokeWidth={1.5} />
+                    Follow us on instagram <span className="font-medium">@{handle}</span>
+                </a>
+            </div>
+
+            {/* Mobile: horizontal scroll */}
+            <div className="flex md:hidden gap-2 overflow-x-auto scroll-smooth snap-x snap-mandatory px-4 pb-2"
+                 style={{ scrollbarWidth: 'none' }}>
+                {posts.map((p, i) => (
+                    <a key={i} href={p.url} target="_blank" rel="noopener noreferrer"
+                       className="snap-start shrink-0 w-[70vw] max-w-[280px] aspect-square bg-gray-100 overflow-hidden group">
+                        <OptimizedImage src={p.image} alt={`Instagram post ${i + 1}`}
+                            width={400} height={400}
+                            sizes="70vw"
+                            className="group-hover:opacity-90 transition-opacity"
+                            wrapperClassName="absolute inset-0" />
+                    </a>
+                ))}
+            </div>
+
+            {/* Desktop: 5-column grid full-bleed */}
+            <div className="hidden md:grid grid-cols-5 gap-0">
+                {posts.map((p, i) => (
+                    <a key={i} href={p.url} target="_blank" rel="noopener noreferrer"
+                       className="relative aspect-square bg-gray-100 overflow-hidden group">
+                        <OptimizedImage src={p.image} alt={`Instagram post ${i + 1}`}
+                            width={500} height={500}
+                            sizes="20vw"
+                            className="group-hover:opacity-90 transition-opacity"
+                            wrapperClassName="absolute inset-0" />
+                        <span className="absolute inset-0 bg-gray-900/0 group-hover:bg-gray-900/20 transition-colors flex items-center justify-center">
+                            <Instagram size={28} className="text-white opacity-0 group-hover:opacity-100 transition-opacity" strokeWidth={1.5} />
+                        </span>
+                    </a>
+                ))}
             </div>
         </section>
     );
@@ -267,6 +332,9 @@ export default function Home() {
                     </div>
                 </div>
             </section>
+
+            {/* ── Instagram Feed ───────────────────────────────── */}
+            <InstagramFeed settings={settings} />
 
             {/* ── Quote ────────────────────────────────────────── */}
             <section className="py-24 md:py-32 px-6 border-t border-gray-100">

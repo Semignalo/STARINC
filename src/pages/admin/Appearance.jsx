@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { adminSettingsApi } from '../../api/settingsApi';
 import { useAppearance } from '../../contexts/AppearanceContext';
-import { Save, Image, Type, Palette, Video, Upload, Loader2 } from 'lucide-react';
+import { Save, Image, Type, Palette, Video, Upload, Loader2, Instagram } from 'lucide-react';
 import Swal from 'sweetalert2';
 
 // Normalize upload URL to always use the current dev/prod host
@@ -43,7 +43,14 @@ const DEFAULT_CONFIG = {
     editorialDescription: 'Formulated with the finest ingredients, our products are designed to nourish and revitalize your skin with every use.',
     editorialCtaText: 'Browse Collection',
     editorialCtaUrl: '/products',
-    editorialImageUrl: ''
+    editorialImageUrl: '',
+    // Instagram Feed (manual, 5 slot)
+    instagramHandle: '',
+    instagramPost1Image: '', instagramPost1Url: '',
+    instagramPost2Image: '', instagramPost2Url: '',
+    instagramPost3Image: '', instagramPost3Url: '',
+    instagramPost4Image: '', instagramPost4Url: '',
+    instagramPost5Image: '', instagramPost5Url: '',
 };
 
 /**
@@ -720,6 +727,59 @@ export default function AdminAppearance() {
                                 driver={uploadDriver}
                                 hint="Gambar akan ditampilkan full-bleed di sisi kanan section. Gunakan gambar landscape berkualitas tinggi."
                             />
+                        </div>
+
+                        {/* Instagram Feed Section */}
+                        <div className="bg-white p-5 rounded-[8px] border border-gray-200">
+                            <h3 className="text-sm font-semibold text-gray-900 mb-1 flex items-center gap-2">
+                                <Instagram size={14} className="text-gray-400" />
+                                Instagram Feed
+                            </h3>
+                            <p className="text-xs text-gray-500 mb-4">Section di paling bawah homepage. Isi handle + max 5 post (gambar + link).</p>
+
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1.5">Instagram Handle</label>
+                                    <div className="relative">
+                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">@</span>
+                                        <input
+                                            name="instagramHandle"
+                                            value={config.instagramHandle || ''}
+                                            onChange={handleChange}
+                                            placeholder="starinc.official"
+                                            className="w-full h-9 pl-7 pr-3 bg-white border border-gray-200 rounded-[6px] text-xs focus:ring-2 focus:ring-[var(--admin-accent)]/30 focus:border-[var(--admin-accent)] outline-none transition-colors"
+                                        />
+                                    </div>
+                                    <p className="text-[10px] text-gray-400 mt-1">Kosongkan untuk sembunyikan section Instagram di homepage.</p>
+                                </div>
+
+                                <div className="border-t border-gray-100 pt-4 space-y-5">
+                                    {[1, 2, 3, 4, 5].map((i) => (
+                                        <div key={i} className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-3 items-start">
+                                            <div>
+                                                <ImageUploadField
+                                                    label={`Post ${i} — Gambar`}
+                                                    fieldName={`instagramPost${i}Image`}
+                                                    value={config[`instagramPost${i}Image`]}
+                                                    onChange={handleFieldChange}
+                                                    driver={uploadDriver}
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-medium text-gray-700 mb-1.5">Post {i} — Link Instagram</label>
+                                                <input
+                                                    name={`instagramPost${i}Url`}
+                                                    value={config[`instagramPost${i}Url`] || ''}
+                                                    onChange={handleChange}
+                                                    placeholder="https://www.instagram.com/p/XXXXXXXXX/"
+                                                    className="w-full h-9 px-3 bg-white border border-gray-200 rounded-[6px] text-xs font-mono focus:ring-2 focus:ring-[var(--admin-accent)]/30 focus:border-[var(--admin-accent)] outline-none transition-colors"
+                                                />
+                                                <p className="text-[10px] text-gray-400 mt-1">Kosongkan = redirect ke profil utama saat diklik.</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
