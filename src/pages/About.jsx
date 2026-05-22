@@ -250,7 +250,10 @@ export default function About() {
             </section>
 
             {/* ── 8. Ingredients philosophy ───────────────────────── */}
-            <section className="bg-[#111] py-20 md:py-28 px-6 relative overflow-hidden">
+            <section
+                className="py-20 md:py-28 px-6 relative overflow-hidden text-white"
+                style={{ backgroundImage: 'linear-gradient(180deg, #0F172A 0%, #020617 100%)' }}
+            >
                 <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[var(--color-accent)]/40 to-transparent" />
                 <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[var(--color-accent)]/40 to-transparent" />
                 <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-12 items-center">
