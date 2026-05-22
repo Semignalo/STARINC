@@ -5,7 +5,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { t } from '../locales/home';
 import { productApi } from '../api/productApi';
 import { testimonialsApi } from '../api/settingsApi';
-import { ArrowRight, Star, Quote, Instagram } from 'lucide-react';
+import { ArrowRight, Star, Quote, Instagram, X, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
 import OptimizedImage from '../components/OptimizedImage';
 
 /* ─────────────────────────────────────────────────────────────
@@ -96,10 +96,125 @@ function FeaturedSplit({ mediaUrl, mediaIsVideo, label, title, description, ctaT
 }
 
 /* ─────────────────────────────────────────────────────────────
+   Instagram Post Modal — iframe Instagram embed dengan Prev/Next
+───────────────────────────────────────────────────────────── */
+// Ekstrak URL embed dari URL post Instagram.
+// https://www.instagram.com/p/XXXX/ -> https://www.instagram.com/p/XXXX/embed/captioned/
+function toEmbedUrl(postUrl) {
+    if (!postUrl) return null;
+    const match = postUrl.match(/instagram\.com\/(p|reel|tv)\/([A-Za-z0-9_-]+)/);
+    if (!match) return null;
+    return `https://www.instagram.com/${match[1]}/${match[2]}/embed/captioned/`;
+}
+
+function InstagramPostModal({ posts, activeIndex, onClose, onPrev, onNext }) {
+    const post = posts?.[activeIndex];
+    const embedUrl = post ? toEmbedUrl(post.url) : null;
+
+    // Close on ESC + arrow keys for navigation
+    useEffect(() => {
+        if (activeIndex === null) return;
+        const handler = (e) => {
+            if (e.key === 'Escape') onClose();
+            else if (e.key === 'ArrowLeft') onPrev();
+            else if (e.key === 'ArrowRight') onNext();
+        };
+        window.addEventListener('keydown', handler);
+        document.body.style.overflow = 'hidden';
+        return () => {
+            window.removeEventListener('keydown', handler);
+            document.body.style.overflow = '';
+        };
+    }, [activeIndex, onClose, onPrev, onNext]);
+
+    if (activeIndex === null || !post) return null;
+
+    const canPrev = activeIndex > 0;
+    const canNext = activeIndex < posts.length - 1;
+
+    return (
+        <div
+            className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center"
+            onClick={onClose}
+        >
+            {/* Close button */}
+            <button
+                onClick={onClose}
+                className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 rounded-full transition-colors z-10"
+                aria-label="Tutup"
+            >
+                <X size={22} />
+            </button>
+
+            {/* Prev */}
+            <button
+                onClick={(e) => { e.stopPropagation(); onPrev(); }}
+                disabled={!canPrev}
+                className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 rounded-full disabled:opacity-30 disabled:cursor-not-allowed transition-colors z-10"
+                aria-label="Previous"
+            >
+                <ChevronLeft size={26} />
+            </button>
+
+            {/* Next */}
+            <button
+                onClick={(e) => { e.stopPropagation(); onNext(); }}
+                disabled={!canNext}
+                className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 rounded-full disabled:opacity-30 disabled:cursor-not-allowed transition-colors z-10"
+                aria-label="Next"
+            >
+                <ChevronRight size={26} />
+            </button>
+
+            {/* Embed iframe */}
+            <div
+                className="relative bg-white shadow-2xl"
+                style={{ width: 'min(540px, 90vw)', height: 'min(82vh, 900px)' }}
+                onClick={(e) => e.stopPropagation()}
+            >
+                {embedUrl ? (
+                    <iframe
+                        key={embedUrl}
+                        src={embedUrl}
+                        title={`Instagram post ${activeIndex + 1}`}
+                        className="w-full h-full"
+                        frameBorder="0"
+                        scrolling="yes"
+                        allowtransparency="true"
+                        allow="encrypted-media"
+                        loading="lazy"
+                    />
+                ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center gap-4 p-8 text-center">
+                        <Instagram size={42} className="text-gray-300" strokeWidth={1.5} />
+                        <p className="text-sm text-gray-500">URL post Instagram tidak valid.</p>
+                        <a
+                            href={post.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-gray-900 hover:text-gray-700"
+                        >
+                            Buka di Instagram <ExternalLink size={12} />
+                        </a>
+                    </div>
+                )}
+            </div>
+
+            {/* Counter */}
+            <p className="absolute bottom-4 left-1/2 -translate-x-1/2 text-xs text-white/60 tabular-nums">
+                {activeIndex + 1} / {posts.length}
+            </p>
+        </div>
+    );
+}
+
+/* ─────────────────────────────────────────────────────────────
    Instagram Feed — manual content via Appearance Settings
 ───────────────────────────────────────────────────────────── */
 function InstagramFeed({ settings }) {
     const handle = settings?.instagramHandle?.trim();
+    const [activeIdx, setActiveIdx] = useState(null);
+
     if (!handle) return null;
 
     const posts = Array.from({ length: 5 }, (_, i) => ({
@@ -112,51 +227,61 @@ function InstagramFeed({ settings }) {
     const profileUrl = `https://instagram.com/${handle}`;
 
     return (
-        <section className="border-t border-gray-100 py-16 md:py-20">
-            <div className="text-center mb-10 px-4">
-                <a
-                    href={profileUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-base md:text-lg text-gray-900 hover:text-gray-600 transition-colors"
-                >
-                    <Instagram size={18} strokeWidth={1.5} />
-                    Follow us on instagram <span className="font-medium">@{handle}</span>
-                </a>
-            </div>
-
-            {/* Mobile: horizontal scroll */}
-            <div className="flex md:hidden gap-2 overflow-x-auto scroll-smooth snap-x snap-mandatory px-4 pb-2"
-                 style={{ scrollbarWidth: 'none' }}>
-                {posts.map((p, i) => (
-                    <a key={i} href={p.url} target="_blank" rel="noopener noreferrer"
-                       className="snap-start shrink-0 w-[70vw] max-w-[280px] aspect-square bg-gray-100 overflow-hidden group">
-                        <OptimizedImage src={p.image} alt={`Instagram post ${i + 1}`}
-                            width={400} height={400}
-                            sizes="70vw"
-                            className="group-hover:opacity-90 transition-opacity"
-                            wrapperClassName="absolute inset-0" />
+        <>
+            <section className="border-t border-gray-100 py-16 md:py-20">
+                <div className="text-center mb-10 px-4">
+                    <a
+                        href={profileUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 text-base md:text-lg text-gray-900 hover:text-gray-600 transition-colors"
+                    >
+                        <Instagram size={18} strokeWidth={1.5} />
+                        Follow us on instagram <span className="font-medium">@{handle}</span>
                     </a>
-                ))}
-            </div>
+                </div>
 
-            {/* Desktop: 5-column grid full-bleed */}
-            <div className="hidden md:grid grid-cols-5 gap-0">
-                {posts.map((p, i) => (
-                    <a key={i} href={p.url} target="_blank" rel="noopener noreferrer"
-                       className="relative aspect-square bg-gray-100 overflow-hidden group">
-                        <OptimizedImage src={p.image} alt={`Instagram post ${i + 1}`}
-                            width={500} height={500}
-                            sizes="20vw"
-                            className="group-hover:opacity-90 transition-opacity"
-                            wrapperClassName="absolute inset-0" />
-                        <span className="absolute inset-0 bg-gray-900/0 group-hover:bg-gray-900/20 transition-colors flex items-center justify-center">
-                            <Instagram size={28} className="text-white opacity-0 group-hover:opacity-100 transition-opacity" strokeWidth={1.5} />
-                        </span>
-                    </a>
-                ))}
-            </div>
-        </section>
+                {/* Mobile: horizontal scroll */}
+                <div className="flex md:hidden gap-2 overflow-x-auto scroll-smooth snap-x snap-mandatory px-4 pb-2"
+                     style={{ scrollbarWidth: 'none' }}>
+                    {posts.map((p, i) => (
+                        <button key={i} onClick={() => setActiveIdx(i)}
+                                className="snap-start shrink-0 w-[70vw] max-w-[280px] aspect-square bg-gray-100 overflow-hidden group relative">
+                            <OptimizedImage src={p.image} alt={`Instagram post ${i + 1}`}
+                                width={400} height={400}
+                                sizes="70vw"
+                                className="group-hover:opacity-90 transition-opacity"
+                                wrapperClassName="absolute inset-0" />
+                        </button>
+                    ))}
+                </div>
+
+                {/* Desktop: 5-column grid full-bleed */}
+                <div className="hidden md:grid grid-cols-5 gap-0">
+                    {posts.map((p, i) => (
+                        <button key={i} onClick={() => setActiveIdx(i)}
+                                className="relative aspect-square bg-gray-100 overflow-hidden group cursor-pointer">
+                            <OptimizedImage src={p.image} alt={`Instagram post ${i + 1}`}
+                                width={500} height={500}
+                                sizes="20vw"
+                                className="group-hover:opacity-90 transition-opacity"
+                                wrapperClassName="absolute inset-0" />
+                            <span className="absolute inset-0 bg-gray-900/0 group-hover:bg-gray-900/20 transition-colors flex items-center justify-center">
+                                <Instagram size={28} className="text-white opacity-0 group-hover:opacity-100 transition-opacity" strokeWidth={1.5} />
+                            </span>
+                        </button>
+                    ))}
+                </div>
+            </section>
+
+            <InstagramPostModal
+                posts={posts}
+                activeIndex={activeIdx}
+                onClose={() => setActiveIdx(null)}
+                onPrev={() => setActiveIdx(i => Math.max(0, i - 1))}
+                onNext={() => setActiveIdx(i => Math.min(posts.length - 1, i + 1))}
+            />
+        </>
     );
 }
 
