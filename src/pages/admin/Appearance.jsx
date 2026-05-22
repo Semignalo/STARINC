@@ -91,7 +91,7 @@ function VideoUploadField({ label, fieldName, value, onChange, hint }) {
                     name={fieldName}
                     value={value || ''}
                     onChange={(e) => onChange(fieldName, e.target.value)}
-                    className="flex-1 min-w-0 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none font-mono text-xs"
+                    className="flex-1 min-w-0 h-9 px-3 bg-white border border-gray-200 rounded-[6px] text-xs font-mono focus:ring-2 focus:ring-[var(--admin-accent)]/30 focus:border-[var(--admin-accent)] outline-none transition-colors"
                     placeholder="Paste video URL atau upload di bawah"
                 />
                 <label className="cursor-pointer bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 shrink-0">
@@ -167,7 +167,7 @@ function ImageUploadField({ label, fieldName, value, onChange, hint }) {
                     name={fieldName}
                     value={value || ''}
                     onChange={(e) => onChange(fieldName, e.target.value)}
-                    className="flex-1 min-w-0 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none font-mono text-xs"
+                    className="flex-1 min-w-0 h-9 px-3 bg-white border border-gray-200 rounded-[6px] text-xs font-mono focus:ring-2 focus:ring-[var(--admin-accent)]/30 focus:border-[var(--admin-accent)] outline-none transition-colors"
                     placeholder="Paste image URL atau upload di bawah"
                 />
                 <label className="cursor-pointer bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 shrink-0">
@@ -303,8 +303,8 @@ export default function AdminAppearance() {
                 <div className="lg:col-span-2 space-y-6">
 
                     {/* Hero Section */}
-                    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                        <h3 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
+                    <div className="bg-white p-5 rounded-[8px] border border-gray-200">
+                        <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
                             <Video size={20} className="text-gray-400" />
                             Hero Section
                         </h3>
@@ -320,7 +320,7 @@ export default function AdminAppearance() {
                                         value={config.heroTitle}
                                         onChange={handleChange}
                                         placeholder="Contoh: True Radiance"
-                                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                                        className="w-full h-9 px-3 bg-white border border-gray-200 rounded-[6px] text-sm focus:ring-2 focus:ring-[var(--admin-accent)]/30 focus:border-[var(--admin-accent)] outline-none transition-colors"
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -330,7 +330,7 @@ export default function AdminAppearance() {
                                         value={config.heroSubtitle}
                                         onChange={handleChange}
                                         placeholder="Contoh: Discover the new..."
-                                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                                        className="w-full h-9 px-3 bg-white border border-gray-200 rounded-[6px] text-sm focus:ring-2 focus:ring-[var(--admin-accent)]/30 focus:border-[var(--admin-accent)] outline-none transition-colors"
                                     />
                                 </div>
                             </div>
@@ -342,7 +342,7 @@ export default function AdminAppearance() {
                                     value={config.heroCtaUrl || '/products'}
                                     onChange={handleChange}
                                     placeholder="Contoh: /products atau /product/5"
-                                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none font-mono text-xs"
+                                    className="w-full h-9 px-3 bg-white border border-gray-200 rounded-[6px] text-xs font-mono focus:ring-2 focus:ring-[var(--admin-accent)]/30 focus:border-[var(--admin-accent)] outline-none transition-colors"
                                 />
                                 <p className="text-xs text-gray-400">Gunakan path internal seperti /products atau /product/5</p>
                             </div>
@@ -357,7 +357,7 @@ export default function AdminAppearance() {
                                         name="heroVideoUrl"
                                         value={config.heroVideoUrl}
                                         onChange={handleChange}
-                                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none font-mono text-xs text-gray-600"
+                                        className="w-full h-9 px-3 bg-white border border-gray-200 rounded-[6px] text-xs font-mono focus:ring-2 focus:ring-[var(--admin-accent)]/30 focus:border-[var(--admin-accent)] outline-none transition-colors text-gray-600"
                                         placeholder="Paste video URL atau upload di bawah..."
                                     />
                                     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
@@ -389,8 +389,8 @@ export default function AdminAppearance() {
                     </div>
 
                     {/* Branding Section */}
-                    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                        <h3 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
+                    <div className="bg-white p-5 rounded-[8px] border border-gray-200">
+                        <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
                             <Palette size={20} className="text-gray-400" />
                             Branding & Logo
                         </h3>
@@ -434,8 +434,8 @@ export default function AdminAppearance() {
                     </div>
 
                     {/* Featured Video & Text Section */}
-                    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                        <h3 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
+                    <div className="bg-white p-5 rounded-[8px] border border-gray-200">
+                        <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
                             <Video size={20} className="text-gray-400" />
                             Featured Video & Text Section
                         </h3>
@@ -447,7 +447,7 @@ export default function AdminAppearance() {
                                     name="goldSerumSubtitle"
                                     value={config.goldSerumSubtitle || ''}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                                    className="w-full h-9 px-3 bg-white border border-gray-200 rounded-[6px] text-sm focus:ring-2 focus:ring-[var(--admin-accent)]/30 focus:border-[var(--admin-accent)] outline-none transition-colors"
                                 />
                             </div>
                             <div className="space-y-2">
@@ -457,7 +457,7 @@ export default function AdminAppearance() {
                                     value={config.goldSerumDescription1 || ''}
                                     onChange={handleChange}
                                     rows="3"
-                                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all resize-none"
+                                    className="w-full h-9 px-3 bg-white border border-gray-200 rounded-[6px] text-sm focus:ring-2 focus:ring-[var(--admin-accent)]/30 focus:border-[var(--admin-accent)] outline-none transition-colors resize-none"
                                 />
                             </div>
                             <div className="space-y-2">
@@ -467,7 +467,7 @@ export default function AdminAppearance() {
                                     value={config.goldSerumDescription2 || ''}
                                     onChange={handleChange}
                                     rows="2"
-                                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all resize-none"
+                                    className="w-full h-9 px-3 bg-white border border-gray-200 rounded-[6px] text-sm focus:ring-2 focus:ring-[var(--admin-accent)]/30 focus:border-[var(--admin-accent)] outline-none transition-colors resize-none"
                                 />
                             </div>
                             <div className="space-y-2">
@@ -477,7 +477,7 @@ export default function AdminAppearance() {
                                     value={config.feat1CtaUrl || '/products'}
                                     onChange={handleChange}
                                     placeholder="Contoh: /products atau /product/5"
-                                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none font-mono text-xs"
+                                    className="w-full h-9 px-3 bg-white border border-gray-200 rounded-[6px] text-xs font-mono focus:ring-2 focus:ring-[var(--admin-accent)]/30 focus:border-[var(--admin-accent)] outline-none transition-colors"
                                 />
                             </div>
                             <VideoUploadField
@@ -491,8 +491,8 @@ export default function AdminAppearance() {
                     </div>
 
                     {/* Second Featured Video Section */}
-                    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                        <h3 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
+                    <div className="bg-white p-5 rounded-[8px] border border-gray-200">
+                        <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
                             <Video size={20} className="text-gray-400" />
                             Second Featured Video Section (Video di kanan)
                         </h3>
@@ -504,7 +504,7 @@ export default function AdminAppearance() {
                                     name="secondFeaturedSubtitle"
                                     value={config.secondFeaturedSubtitle || ''}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                                    className="w-full h-9 px-3 bg-white border border-gray-200 rounded-[6px] text-sm focus:ring-2 focus:ring-[var(--admin-accent)]/30 focus:border-[var(--admin-accent)] outline-none transition-colors"
                                 />
                             </div>
                             <div className="space-y-2">
@@ -514,7 +514,7 @@ export default function AdminAppearance() {
                                     value={config.secondFeaturedDescription1 || ''}
                                     onChange={handleChange}
                                     rows="3"
-                                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all resize-none"
+                                    className="w-full h-9 px-3 bg-white border border-gray-200 rounded-[6px] text-sm focus:ring-2 focus:ring-[var(--admin-accent)]/30 focus:border-[var(--admin-accent)] outline-none transition-colors resize-none"
                                 />
                             </div>
                             <div className="space-y-2">
@@ -524,7 +524,7 @@ export default function AdminAppearance() {
                                     value={config.secondFeaturedDescription2 || ''}
                                     onChange={handleChange}
                                     rows="2"
-                                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all resize-none"
+                                    className="w-full h-9 px-3 bg-white border border-gray-200 rounded-[6px] text-sm focus:ring-2 focus:ring-[var(--admin-accent)]/30 focus:border-[var(--admin-accent)] outline-none transition-colors resize-none"
                                 />
                             </div>
                             <div className="space-y-2">
@@ -534,7 +534,7 @@ export default function AdminAppearance() {
                                     value={config.feat2CtaUrl || '/products'}
                                     onChange={handleChange}
                                     placeholder="Contoh: /products atau /product/5"
-                                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none font-mono text-xs"
+                                    className="w-full h-9 px-3 bg-white border border-gray-200 rounded-[6px] text-xs font-mono focus:ring-2 focus:ring-[var(--admin-accent)]/30 focus:border-[var(--admin-accent)] outline-none transition-colors"
                                 />
                             </div>
                             <VideoUploadField
@@ -548,8 +548,8 @@ export default function AdminAppearance() {
                     </div>
 
                     {/* Skin Type Split Section */}
-                    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                        <h3 className="text-lg font-bold text-gray-800 mb-1 flex items-center gap-2">
+                    <div className="bg-white p-5 rounded-[8px] border border-gray-200">
+                        <h3 className="text-sm font-semibold text-gray-900 mb-1 flex items-center gap-2">
                             <Image size={20} className="text-gray-400" />
                             Skin Type Section
                         </h3>
@@ -562,7 +562,7 @@ export default function AdminAppearance() {
                                     value={config.skinTypeTag || ''}
                                     onChange={handleChange}
                                     placeholder="Contoh: FOR ALL SKIN TYPES"
-                                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                                    className="w-full h-9 px-3 bg-white border border-gray-200 rounded-[6px] text-sm focus:ring-2 focus:ring-[var(--admin-accent)]/30 focus:border-[var(--admin-accent)] outline-none transition-colors"
                                 />
                             </div>
                             <div className="space-y-2">
@@ -572,7 +572,7 @@ export default function AdminAppearance() {
                                     value={config.skinTypeTitle || ''}
                                     onChange={handleChange}
                                     placeholder="Crafted for Every Skin Type"
-                                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                                    className="w-full h-9 px-3 bg-white border border-gray-200 rounded-[6px] text-sm focus:ring-2 focus:ring-[var(--admin-accent)]/30 focus:border-[var(--admin-accent)] outline-none transition-colors"
                                 />
                             </div>
                             <div className="space-y-2">
@@ -582,7 +582,7 @@ export default function AdminAppearance() {
                                     value={config.skinTypeDescription || ''}
                                     onChange={handleChange}
                                     rows="4"
-                                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all resize-none"
+                                    className="w-full h-9 px-3 bg-white border border-gray-200 rounded-[6px] text-sm focus:ring-2 focus:ring-[var(--admin-accent)]/30 focus:border-[var(--admin-accent)] outline-none transition-colors resize-none"
                                 />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
@@ -593,7 +593,7 @@ export default function AdminAppearance() {
                                         value={config.skinTypeCtaText || ''}
                                         onChange={handleChange}
                                         placeholder="Explore Products"
-                                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                                        className="w-full h-9 px-3 bg-white border border-gray-200 rounded-[6px] text-sm focus:ring-2 focus:ring-[var(--admin-accent)]/30 focus:border-[var(--admin-accent)] outline-none transition-colors"
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -603,7 +603,7 @@ export default function AdminAppearance() {
                                         value={config.skinTypeCtaUrl || ''}
                                         onChange={handleChange}
                                         placeholder="/products"
-                                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                                        className="w-full h-9 px-3 bg-white border border-gray-200 rounded-[6px] text-sm focus:ring-2 focus:ring-[var(--admin-accent)]/30 focus:border-[var(--admin-accent)] outline-none transition-colors"
                                     />
                                 </div>
                             </div>
@@ -618,8 +618,8 @@ export default function AdminAppearance() {
                     </div>
 
                     {/* Editorial Image & Text Section */}
-                    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                        <h3 className="text-lg font-bold text-gray-800 mb-1 flex items-center gap-2">
+                    <div className="bg-white p-5 rounded-[8px] border border-gray-200">
+                        <h3 className="text-sm font-semibold text-gray-900 mb-1 flex items-center gap-2">
                             <Image size={20} className="text-gray-400" />
                             Editorial Image & Text Section
                         </h3>
@@ -634,7 +634,7 @@ export default function AdminAppearance() {
                                         value={config.editorialTag || ''}
                                         onChange={handleChange}
                                         placeholder="Contoh: Our Signature Collection"
-                                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                                        className="w-full h-9 px-3 bg-white border border-gray-200 rounded-[6px] text-sm focus:ring-2 focus:ring-[var(--admin-accent)]/30 focus:border-[var(--admin-accent)] outline-none transition-colors"
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -644,7 +644,7 @@ export default function AdminAppearance() {
                                         value={config.editorialCtaText || ''}
                                         onChange={handleChange}
                                         placeholder="Contoh: Browse Collection"
-                                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                                        className="w-full h-9 px-3 bg-white border border-gray-200 rounded-[6px] text-sm focus:ring-2 focus:ring-[var(--admin-accent)]/30 focus:border-[var(--admin-accent)] outline-none transition-colors"
                                     />
                                 </div>
                             </div>
@@ -655,7 +655,7 @@ export default function AdminAppearance() {
                                     value={config.editorialCtaUrl || '/products'}
                                     onChange={handleChange}
                                     placeholder="Contoh: /products atau /product/5"
-                                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none font-mono text-xs"
+                                    className="w-full h-9 px-3 bg-white border border-gray-200 rounded-[6px] text-xs font-mono focus:ring-2 focus:ring-[var(--admin-accent)]/30 focus:border-[var(--admin-accent)] outline-none transition-colors"
                                 />
                             </div>
                             <div className="space-y-2">
@@ -665,7 +665,7 @@ export default function AdminAppearance() {
                                     value={config.editorialTitle || ''}
                                     onChange={handleChange}
                                     placeholder="Contoh: Crafted for Your Skin"
-                                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                                    className="w-full h-9 px-3 bg-white border border-gray-200 rounded-[6px] text-sm focus:ring-2 focus:ring-[var(--admin-accent)]/30 focus:border-[var(--admin-accent)] outline-none transition-colors"
                                 />
                             </div>
                             <div className="space-y-2">
@@ -675,7 +675,7 @@ export default function AdminAppearance() {
                                     value={config.editorialDescription || ''}
                                     onChange={handleChange}
                                     rows="3"
-                                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all resize-none"
+                                    className="w-full h-9 px-3 bg-white border border-gray-200 rounded-[6px] text-sm focus:ring-2 focus:ring-[var(--admin-accent)]/30 focus:border-[var(--admin-accent)] outline-none transition-colors resize-none"
                                 />
                             </div>
                             <ImageUploadField
@@ -821,7 +821,7 @@ function HeroVideoUploader({ onChange }) {
 
     return (
         <>
-            <label className="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+            <label className="cursor-pointer bg-white border border-gray-200 hover:border-gray-300 text-gray-700 h-8 px-3 rounded-[6px] text-xs font-medium transition-colors flex items-center gap-1.5">
                 <Upload size={16} />
                 Upload Video (MP4)
                 <input
