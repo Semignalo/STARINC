@@ -55,7 +55,7 @@ function FeaturedSplit({ mediaUrl, mediaIsVideo, label, title, description, ctaT
         <section className="py-12 md:py-20 px-4 md:px-8">
             <div className={`max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-[1.4fr_1fr] gap-8 md:gap-12 items-center ${reverse ? 'md:[direction:rtl]' : ''}`}>
                 {/* Media — capped tinggi agar tidak melebihi layar */}
-                <div className="aspect-square md:aspect-[5/4] lg:aspect-[5/4] max-h-[80vh] bg-gray-50 overflow-hidden rounded-lg md:[direction:ltr]">
+                <div className="aspect-square md:aspect-[4/5] lg:aspect-[4/5] max-h-[80vh] bg-gray-50 overflow-hidden rounded-lg md:[direction:ltr]">
                     {mediaUrl ? (
                         mediaIsVideo ? (
                             <video src={mediaUrl} autoPlay loop muted playsInline preload="none"
