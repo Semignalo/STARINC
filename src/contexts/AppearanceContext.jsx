@@ -122,7 +122,7 @@ export function AppearanceProvider({ children }) {
      * Memaksa refresh appearance (invalidate cache lalu fetch ulang).
      * Bisa dipanggil setelah admin mengubah appearance.
      */
-    const refreshAppearance = useCallback(async () => {
+    const refreshAppearance = useCallback(async (opts = {}) => {
         localStorage.removeItem(CACHE_KEY);
         setLoading(true);
         try {
@@ -132,12 +132,29 @@ export function AppearanceProvider({ children }) {
             if (data.accentColor) {
                 document.documentElement.style.setProperty('--color-accent', data.accentColor);
             }
+            // Broadcast ke tab lain bila opts.broadcast = true (default true)
+            // Tab penerima akan dengar 'storage' event lalu re-fetch.
+            if (opts.broadcast !== false) {
+                localStorage.setItem('appearance_bust', String(Date.now()));
+            }
         } catch (err) {
             console.error("Failed to refresh appearance settings:", err);
         } finally {
             setLoading(false);
         }
     }, []);
+
+    // Listen storage event dari tab lain. Saat admin save di tab lain,
+    // tab ini akan auto-refetch appearance tanpa user perlu reload.
+    useEffect(() => {
+        const onStorage = (e) => {
+            if (e.key === 'appearance_bust') {
+                refreshAppearance({ broadcast: false }); // jangan re-broadcast (infinite loop)
+            }
+        };
+        window.addEventListener('storage', onStorage);
+        return () => window.removeEventListener('storage', onStorage);
+    }, [refreshAppearance]);
 
     const value = useMemo(
         () => ({ settings, loading, refreshAppearance }),

@@ -46,11 +46,11 @@ const DEFAULT_CONFIG = {
     editorialImageUrl: '',
     // Instagram Feed (manual, 5 slot)
     instagramHandle: '',
-    instagramPost1Image: '', instagramPost1Url: '',
-    instagramPost2Image: '', instagramPost2Url: '',
-    instagramPost3Image: '', instagramPost3Url: '',
-    instagramPost4Image: '', instagramPost4Url: '',
-    instagramPost5Image: '', instagramPost5Url: '',
+    instagramPost1Image: '', instagramPost1Url: '', instagramPost1Caption: '',
+    instagramPost2Image: '', instagramPost2Url: '', instagramPost2Caption: '',
+    instagramPost3Image: '', instagramPost3Url: '', instagramPost3Caption: '',
+    instagramPost4Image: '', instagramPost4Url: '', instagramPost4Caption: '',
+    instagramPost5Image: '', instagramPost5Url: '', instagramPost5Caption: '',
 };
 
 /**
@@ -753,9 +753,9 @@ export default function AdminAppearance() {
                                     <p className="text-[10px] text-gray-400 mt-1">Kosongkan untuk sembunyikan section Instagram di homepage.</p>
                                 </div>
 
-                                <div className="border-t border-gray-100 pt-4 space-y-5">
+                                <div className="border-t border-gray-100 pt-4 space-y-6">
                                     {[1, 2, 3, 4, 5].map((i) => (
-                                        <div key={i} className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-3 items-start">
+                                        <div key={i} className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-3 items-start pb-4 border-b border-gray-50 last:border-0 last:pb-0">
                                             <div>
                                                 <ImageUploadField
                                                     label={`Post ${i} — Gambar`}
@@ -765,16 +765,28 @@ export default function AdminAppearance() {
                                                     driver={uploadDriver}
                                                 />
                                             </div>
-                                            <div>
-                                                <label className="block text-xs font-medium text-gray-700 mb-1.5">Post {i} — Link Instagram</label>
-                                                <input
-                                                    name={`instagramPost${i}Url`}
-                                                    value={config[`instagramPost${i}Url`] || ''}
-                                                    onChange={handleChange}
-                                                    placeholder="https://www.instagram.com/p/XXXXXXXXX/"
-                                                    className="w-full h-9 px-3 bg-white border border-gray-200 rounded-[6px] text-xs font-mono focus:ring-2 focus:ring-[var(--admin-accent)]/30 focus:border-[var(--admin-accent)] outline-none transition-colors"
-                                                />
-                                                <p className="text-[10px] text-gray-400 mt-1">Kosongkan = redirect ke profil utama saat diklik.</p>
+                                            <div className="space-y-2">
+                                                <div>
+                                                    <label className="block text-xs font-medium text-gray-700 mb-1.5">Link Instagram</label>
+                                                    <input
+                                                        name={`instagramPost${i}Url`}
+                                                        value={config[`instagramPost${i}Url`] || ''}
+                                                        onChange={handleChange}
+                                                        placeholder="https://www.instagram.com/p/XXXXXXXXX/"
+                                                        className="w-full h-9 px-3 bg-white border border-gray-200 rounded-[6px] text-xs font-mono focus:ring-2 focus:ring-[var(--admin-accent)]/30 focus:border-[var(--admin-accent)] outline-none transition-colors"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-xs font-medium text-gray-700 mb-1.5">Caption (opsional)</label>
+                                                    <textarea
+                                                        name={`instagramPost${i}Caption`}
+                                                        value={config[`instagramPost${i}Caption`] || ''}
+                                                        onChange={handleChange}
+                                                        placeholder="Salin caption Instagram di sini bila ingin ditampilkan di modal. Kosongkan untuk fallback ke 'Open in Instagram'."
+                                                        rows={3}
+                                                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-[6px] text-xs focus:ring-2 focus:ring-[var(--admin-accent)]/30 focus:border-[var(--admin-accent)] outline-none transition-colors resize-y"
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
                                     ))}

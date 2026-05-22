@@ -96,22 +96,13 @@ function FeaturedSplit({ mediaUrl, mediaIsVideo, label, title, description, ctaT
 }
 
 /* ─────────────────────────────────────────────────────────────
-   Instagram Post Modal — iframe Instagram embed dengan Prev/Next
+   Instagram Post Modal — lightbox dengan gambar lokal + link IG
+   (Tidak pakai iframe Instagram embed — hindari error
+    'restricted account' / 'private profile' / 'age limit')
 ───────────────────────────────────────────────────────────── */
-// Ekstrak URL embed dari URL post Instagram.
-// https://www.instagram.com/p/XXXX/ -> https://www.instagram.com/p/XXXX/embed/captioned/
-function toEmbedUrl(postUrl) {
-    if (!postUrl) return null;
-    const match = postUrl.match(/instagram\.com\/(p|reel|tv)\/([A-Za-z0-9_-]+)/);
-    if (!match) return null;
-    return `https://www.instagram.com/${match[1]}/${match[2]}/embed/captioned/`;
-}
-
-function InstagramPostModal({ posts, activeIndex, onClose, onPrev, onNext }) {
+function InstagramPostModal({ posts, activeIndex, handle, onClose, onPrev, onNext }) {
     const post = posts?.[activeIndex];
-    const embedUrl = post ? toEmbedUrl(post.url) : null;
 
-    // Close on ESC + arrow keys for navigation
     useEffect(() => {
         if (activeIndex === null) return;
         const handler = (e) => {
@@ -131,16 +122,17 @@ function InstagramPostModal({ posts, activeIndex, onClose, onPrev, onNext }) {
 
     const canPrev = activeIndex > 0;
     const canNext = activeIndex < posts.length - 1;
+    const postUrl = post.url || `https://instagram.com/${handle}`;
 
     return (
         <div
-            className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center"
+            className="fixed inset-0 z-[100] bg-black/85 backdrop-blur-sm flex items-center justify-center px-4"
             onClick={onClose}
         >
             {/* Close button */}
             <button
                 onClick={onClose}
-                className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 rounded-full transition-colors z-10"
+                className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 rounded-full transition-colors z-20"
                 aria-label="Tutup"
             >
                 <X size={22} />
@@ -150,60 +142,79 @@ function InstagramPostModal({ posts, activeIndex, onClose, onPrev, onNext }) {
             <button
                 onClick={(e) => { e.stopPropagation(); onPrev(); }}
                 disabled={!canPrev}
-                className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 rounded-full disabled:opacity-30 disabled:cursor-not-allowed transition-colors z-10"
+                className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 rounded-full disabled:opacity-25 disabled:cursor-not-allowed transition-colors z-20"
                 aria-label="Previous"
             >
-                <ChevronLeft size={26} />
+                <ChevronLeft size={28} />
             </button>
 
             {/* Next */}
             <button
                 onClick={(e) => { e.stopPropagation(); onNext(); }}
                 disabled={!canNext}
-                className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 rounded-full disabled:opacity-30 disabled:cursor-not-allowed transition-colors z-10"
+                className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 rounded-full disabled:opacity-25 disabled:cursor-not-allowed transition-colors z-20"
                 aria-label="Next"
             >
-                <ChevronRight size={26} />
+                <ChevronRight size={28} />
             </button>
 
-            {/* Embed iframe */}
+            {/* Content card — layout: image kiri, sidebar kanan (desktop) / stacked (mobile) */}
             <div
-                className="relative bg-white shadow-2xl"
-                style={{ width: 'min(540px, 90vw)', height: 'min(82vh, 900px)' }}
+                className="bg-white shadow-2xl flex flex-col md:flex-row max-h-[92vh] overflow-hidden"
+                style={{ width: 'min(960px, 100%)' }}
                 onClick={(e) => e.stopPropagation()}
             >
-                {embedUrl ? (
-                    <iframe
-                        key={embedUrl}
-                        src={embedUrl}
-                        title={`Instagram post ${activeIndex + 1}`}
-                        className="w-full h-full"
-                        frameBorder="0"
-                        scrolling="yes"
-                        allowtransparency="true"
-                        allow="encrypted-media"
-                        loading="lazy"
+                {/* Image */}
+                <div className="md:flex-1 bg-gray-50 flex items-center justify-center aspect-square md:aspect-auto md:min-h-[560px] max-h-[92vh]">
+                    <OptimizedImage
+                        src={post.image}
+                        alt={`Instagram post ${activeIndex + 1}`}
+                        width={1000}
+                        height={1000}
+                        priority
+                        wrapperClassName="w-full h-full"
+                        fit="contain"
                     />
-                ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center gap-4 p-8 text-center">
-                        <Instagram size={42} className="text-gray-300" strokeWidth={1.5} />
-                        <p className="text-sm text-gray-500">URL post Instagram tidak valid.</p>
+                </div>
+
+                {/* Sidebar */}
+                <aside className="md:w-[340px] flex-shrink-0 border-t md:border-t-0 md:border-l border-gray-100 flex flex-col">
+                    {/* Header */}
+                    <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-2.5">
+                        <Instagram size={16} className="text-gray-900" strokeWidth={1.8} />
+                        <p className="text-sm font-medium text-gray-900 tracking-tight">View on Instagram</p>
+                    </div>
+
+                    {/* Caption / body */}
+                    <div className="flex-1 px-5 py-5 overflow-y-auto">
+                        {post.caption ? (
+                            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
+                                {post.caption}
+                            </p>
+                        ) : (
+                            <p className="text-sm text-gray-400 leading-relaxed">
+                                Klik tombol di bawah untuk melihat caption lengkap & berinteraksi di Instagram.
+                            </p>
+                        )}
+                    </div>
+
+                    {/* Footer with CTA + counter */}
+                    <div className="px-5 py-4 border-t border-gray-100 space-y-3">
                         <a
-                            href={post.url}
+                            href={postUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-gray-900 hover:text-gray-700"
+                            className="w-full h-11 inline-flex items-center justify-center gap-2 bg-gray-900 hover:bg-gray-800 text-white text-xs uppercase tracking-[0.2em] transition-colors"
                         >
-                            Buka di Instagram <ExternalLink size={12} />
+                            <ExternalLink size={14} />
+                            Open in Instagram
                         </a>
+                        <p className="text-[11px] text-gray-400 text-center tabular-nums">
+                            {activeIndex + 1} / {posts.length}
+                        </p>
                     </div>
-                )}
+                </aside>
             </div>
-
-            {/* Counter */}
-            <p className="absolute bottom-4 left-1/2 -translate-x-1/2 text-xs text-white/60 tabular-nums">
-                {activeIndex + 1} / {posts.length}
-            </p>
         </div>
     );
 }
@@ -218,8 +229,9 @@ function InstagramFeed({ settings }) {
     if (!handle) return null;
 
     const posts = Array.from({ length: 5 }, (_, i) => ({
-        image: settings?.[`instagramPost${i + 1}Image`],
-        url:   settings?.[`instagramPost${i + 1}Url`] || `https://instagram.com/${handle}`,
+        image:   settings?.[`instagramPost${i + 1}Image`],
+        url:     settings?.[`instagramPost${i + 1}Url`] || `https://instagram.com/${handle}`,
+        caption: settings?.[`instagramPost${i + 1}Caption`] || '',
     })).filter(p => p.image);
 
     if (posts.length === 0) return null;
@@ -277,6 +289,7 @@ function InstagramFeed({ settings }) {
             <InstagramPostModal
                 posts={posts}
                 activeIndex={activeIdx}
+                handle={handle}
                 onClose={() => setActiveIdx(null)}
                 onPrev={() => setActiveIdx(i => Math.max(0, i - 1))}
                 onNext={() => setActiveIdx(i => Math.min(posts.length - 1, i + 1))}
