@@ -52,9 +52,10 @@ function ProductCardSimple({ id, title, price, main_image_url, main_image, image
 ───────────────────────────────────────────────────────────── */
 function FeaturedSplit({ mediaUrl, mediaIsVideo, label, title, description, ctaText, ctaUrl, reverse = false }) {
     return (
-        <section className="border-t border-gray-100">
-            <div className={`grid grid-cols-1 md:grid-cols-2 ${reverse ? 'md:[direction:rtl]' : ''}`}>
-                <div className="aspect-square md:aspect-auto md:min-h-[520px] bg-gray-50 overflow-hidden md:[direction:ltr]">
+        <section className="py-12 md:py-20 px-4 md:px-8">
+            <div className={`max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center ${reverse ? 'md:[direction:rtl]' : ''}`}>
+                {/* Media — capped tinggi agar tidak melebihi layar */}
+                <div className="aspect-square md:aspect-[4/5] lg:aspect-[3/4] max-h-[70vh] bg-gray-50 overflow-hidden rounded-lg md:[direction:ltr]">
                     {mediaUrl ? (
                         mediaIsVideo ? (
                             <video src={mediaUrl} autoPlay loop muted playsInline preload="none"
@@ -68,7 +69,9 @@ function FeaturedSplit({ mediaUrl, mediaIsVideo, label, title, description, ctaT
                         <div className="w-full h-full flex items-center justify-center text-xs text-gray-300">Media belum diatur</div>
                     )}
                 </div>
-                <div className="flex items-center justify-center px-8 md:px-14 lg:px-20 py-14 md:py-20 md:[direction:ltr]">
+
+                {/* Text */}
+                <div className="flex items-center md:[direction:ltr]">
                     <div className="max-w-md w-full">
                         {label && (
                             <p className="text-[10px] uppercase tracking-[0.3em] text-gray-400 mb-4">{label}</p>
@@ -84,7 +87,7 @@ function FeaturedSplit({ mediaUrl, mediaIsVideo, label, title, description, ctaT
                         {ctaText && (
                             <Link
                                 to={ctaUrl || '/products'}
-                                className="inline-flex items-center gap-2 px-5 h-10 border border-gray-900 text-xs uppercase tracking-[0.2em] text-gray-900 hover:bg-gray-900 hover:text-white transition-colors"
+                                className="inline-flex items-center gap-2 px-5 h-10 border border-gray-900 text-xs uppercase tracking-[0.2em] text-gray-900 hover:bg-gray-900 hover:text-white transition-colors rounded-md"
                             >
                                 {ctaText} <ArrowRight size={12} />
                             </Link>
