@@ -166,21 +166,32 @@ export default function ProductFormModal({
                         <div className="space-y-2">
                             {formData.variants.map((v, idx) => (
                                 <div key={idx} className="flex gap-2 items-start">
-                                    <Input
-                                        placeholder="Nama varian"
-                                        value={v.name}
-                                        onChange={(e) => onVariantChange(idx, 'name', e.target.value)}
-                                        required
-                                        className="flex-1"
-                                    />
-                                    <Input
-                                        placeholder="Harga"
-                                        prefix="Rp"
-                                        value={v.price}
-                                        onChange={(e) => onVariantChange(idx, 'price', e.target.value)}
-                                        required
-                                        className="w-32"
-                                    />
+                                    <div className="flex-1">
+                                        <Input
+                                            placeholder="Nama varian"
+                                            value={v.name}
+                                            onChange={(e) => onVariantChange(idx, 'name', e.target.value)}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="w-28">
+                                        <Input
+                                            placeholder="Harga"
+                                            prefix="Rp"
+                                            value={v.price}
+                                            onChange={(e) => onVariantChange(idx, 'price', e.target.value)}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="w-20">
+                                        <Input
+                                            type="number"
+                                            placeholder="Stok"
+                                            min="0"
+                                            value={v.stock ?? ''}
+                                            onChange={(e) => onVariantChange(idx, 'stock', e.target.value)}
+                                        />
+                                    </div>
                                     <button
                                         type="button"
                                         onClick={() => onRemoveVariant(idx)}
@@ -191,6 +202,7 @@ export default function ProductFormModal({
                                     </button>
                                 </div>
                             ))}
+                            <p className="text-[11px] text-gray-400">Stok varian kosong = ikut stok produk utama.</p>
                         </div>
                     ) : null}
                 </Section>

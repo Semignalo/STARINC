@@ -31,14 +31,6 @@ function buildNetworkTree(rootUser, downlines) {
     return map[rootUser.id];
 }
 
-const ROLE_CARD = {
-    admin:      'border-red-200 bg-red-50',
-    starcenter: 'border-purple-200 bg-purple-50',
-};
-const ROLE_BADGE = {
-    admin:      'bg-red-100 text-red-700',
-    starcenter: 'bg-purple-100 text-purple-700',
-};
 const ROLE_LABEL = { admin: 'Admin', starcenter: 'Starcenter' };
 
 function NetworkTreeNode({ node, isRoot = false }) {
@@ -52,32 +44,37 @@ function NetworkTreeNode({ node, isRoot = false }) {
             <div className="flex items-start gap-2">
                 <button
                     onClick={() => hasChildren && setCollapsed(c => !c)}
-                    className={`mt-3 w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 transition
-                        ${hasChildren ? 'bg-gray-200 hover:bg-gray-300 cursor-pointer' : 'opacity-0 pointer-events-none'}`}
+                    className={`mt-2.5 w-4 h-4 rounded flex items-center justify-center flex-shrink-0 transition-colors
+                        ${hasChildren ? 'bg-gray-100 hover:bg-gray-200 text-gray-500 cursor-pointer' : 'opacity-0 pointer-events-none'}`}
                 >
-                    {collapsed ? <ChevronRight size={11} /> : <ChevronDown size={11} />}
+                    {collapsed ? <ChevronRight size={10} /> : <ChevronDown size={10} />}
                 </button>
                 <div
-                    className={`flex-1 border rounded-xl px-3 py-2.5 transition
+                    className={`flex-1 border rounded-md px-3 py-2 transition-colors
                         ${isRoot
-                            ? 'border-emerald-300 bg-emerald-50 shadow-sm'
-                            : `${ROLE_CARD[node.role] || 'border-gray-200 bg-gray-50'} cursor-pointer hover:shadow-sm`
+                            ? 'border-gray-900 bg-gray-900 text-white'
+                            : 'border-gray-200 bg-white cursor-pointer hover:border-gray-300 hover:bg-gray-50/60'
                         }`}
                     onClick={() => !isRoot && navigate(`/admin/users/${node.id}`)}
                 >
                     <div className="flex items-center justify-between gap-2 min-w-0">
-                        <span className="font-medium text-sm text-gray-900 truncate">{node.name}</span>
+                        <span className={`font-medium text-sm truncate ${isRoot ? 'text-white' : 'text-gray-900'}`}>{node.name}</span>
                         <div className="flex items-center gap-1.5 flex-shrink-0">
-                            <span className={`text-xs px-2 py-0.5 rounded-full font-medium
-                                ${isRoot ? 'bg-emerald-100 text-emerald-700' : (ROLE_BADGE[node.role] || 'bg-gray-100 text-gray-600')}`}>
-                                {isRoot ? (ROLE_LABEL[node.role] || node.role) + ' (root)' : (ROLE_LABEL[node.role] || node.role)}
+                            <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded ring-1 ring-inset
+                                ${isRoot
+                                    ? 'bg-white/10 text-white ring-white/20'
+                                    : node.role === 'admin'
+                                        ? 'bg-red-50 text-red-700 ring-red-200'
+                                        : 'bg-[var(--admin-accent-soft)] text-[var(--admin-accent-hover)] ring-[var(--admin-accent)]/20'
+                                }`}>
+                                {ROLE_LABEL[node.role] || node.role}{isRoot ? ' · root' : ''}
                             </span>
-                            {!isRoot && <ExternalLink size={13} className="text-gray-400" />}
+                            {!isRoot && <ExternalLink size={11} className="text-gray-300" />}
                         </div>
                     </div>
-                    <p className="text-xs text-gray-500 mt-0.5 truncate">{node.email}</p>
+                    <p className={`text-[11px] mt-0.5 truncate ${isRoot ? 'text-white/60' : 'text-gray-500'}`}>{node.email}</p>
                     {hasChildren && (
-                        <p className="text-xs text-gray-400 mt-1">
+                        <p className={`text-[11px] mt-1 ${isRoot ? 'text-white/50' : 'text-gray-400'}`}>
                             {node.children.length} langsung · {totalDesc} total downline
                         </p>
                     )}

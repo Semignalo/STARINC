@@ -50,7 +50,7 @@ const DEFAULT_CONFIG = {
  * Komponen untuk upload video dengan progress bar.
  * Menggunakan adminSettingsApi.uploadFile (Laravel storage).
  */
-function VideoUploadField({ label, fieldName, value, onChange, hint }) {
+function VideoUploadField({ label, fieldName, value, onChange, hint, driver }) {
     const [isUploading, setIsUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
 
@@ -65,7 +65,8 @@ function VideoUploadField({ label, fieldName, value, onChange, hint }) {
             const result = await adminSettingsApi.uploadFile(
                 file,
                 'appearance',
-                (percent) => setUploadProgress(percent)
+                (percent) => setUploadProgress(percent),
+                driver || null
             );
             onChange(fieldName, result.url);
         } catch (error) {
@@ -126,7 +127,7 @@ function VideoUploadField({ label, fieldName, value, onChange, hint }) {
     );
 }
 
-function ImageUploadField({ label, fieldName, value, onChange, hint }) {
+function ImageUploadField({ label, fieldName, value, onChange, hint, driver }) {
     const [isUploading, setIsUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
 
@@ -141,7 +142,8 @@ function ImageUploadField({ label, fieldName, value, onChange, hint }) {
             const result = await adminSettingsApi.uploadFile(
                 file,
                 'appearance',
-                (percent) => setUploadProgress(percent)
+                (percent) => setUploadProgress(percent),
+                driver || null
             );
             onChange(fieldName, result.url);
         } catch (error) {
@@ -206,6 +208,7 @@ export default function AdminAppearance() {
     const { settings, loading: contextLoading, refreshAppearance } = useAppearance();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [uploadDriver, setUploadDriver] = useState(''); // '' = pakai default server
     const [lastSaved, setLastSaved] = useState(null);
     const [config, setConfig] = useState(DEFAULT_CONFIG);
     const adminFetched = useRef(false);
@@ -292,9 +295,35 @@ export default function AdminAppearance() {
                 </button>
             </div>
 
-            <div className="mb-4 px-3 py-2 bg-[var(--admin-accent-soft)] border border-[var(--admin-accent)]/20 text-[var(--admin-accent-hover)] text-xs rounded-[6px]">
-                Upload media di halaman ini pakai driver default server (atur via <code className="font-mono bg-white/60 px-1 rounded">MEDIA_DEFAULT_DRIVER</code> di <code className="font-mono bg-white/60 px-1 rounded">.env</code>).
-                Untuk upload ke Cloudinary, set <code className="font-mono bg-white/60 px-1 rounded">MEDIA_DEFAULT_DRIVER=cloudinary</code>.
+            {/* Storage Driver Toggle */}
+            <div className="mb-4 px-3 py-2.5 bg-white border border-gray-200 rounded-[8px] flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                    <p className="text-xs font-medium text-gray-700">Storage upload</p>
+                    <p className="text-[11px] text-gray-500">
+                        Pilih lokasi penyimpanan untuk upload berikutnya di halaman ini.
+                    </p>
+                </div>
+                <div className="flex border border-gray-200 rounded-[6px] p-0.5 bg-gray-50 shrink-0">
+                    {[
+                        { key: '', label: 'Default' },
+                        { key: 'local', label: 'Local' },
+                        { key: 'cloudinary', label: 'Cloudinary' },
+                    ].map(opt => (
+                        <button
+                            key={opt.key}
+                            type="button"
+                            onClick={() => setUploadDriver(opt.key)}
+                            className={`inline-flex items-center px-2 h-6 rounded text-[11px] font-medium transition-colors ${
+                                uploadDriver === opt.key
+                                    ? 'bg-white text-gray-900 shadow-sm border border-gray-200'
+                                    : 'text-gray-500 hover:text-gray-900'
+                            }`}
+                            title={opt.key === '' ? 'Pakai MEDIA_DEFAULT_DRIVER dari .env' : `Upload ke ${opt.label}`}
+                        >
+                            {opt.label}
+                        </button>
+                    ))}
+                </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -363,6 +392,7 @@ export default function AdminAppearance() {
                                     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
                                         <HeroVideoUploader
                                             onChange={(url) => handleFieldChange('heroVideoUrl', url)}
+                                            driver={uploadDriver}
                                         />
                                     </div>
                                     {config.heroVideoUrl && (
@@ -405,6 +435,7 @@ export default function AdminAppearance() {
                                     fieldName="logoUrl"
                                     value={config.logoUrl}
                                     onChange={handleFieldChange}
+                                driver={uploadDriver}
                                     hint="Gunakan file PNG dengan background transparan untuk hasil terbaik."
                                 />
                                 {config.logoUrl && (
@@ -485,6 +516,7 @@ export default function AdminAppearance() {
                                 fieldName="goldSerumVideoUrl"
                                 value={config.goldSerumVideoUrl}
                                 onChange={handleFieldChange}
+                                driver={uploadDriver}
                                 hint="Gunakan format video terkompres dengan framerate 30fps dan resolusi maksimal 1080p (vertikal 4:3) agar performa website tetap cepat."
                             />
                         </div>
@@ -542,6 +574,7 @@ export default function AdminAppearance() {
                                 fieldName="secondFeaturedVideoUrl"
                                 value={config.secondFeaturedVideoUrl}
                                 onChange={handleFieldChange}
+                                driver={uploadDriver}
                                 hint="Gunakan format video terkompres dengan framerate 30fps dan resolusi maksimal 1080p (vertikal 4:3)."
                             />
                         </div>
@@ -612,6 +645,7 @@ export default function AdminAppearance() {
                                 fieldName="skinTypeImageUrl"
                                 value={config.skinTypeImageUrl}
                                 onChange={handleFieldChange}
+                                driver={uploadDriver}
                                 hint="Rasio bebas, tapi portrait atau square lebih baik. Gambar akan mengisi penuh sisi kiri."
                             />
                         </div>
@@ -683,6 +717,7 @@ export default function AdminAppearance() {
                                 fieldName="editorialImageUrl"
                                 value={config.editorialImageUrl}
                                 onChange={handleFieldChange}
+                                driver={uploadDriver}
                                 hint="Gambar akan ditampilkan full-bleed di sisi kanan section. Gunakan gambar landscape berkualitas tinggi."
                             />
                         </div>
@@ -787,7 +822,7 @@ export default function AdminAppearance() {
 /**
  * Sub-komponen upload untuk hero video (inline, karena layoutnya berbeda).
  */
-function HeroVideoUploader({ onChange }) {
+function HeroVideoUploader({ onChange, driver }) {
     const [isUploading, setIsUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
 
@@ -802,7 +837,8 @@ function HeroVideoUploader({ onChange }) {
             const result = await adminSettingsApi.uploadFile(
                 file,
                 'appearance',
-                (percent) => setUploadProgress(percent)
+                (percent) => setUploadProgress(percent),
+                driver || null
             );
             onChange(result.url);
         } catch (error) {

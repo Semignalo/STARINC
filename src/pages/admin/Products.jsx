@@ -120,7 +120,11 @@ export default function Products() {
             image: product.main_image_url || product.main_image || product.image || '',
             media: initialMedia,
             variants: product.variants
-                ? product.variants.map(v => ({ name: v.name, price: v.price }))
+                ? product.variants.map(v => ({
+                    name: v.name,
+                    price: v.price,
+                    stock: v.stock !== null && v.stock !== undefined ? String(v.stock) : '',
+                }))
                 : [],
             isPromo: product.is_promo || product.isPromo || false,
             stock: product.stock !== null && product.stock !== undefined ? String(product.stock) : '',
@@ -168,7 +172,7 @@ export default function Products() {
     };
 
     const handleAddVariant = () => {
-        setFormData(prev => ({ ...prev, variants: [...prev.variants, { name: '', price: '' }] }));
+        setFormData(prev => ({ ...prev, variants: [...prev.variants, { name: '', price: '', stock: '' }] }));
     };
 
     const handleRemoveVariant = (index) => {
@@ -205,7 +209,10 @@ export default function Products() {
                 weight: formData.weight !== '' ? parseInt(formData.weight, 10) : null,
                 variants: formData.variants.map(v => ({
                     name: v.name,
-                    price: parseFloat(String(v.price).replace(/,/g, ''))
+                    price: parseFloat(String(v.price).replace(/,/g, '')),
+                    stock: v.stock !== '' && v.stock !== null && v.stock !== undefined
+                        ? parseInt(v.stock, 10)
+                        : null,
                 }))
             };
 
