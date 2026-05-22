@@ -11,8 +11,18 @@ import Input from '../../components/admin/ui/Input';
 // ── Network tree helpers ──────────────────────────────────────────────────────
 
 const ROLE_CFG = {
-    admin:      { card: 'border-red-200 bg-red-50',       badge: 'bg-red-100 text-red-700',       avatar: 'bg-red-500',    label: 'Admin' },
-    starcenter: { card: 'border-purple-200 bg-purple-50', badge: 'bg-purple-100 text-purple-700', avatar: 'bg-purple-500', label: 'Starcenter' },
+    admin: {
+        card:   'border-gray-900 bg-gray-900 text-white',
+        badge:  'bg-white/10 text-white ring-white/20',
+        avatar: 'bg-white text-gray-900',
+        label:  'Admin',
+    },
+    starcenter: {
+        card:   'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50/60',
+        badge:  'bg-[var(--admin-accent-soft)] text-[var(--admin-accent-hover)] ring-[var(--admin-accent)]/20',
+        avatar: 'bg-gray-900 text-white',
+        label:  'Starcenter',
+    },
 };
 
 function countDesc(node) {
@@ -46,6 +56,7 @@ function NetworkNode({ node, depth = 0 }) {
     const cfg = ROLE_CFG[node.role] || ROLE_CFG.starcenter;
     const total = hasChildren ? countDesc(node) : 0;
     const initials = (node.name || node.email || '?').charAt(0).toUpperCase();
+    const isAdmin = node.role === 'admin';
 
     return (
         <div>
@@ -53,51 +64,53 @@ function NetworkNode({ node, depth = 0 }) {
                 {/* Expand / collapse */}
                 <button
                     onClick={() => hasChildren && setCollapsed(c => !c)}
-                    className={`mt-[18px] w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 transition
-                        ${hasChildren ? 'bg-gray-200 hover:bg-gray-300 cursor-pointer' : 'opacity-0 pointer-events-none'}`}
+                    className={`mt-[14px] w-4 h-4 rounded flex items-center justify-center flex-shrink-0 transition-colors
+                        ${hasChildren ? 'bg-gray-100 hover:bg-gray-200 text-gray-500 cursor-pointer' : 'opacity-0 pointer-events-none'}`}
                     title={collapsed ? 'Tampilkan downline' : 'Sembunyikan downline'}
                 >
-                    {collapsed ? <ChevronRight size={11} /> : <ChevronDown size={11} />}
+                    {collapsed ? <ChevronRight size={10} /> : <ChevronDown size={10} />}
                 </button>
 
                 {/* Node card */}
                 <div
-                    className={`flex-1 border rounded-xl px-3 py-2.5 flex items-center gap-3 cursor-pointer hover:shadow-sm transition ${cfg.card}`}
+                    className={`flex-1 border rounded-md px-3 py-2 flex items-center gap-3 cursor-pointer transition-colors ${cfg.card}`}
                     onClick={() => navigate(`/admin/users/${node.id}`)}
                 >
                     {/* Avatar */}
-                    <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0 ${cfg.avatar}`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-xs flex-shrink-0 ${cfg.avatar}`}>
                         {initials}
                     </div>
 
                     {/* Info */}
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5 flex-wrap">
-                            <span className="text-sm font-semibold text-gray-900 truncate">{node.name || '-'}</span>
-                            <span className={`text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0 ${cfg.badge}`}>
+                            <span className={`text-sm font-medium truncate ${isAdmin ? 'text-white' : 'text-gray-900'}`}>{node.name || '—'}</span>
+                            <span className={`inline-flex items-center px-1.5 py-0.5 text-[10px] font-medium rounded ring-1 ring-inset flex-shrink-0 ${cfg.badge}`}>
                                 {cfg.label}
                             </span>
                             {node.status === 'inactive' && (
-                                <span className="text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider flex-shrink-0 bg-red-100 text-red-600">
+                                <span className={`inline-flex items-center px-1.5 py-0.5 text-[10px] font-medium rounded ring-1 ring-inset flex-shrink-0 ${
+                                    isAdmin ? 'bg-white/10 text-white/80 ring-white/20' : 'bg-gray-100 text-gray-600 ring-gray-200'
+                                }`}>
                                     Inactive
                                 </span>
                             )}
                         </div>
-                        <p className="text-xs text-gray-500 truncate">{node.email}</p>
+                        <p className={`text-[11px] truncate ${isAdmin ? 'text-white/60' : 'text-gray-500'}`}>{node.email}</p>
                         {hasChildren && (
-                            <p className="text-xs text-gray-400 mt-0.5">
+                            <p className={`text-[11px] mt-0.5 ${isAdmin ? 'text-white/50' : 'text-gray-400'}`}>
                                 {node.children.length} langsung · {total} total downline
                             </p>
                         )}
                     </div>
 
-                    <ExternalLink size={13} className="text-gray-400 flex-shrink-0" />
+                    <ExternalLink size={11} className={`flex-shrink-0 ${isAdmin ? 'text-white/40' : 'text-gray-300'}`} />
                 </div>
             </div>
 
             {/* Children */}
             {!collapsed && hasChildren && (
-                <div className="ml-[10px] pl-5 mt-1.5 space-y-1.5 border-l-2 border-dashed border-gray-200">
+                <div className="ml-[8px] pl-4 mt-1 space-y-1 border-l border-gray-200">
                     {node.children.map(child => (
                         <NetworkNode key={child.id} node={child} depth={depth + 1} />
                     ))}
@@ -314,47 +327,47 @@ export default function Users() {
 
             {/* ── NETWORK VIEW ── */}
             {viewMode === 'network' && (
-                <div className="space-y-5">
+                <div className="space-y-4">
                     {/* Stats */}
                     {counts && (
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                             {[
-                                { label: 'Total Pengguna', value: counts.total,      color: 'text-gray-900' },
-                                { label: 'Admin',          value: counts.admin,      color: 'text-red-600' },
-                                { label: 'Starcenter',     value: counts.starcenter, color: 'text-purple-600' },
-                            ].map(({ label, value, color }) => (
-                                <div key={label} className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
-                                    <p className="text-xs text-gray-500 font-medium">{label}</p>
-                                    <p className={`text-2xl font-bold mt-1 ${color}`}>{value}</p>
+                                { label: 'Total Pengguna', value: counts.total },
+                                { label: 'Admin',          value: counts.admin },
+                                { label: 'Starcenter',     value: counts.starcenter },
+                            ].map(({ label, value }) => (
+                                <div key={label} className="bg-white border border-gray-200 rounded-[8px] p-4">
+                                    <p className="text-[11px] font-medium uppercase tracking-wider text-gray-500">{label}</p>
+                                    <p className="text-xl font-semibold text-gray-900 mt-2 tabular-nums">{value}</p>
                                 </div>
                             ))}
                         </div>
                     )}
 
                     {/* Tree */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                        <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-                            <h2 className="font-bold text-gray-900 flex items-center gap-2">
-                                <GitBranch size={18} className="text-purple-600" />
+                    <div className="bg-white border border-gray-200 rounded-[8px] overflow-hidden">
+                        <div className="px-5 py-3 border-b border-gray-100 flex items-center justify-between gap-3">
+                            <h2 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+                                <GitBranch size={14} className="text-gray-400" />
                                 Pohon Jaringan
                             </h2>
-                            <p className="text-xs text-gray-400">
+                            <p className="text-[11px] text-gray-400">
                                 Klik node untuk detail · ▶ expand/collapse · Level 3+ otomatis ditutup
                             </p>
                         </div>
 
-                        <div className="p-5">
+                        <div className="p-4">
                             {networkLoading ? (
-                                <div className="flex items-center justify-center h-64 text-gray-500">
-                                    Memuat jaringan...
+                                <div className="flex items-center justify-center h-64 text-sm text-gray-400">
+                                    Memuat jaringan…
                                 </div>
                             ) : treeRoots.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center h-64 text-gray-400">
-                                    <GitBranch size={36} className="mb-2 opacity-30" />
+                                    <GitBranch size={28} className="mb-2 opacity-30" />
                                     <p className="text-sm">Tidak ada data jaringan.</p>
                                 </div>
                             ) : (
-                                <div className="space-y-2">
+                                <div className="space-y-1.5">
                                     {treeRoots.map(root => (
                                         <NetworkNode key={root.id} node={root} depth={0} />
                                     ))}
