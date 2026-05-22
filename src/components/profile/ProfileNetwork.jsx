@@ -43,8 +43,8 @@ export default function ProfileNetwork() {
     if (loading) {
         return (
             <div className="space-y-4">
-                <div className="h-32 w-full bg-gray-100 rounded-3xl animate-pulse" />
-                <div className="h-64 w-full bg-gray-50 rounded-3xl animate-pulse" />
+                <div className="h-32 w-full bg-gray-100  animate-pulse" />
+                <div className="h-64 w-full bg-gray-50  animate-pulse" />
             </div>
         );
     }
@@ -58,16 +58,16 @@ export default function ProfileNetwork() {
     return (
         <div className="space-y-6">
             <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2 mb-2">
-                <Users className="text-[var(--color-primary)]" /> Jaringan Saya
+                <Users className="text-gray-900" /> Jaringan Saya
             </h2>
 
             {/* Top Stats & Invitation Link */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 
                 {/* Referral Link Card */}
-                <div className="lg:col-span-2 bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl p-8 text-white shadow-lg relative overflow-hidden">
+                <div className="lg:col-span-2 bg-gradient-to-br from-gray-900 to-gray-800  p-8 text-white shadow-lg relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
-                    <h3 className="text-lg font-bold mb-1 flex items-center gap-2 relative z-10"><Share2 size={20} className="text-[var(--color-primary)]" /> Ajak Teman & Dapatkan Komisi</h3>
+                    <h3 className="text-lg font-bold mb-1 flex items-center gap-2 relative z-10"><Share2 size={20} className="text-gray-900" /> Ajak Teman & Dapatkan Komisi</h3>
                     <p className="text-gray-400 text-sm mb-6 relative z-10">Bagikan kode atau link referral kamu untuk mendapatkan komisi dari setiap transaksi mereka.</p>
                     
                     <div className="space-y-4 relative z-10">
@@ -135,32 +135,32 @@ export default function ProfileNetwork() {
 
                 {/* Quick Stats */}
                 <div className="flex flex-col gap-4">
-                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex-1 flex flex-col justify-center">
+                    <div className="bg-white p-6  shadow-sm border border-gray-100 flex-1 flex flex-col justify-center">
                         <div className="text-sm font-medium text-gray-500 mb-1 flex items-center gap-2"><Users size={16}/> Total Anggota</div>
                         <div className="text-4xl font-extrabold text-gray-900">{network?.total_referrals || 0}</div>
                     </div>
-                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex-1 flex flex-col justify-center">
+                    <div className="bg-white p-6  shadow-sm border border-gray-100 flex-1 flex flex-col justify-center">
                         <div className="text-sm font-medium text-gray-500 mb-1 flex items-center gap-2"><TrendingUp size={16}/> Omzet Anggota</div>
-                        <div className="text-2xl font-bold text-[var(--color-primary)]">Rp. {totalDownlineSpend.toLocaleString('id-ID')}</div>
+                        <div className="text-2xl font-bold text-gray-900">Rp. {totalDownlineSpend.toLocaleString('id-ID')}</div>
                     </div>
                 </div>
             </div>
 
             {/* Downlines List */}
-            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="bg-white  shadow-sm border border-gray-100 overflow-hidden">
                 <div className="p-6 border-b border-gray-100 flex flex-col sm:flex-row justify-between sm:items-center gap-4">
                     <h3 className="font-bold text-gray-900 text-lg">Daftar Anggota ({filteredReferrals.length})</h3>
                     <div className="flex items-center gap-4 w-full sm:w-auto">
                         <div className="flex bg-gray-100 p-1 rounded-lg">
                             <button 
                                 onClick={() => setViewMode('table')}
-                                className={`px-3 py-1.5 rounded-md text-sm font-medium flex items-center gap-2 transition ${viewMode === 'table' ? 'bg-white shadow-sm text-primary' : 'text-gray-500 hover:text-gray-900'}`}
+                                className={`px-3 py-1.5 rounded-md text-sm font-medium flex items-center gap-2 transition ${viewMode === 'table' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-900'}`}
                             >
                                 <Table size={16}/> Tabel
                             </button>
                             <button 
                                 onClick={() => setViewMode('tree')}
-                                className={`px-3 py-1.5 rounded-md text-sm font-medium flex items-center gap-2 transition ${viewMode === 'tree' ? 'bg-white shadow-sm text-primary' : 'text-gray-500 hover:text-gray-900'}`}
+                                className={`px-3 py-1.5 rounded-md text-sm font-medium flex items-center gap-2 transition ${viewMode === 'tree' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-900'}`}
                             >
                                 <Network size={16}/> Visualisasi Web
                             </button>
@@ -204,7 +204,7 @@ export default function ProfileNetwork() {
                                     <tr key={user.id} className="hover:bg-gray-50/50 transition">
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full bg-primary/10 text-[var(--color-primary)] flex items-center justify-center font-bold">
+                                                <div className="w-10 h-10 rounded-full bg-gray-900/10 text-gray-900 flex items-center justify-center font-bold">
                                                     {user.name.charAt(0).toUpperCase()}
                                                 </div>
                                                 <div>

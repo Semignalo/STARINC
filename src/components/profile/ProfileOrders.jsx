@@ -48,13 +48,13 @@ function TrackingBar({ status }) {
                         <div key={step} className="flex flex-col items-center gap-1.5">
                             <div className={`w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all duration-300
                                 ${isRejected ? 'bg-gray-50 border-gray-200 text-gray-300' :
-                                  isActive ? 'bg-[var(--color-primary)] border-[var(--color-primary)] text-white scale-110 shadow-lg shadow-primary/20' :
+                                  isActive ? 'bg-gray-900 border-[var(--color-primary)] text-white scale-110 shadow-lg shadow-primary/20' :
                                   isPast ? 'bg-gray-800 border-gray-800 text-white' :
                                   'bg-white border-gray-200 text-gray-300'}`}>
                                 <span className="w-2 h-2 rounded-full bg-current" />
                             </div>
                             <span className={`text-[9px] uppercase tracking-wide font-bold leading-tight text-center max-w-[64px]
-                                ${isActive ? 'text-[var(--color-primary)]' : isPast && !isRejected ? 'text-gray-700' : 'text-gray-400'}`}>
+                                ${isActive ? 'text-gray-900' : isPast && !isRejected ? 'text-gray-700' : 'text-gray-400'}`}>
                                 {cfg.label}
                             </span>
                         </div>
@@ -174,7 +174,7 @@ export default function ProfileOrders() {
         return (
             <div className="space-y-4">
                 {[1, 2, 3].map(i => (
-                    <div key={i} className="bg-white rounded-3xl p-6 border border-gray-100 animate-pulse">
+                    <div key={i} className="bg-white  p-6 border border-gray-100 animate-pulse">
                         <div className="flex justify-between mb-4">
                             <div className="h-4 w-36 bg-gray-100 rounded" />
                             <div className="h-4 w-24 bg-gray-100 rounded-full" />
@@ -188,7 +188,7 @@ export default function ProfileOrders() {
 
     if (orders.length === 0) {
         return (
-            <div className="bg-white rounded-3xl p-12 shadow-sm border border-gray-100 text-center flex flex-col items-center">
+            <div className="bg-white  p-12 shadow-sm border border-gray-100 text-center flex flex-col items-center">
                 <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-5">
                     <Package size={40} className="text-gray-300" />
                 </div>
@@ -204,7 +204,7 @@ export default function ProfileOrders() {
     return (
         <div className="space-y-6">
             <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <Package className="text-[var(--color-primary)]" /> Riwayat Pesanan
+                <Package className="text-gray-900" /> Riwayat Pesanan
             </h2>
 
             <div className="flex flex-col gap-5">
@@ -216,7 +216,7 @@ export default function ProfileOrders() {
                     const canUploadProof = order.status === 'pending_payment';
 
                     return (
-                        <div key={order.id} className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition">
+                        <div key={order.id} className="bg-white p-6  shadow-sm border border-gray-100 hover:shadow-md transition">
 
                             {/* Order Header */}
                             <div className="flex flex-col md:flex-row justify-between md:items-center border-b border-gray-100 pb-4 mb-4 gap-3">
@@ -233,7 +233,7 @@ export default function ProfileOrders() {
                             <TrackingBar status={order.status} />
 
                             {/* Items + Summary */}
-                            <div className="flex flex-col md:flex-row gap-5 bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
+                            <div className="flex flex-col md:flex-row gap-5 bg-gray-50/50 p-4  border border-gray-100">
 
                                 {/* Items list */}
                                 <div className="flex-1 space-y-3">
@@ -249,7 +249,7 @@ export default function ProfileOrders() {
                                                 </div>
                                                 <div className="flex-1 min-w-0">
                                                     <p className="text-sm font-bold text-gray-900 truncate">{item.product_title}</p>
-                                                    {item.variant_name && <p className="text-xs text-[var(--color-primary)]">{item.variant_name}</p>}
+                                                    {item.variant_name && <p className="text-xs text-gray-900">{item.variant_name}</p>}
                                                     <p className="text-xs text-gray-500 mt-0.5">
                                                         {item.quantity} × Rp. {parseFloat(item.unit_price || 0).toLocaleString('id-ID')}
                                                     </p>
@@ -269,7 +269,7 @@ export default function ProfileOrders() {
                                             </div>
                                         )}
                                         {order.discount_amount > 0 && (
-                                            <div className="text-xs text-[var(--color-primary)] font-medium mb-1 flex justify-between">
+                                            <div className="text-xs text-gray-900 font-medium mb-1 flex justify-between">
                                                 <span>Diskon Tier</span>
                                                 <span>- Rp. {parseFloat(order.discount_amount || 0).toLocaleString('id-ID')}</span>
                                             </div>

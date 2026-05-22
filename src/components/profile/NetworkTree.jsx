@@ -20,7 +20,7 @@ const NetworkNode = ({ node, isRoot = false }) => {
                 {hasChildren ? (
                     <button
                         onClick={() => setExpanded(!expanded)}
-                        className="mt-1 flex-shrink-0 bg-white border border-gray-300 rounded text-gray-500 hover:text-primary hover:border-primary transition"
+                        className="mt-1 flex-shrink-0 bg-white border border-gray-300 rounded text-gray-500 hover:text-gray-900 hover:border-primary transition"
                     >
                         {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                     </button>
@@ -28,9 +28,9 @@ const NetworkNode = ({ node, isRoot = false }) => {
                     <div className="mt-1 w-4 h-4" /> // spacer
                 )}
                 
-                <div className={`p-3 md:p-4 rounded-xl border ${isRoot ? 'border-primary bg-primary/5 shadow-md' : 'border-gray-200 bg-white'} w-52 md:w-72 flex items-center gap-3 transition-all hover:shadow-md`}>
+                <div className={`p-3 md:p-4 rounded-xl border ${isRoot ? 'border-primary bg-gray-900/5 shadow-md' : 'border-gray-200 bg-white'} w-52 md:w-72 flex items-center gap-3 transition-all hover:shadow-md`}>
                     <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0
-                        ${isRoot ? 'bg-primary text-white' : 'bg-gray-100 text-[var(--color-primary)]'}`}>
+                        ${isRoot ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'}`}>
                         {node.name ? node.name.charAt(0).toUpperCase() : <User />}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -88,7 +88,7 @@ export default function NetworkTree({ referrals, currentUser }) {
     root.children = buildTree(root.id);
 
     return (
-        <div className="bg-gray-50/50 rounded-2xl border border-gray-100">
+        <div className="bg-gray-50/50  border border-gray-100">
             {referrals.length > 0 && (
                 <div className="px-6 pt-4 pb-2 flex items-center justify-between">
                     <p className="text-xs text-gray-500 flex items-center gap-1.5">

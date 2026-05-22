@@ -106,9 +106,9 @@ export default function ProfileEdit() {
         <div className="space-y-8">
 
             {/* ── Section 1: Informasi Personal ── */}
-            <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 relative overflow-hidden">
+            <div className="bg-white  p-8 shadow-sm border border-gray-100 relative overflow-hidden">
                 <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                    <User className="text-[var(--color-primary)]" />
+                    <User className="text-gray-900" />
                     Informasi Personal
                 </h2>
 
@@ -224,9 +224,9 @@ export default function ProfileEdit() {
             </div>
 
             {/* ── Section 2: Ubah Password ── */}
-            <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 relative overflow-hidden">
+            <div className="bg-white  p-8 shadow-sm border border-gray-100 relative overflow-hidden">
                 <h2 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
-                    <KeyRound className="text-[var(--color-primary)]" />
+                    <KeyRound className="text-gray-900" />
                     Ubah Password
                 </h2>
                 <p className="text-sm text-gray-500 mb-6">

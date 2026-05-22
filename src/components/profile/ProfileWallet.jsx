@@ -69,7 +69,7 @@ export default function ProfileWallet() {
     return (
         <div className="space-y-6">
             {/* Balance Card */}
-            <div className="bg-gradient-to-br from-emerald-700 to-emerald-900 rounded-2xl p-6 text-white shadow-lg">
+            <div className="bg-gradient-to-br from-emerald-700 to-emerald-900  p-6 text-white shadow-lg">
                 <div className="flex items-center gap-2 mb-1 opacity-80">
                     <Wallet size={16} />
                     <span className="text-sm font-medium uppercase tracking-wider">Saldo Wallet</span>
@@ -88,7 +88,7 @@ export default function ProfileWallet() {
 
             {/* Withdrawal Form */}
             {showWithdrawForm && (
-                <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm">
+                <div className="bg-white  border border-gray-200 p-5 shadow-sm">
                     <h3 className="font-bold text-gray-900 mb-4">Permintaan Penarikan</h3>
                     <form onSubmit={handleWithdraw} className="space-y-3">
                         <div>
@@ -158,7 +158,7 @@ export default function ProfileWallet() {
             )}
 
             {/* Transaction History */}
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className="bg-white  border border-gray-200 shadow-sm overflow-hidden">
                 <div className="p-5 border-b border-gray-100">
                     <h3 className="font-bold text-gray-900">Riwayat Transaksi</h3>
                 </div>

@@ -50,10 +50,10 @@ export default function ProfileCommissions() {
         return (
             <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="h-32 w-full bg-gray-100 rounded-3xl animate-pulse" />
-                    <div className="h-32 w-full bg-gray-100 rounded-3xl animate-pulse" />
+                    <div className="h-32 w-full bg-gray-100  animate-pulse" />
+                    <div className="h-32 w-full bg-gray-100  animate-pulse" />
                 </div>
-                <div className="h-64 w-full bg-gray-50 rounded-3xl animate-pulse" />
+                <div className="h-64 w-full bg-gray-50  animate-pulse" />
             </div>
         );
     }
@@ -61,12 +61,12 @@ export default function ProfileCommissions() {
     return (
         <div className="space-y-6">
             <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2 mb-2">
-                <Wallet className="text-[var(--color-primary)]" /> Komisi Saya
+                <Wallet className="text-gray-900" /> Komisi Saya
             </h2>
 
             {/* Summary Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="bg-gradient-to-br from-emerald-500 to-green-600 rounded-3xl p-6 text-white shadow-lg relative overflow-hidden">
+                <div className="bg-gradient-to-br from-emerald-500 to-green-600  p-6 text-white shadow-lg relative overflow-hidden">
                     <div className="absolute -right-4 -top-4 text-white/20">
                         <CheckCircle size={100} />
                     </div>
@@ -76,7 +76,7 @@ export default function ProfileCommissions() {
                     </div>
                 </div>
                 
-                <div className="bg-gradient-to-br from-orange-400 to-red-500 rounded-3xl p-6 text-white shadow-lg relative overflow-hidden">
+                <div className="bg-gradient-to-br from-orange-400 to-red-500  p-6 text-white shadow-lg relative overflow-hidden">
                     <div className="absolute -right-4 -top-4 text-white/20">
                         <Clock size={100} />
                     </div>
@@ -89,7 +89,7 @@ export default function ProfileCommissions() {
             </div>
 
             {/* Commissions List */}
-            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="bg-white  shadow-sm border border-gray-100 overflow-hidden">
                 <div className="p-6 border-b border-gray-100">
                     <h3 className="font-bold text-gray-900 text-lg">Riwayat Komisi</h3>
                 </div>
@@ -130,7 +130,7 @@ export default function ProfileCommissions() {
                                         <td className="px-6 py-4 text-right text-gray-500">
                                             Rp. {parseFloat(comm.order_amount).toLocaleString('id-ID')}
                                         </td>
-                                        <td className="px-6 py-4 text-right font-bold text-[var(--color-primary)]">
+                                        <td className="px-6 py-4 text-right font-bold text-gray-900">
                                             + Rp. {parseFloat(comm.commission_amount).toLocaleString('id-ID')}
                                         </td>
                                         <td className="px-6 py-4 text-center">
