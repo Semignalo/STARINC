@@ -113,8 +113,9 @@ class InstagramService
 
         try {
             // Instagram Login API: pakai /me/media (token sudah scoped ke user)
-            $resp = Http::timeout(10)->get("{$this->apiBase}/me/media", [
-                'fields'       => 'id,media_type,media_url,thumbnail_url,permalink,caption,timestamp',
+            // children{} expansion: dapat semua item carousel sekaligus dalam 1 request
+            $resp = Http::timeout(15)->get("{$this->apiBase}/me/media", [
+                'fields'       => 'id,media_type,media_url,thumbnail_url,permalink,caption,timestamp,children{id,media_type,media_url,thumbnail_url}',
                 'limit'        => $limit,
                 'access_token' => $accessToken,
             ]);
@@ -129,21 +130,46 @@ class InstagramService
 
             $items = $resp->json('data') ?? [];
 
-            return array_map(function ($item) {
-                return [
-                    'id'        => $item['id'] ?? null,
-                    'type'      => strtolower($item['media_type'] ?? 'image'),
-                    // Untuk video, media_url = video file. Thumbnail bisa pakai thumbnail_url.
-                    'image'     => $item['thumbnail_url'] ?? $item['media_url'] ?? null,
-                    'video'     => ($item['media_type'] ?? '') === 'VIDEO' ? ($item['media_url'] ?? null) : null,
-                    'permalink' => $item['permalink'] ?? null,
-                    'caption'   => $item['caption'] ?? '',
-                    'timestamp' => $item['timestamp'] ?? null,
-                ];
-            }, $items);
+            return array_map(fn($item) => $this->normalizeItem($item), $items);
         } catch (\Throwable $e) {
             Log::error('Instagram fetch error', ['msg' => $e->getMessage()]);
             return [];
         }
+    }
+
+    /**
+     * Normalize 1 media item ke shape internal yang konsisten.
+     */
+    private function normalizeItem(array $item): array
+    {
+        $type = strtolower($item['media_type'] ?? 'image');
+
+        // Children untuk carousel album
+        $children = [];
+        if ($type === 'carousel_album' && !empty($item['children']['data'])) {
+            $children = array_map(function ($child) {
+                $childType = strtolower($child['media_type'] ?? 'image');
+                return [
+                    'id'    => $child['id'] ?? null,
+                    'type'  => $childType,
+                    'image' => $child['thumbnail_url'] ?? $child['media_url'] ?? null,
+                    'video' => $childType === 'video' ? ($child['media_url'] ?? null) : null,
+                ];
+            }, $item['children']['data']);
+        }
+
+        return [
+            'id'        => $item['id'] ?? null,
+            'type'      => $type,
+            // Thumbnail/preview untuk grid (always image)
+            'image'     => $item['thumbnail_url'] ?? $item['media_url'] ?? null,
+            // Video URL untuk single video post
+            'video'     => $type === 'video' ? ($item['media_url'] ?? null) : null,
+            // Carousel children (urut sesuai posting)
+            'children'  => $children,
+            'permalink' => $item['permalink'] ?? null,
+            'caption'   => $item['caption'] ?? '',
+            'timestamp' => $item['timestamp'] ?? null,
+        ];
     }
 }

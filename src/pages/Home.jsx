@@ -97,6 +97,102 @@ function FeaturedSplit({ mediaUrl, mediaIsVideo, label, title, description, ctaT
 }
 
 /* ─────────────────────────────────────────────────────────────
+   PostMedia — render isi modal: image / video / carousel slider
+───────────────────────────────────────────────────────────── */
+function PostMedia({ post, childIdx, onPrevChild, onNextChild }) {
+    // Carousel: render child yang aktif (image atau video) + nav dots di bawah
+    if (post.type === 'carousel_album' && post.children?.length > 0) {
+        const child = post.children[Math.min(childIdx, post.children.length - 1)];
+        const isVideo = child.type === 'video' && child.video;
+
+        return (
+            <>
+                {isVideo ? (
+                    <video
+                        key={child.video}
+                        src={child.video}
+                        poster={child.image}
+                        controls
+                        playsInline
+                        className="max-w-full max-h-full object-contain"
+                    />
+                ) : (
+                    <OptimizedImage
+                        src={child.image}
+                        alt=""
+                        width={1000} height={1000}
+                        priority blur={false}
+                        wrapperClassName="w-full h-full flex items-center justify-center"
+                        fit="contain"
+                    />
+                )}
+
+                {/* Prev/Next dalam carousel */}
+                {post.children.length > 1 && (
+                    <>
+                        <button
+                            onClick={(e) => { e.stopPropagation(); onPrevChild(); }}
+                            disabled={childIdx === 0}
+                            className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-gray-900 flex items-center justify-center shadow disabled:opacity-30 disabled:cursor-not-allowed transition"
+                            aria-label="Previous slide"
+                        >
+                            <ChevronLeft size={18} />
+                        </button>
+                        <button
+                            onClick={(e) => { e.stopPropagation(); onNextChild(); }}
+                            disabled={childIdx === post.children.length - 1}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-gray-900 flex items-center justify-center shadow disabled:opacity-30 disabled:cursor-not-allowed transition"
+                            aria-label="Next slide"
+                        >
+                            <ChevronRight size={18} />
+                        </button>
+
+                        {/* Dot indicator */}
+                        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                            {post.children.map((_, i) => (
+                                <span
+                                    key={i}
+                                    className={`w-1.5 h-1.5 rounded-full transition-colors ${
+                                        i === childIdx ? 'bg-white' : 'bg-white/40'
+                                    }`}
+                                />
+                            ))}
+                        </div>
+                    </>
+                )}
+            </>
+        );
+    }
+
+    // Single video
+    if (post.type === 'video' && post.video) {
+        return (
+            <video
+                key={post.video}
+                src={post.video}
+                poster={post.image}
+                controls
+                autoPlay
+                playsInline
+                className="max-w-full max-h-full object-contain"
+            />
+        );
+    }
+
+    // Single image (default fallback)
+    return (
+        <OptimizedImage
+            src={post.image}
+            alt=""
+            width={1000} height={1000}
+            priority blur={false}
+            wrapperClassName="w-full h-full flex items-center justify-center"
+            fit="contain"
+        />
+    );
+}
+
+/* ─────────────────────────────────────────────────────────────
    MediaTypeIcon — overlay icon di pojok kanan-atas thumbnail
    menandakan tipe post (carousel / video). Image tidak ada icon.
 ───────────────────────────────────────────────────────────── */
@@ -127,6 +223,10 @@ function MediaTypeIcon({ type }) {
 ───────────────────────────────────────────────────────────── */
 function InstagramPostModal({ posts, activeIndex, handle, onClose, onPrev, onNext }) {
     const post = posts?.[activeIndex];
+    const [childIdx, setChildIdx] = useState(0);
+
+    // Reset carousel index saat post berganti
+    useEffect(() => { setChildIdx(0); }, [activeIndex]);
 
     useEffect(() => {
         if (activeIndex === null) return;
@@ -189,16 +289,13 @@ function InstagramPostModal({ posts, activeIndex, handle, onClose, onPrev, onNex
                 style={{ width: 'min(960px, 100%)' }}
                 onClick={(e) => e.stopPropagation()}
             >
-                {/* Image */}
-                <div className="md:flex-1 bg-gray-50 flex items-center justify-center aspect-square md:aspect-auto md:min-h-[560px] max-h-[92vh]">
-                    <OptimizedImage
-                        src={post.image}
-                        alt={`Instagram post ${activeIndex + 1}`}
-                        width={1000}
-                        height={1000}
-                        priority
-                        wrapperClassName="w-full h-full"
-                        fit="contain"
+                {/* Media — render image / video / carousel */}
+                <div className="md:flex-1 bg-black flex items-center justify-center aspect-square md:aspect-auto md:min-h-[560px] max-h-[92vh] relative">
+                    <PostMedia
+                        post={post}
+                        childIdx={childIdx}
+                        onPrevChild={() => setChildIdx(i => Math.max(0, i - 1))}
+                        onNextChild={() => setChildIdx(i => Math.min((post.children?.length || 1) - 1, i + 1))}
                     />
                 </div>
 
@@ -261,10 +358,12 @@ function InstagramFeed({ settings }) {
                 if (res?.configured && Array.isArray(res.posts) && res.posts.length > 0) {
                     // Normalize ke shape internal
                     setApiPosts(res.posts.map(p => ({
-                        image:   p.image,
-                        url:     p.permalink,
-                        caption: p.caption || '',
-                        type:    p.type || 'image', // image | video | carousel_album
+                        image:    p.image,
+                        video:    p.video || null,
+                        children: Array.isArray(p.children) ? p.children : [],
+                        url:      p.permalink,
+                        caption:  p.caption || '',
+                        type:     p.type || 'image', // image | video | carousel_album
                     })));
                 } else {
                     setApiPosts([]);
