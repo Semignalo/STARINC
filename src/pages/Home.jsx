@@ -509,32 +509,39 @@ export default function Home() {
             {/* ── Products ─────────────────────────────────────── */}
             {allProducts.length > 0 && (
                 <section className="py-16 md:py-24">
-                    {/* Header tetap di container (biar tidak nempel pinggir) */}
-                    <div className="max-w-7xl mx-auto px-4 md:px-8 flex items-end justify-between mb-10 md:mb-12">
-                        <div>
-                            <p className="text-[10px] uppercase tracking-[0.3em] text-gray-400 mb-3">{tx.productsLabel}</p>
-                            <h2 className="text-2xl md:text-3xl font-medium text-gray-900 tracking-tight">{tx.productsTitle}</h2>
-                        </div>
-                        <Link to="/products" className="hidden sm:inline-flex items-center gap-1 text-xs text-gray-500 hover:text-gray-900 transition-colors">
-                            {lang === 'id' ? 'Lihat semua' : 'View all'} <ArrowRight size={11} />
-                        </Link>
+                    {/* Header (judul saja) */}
+                    <div className="max-w-7xl mx-auto px-4 md:px-8 mb-10 md:mb-12 text-center">
+                        <p className="text-[10px] uppercase tracking-[0.3em] text-gray-400 mb-3">{tx.productsLabel}</p>
+                        <h2 className="text-2xl md:text-3xl font-medium text-gray-900 tracking-tight">{tx.productsTitle}</h2>
                     </div>
 
-                    {/* Mobile: horizontal scroll */}
+                    {/* Mobile: horizontal scroll (tampil semua sebagai swipeable) */}
                     <div className="flex md:hidden gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 px-4"
                          style={{ scrollbarWidth: 'none' }}>
-                        {allProducts.map(p => (
+                        {allProducts.slice(0, 4).map(p => (
                             <div key={p.id} className="snap-start shrink-0 w-[60vw] max-w-[260px]">
                                 <ProductCardSimple {...p} viewLabel={tx.viewProduct} outOfStockLabel={tx.outOfStock} />
                             </div>
                         ))}
                     </div>
 
-                    {/* Desktop: full-width grid 4 kolom */}
+                    {/* Desktop: 1 row penuh (3 di md, 4 di lg) */}
                     <div className="hidden md:grid grid-cols-3 lg:grid-cols-4 gap-6 lg:gap-8 px-6 lg:px-10">
-                        {allProducts.slice(0, 8).map(p => (
+                        {allProducts.slice(0, 4).map(p => (
                             <ProductCardSimple key={p.id} {...p} viewLabel={tx.viewProduct} outOfStockLabel={tx.outOfStock} />
                         ))}
+                    </div>
+
+                    {/* View all CTA — highlighted */}
+                    <div className="mt-12 md:mt-14 flex justify-center px-4">
+                        <Link
+                            to="/products"
+                            className="group inline-flex items-center gap-3 px-8 h-12 border border-gray-900 text-gray-900 text-xs uppercase tracking-[0.25em] font-medium hover:bg-gray-900 hover:text-white transition-colors relative"
+                        >
+                            <span className="absolute -bottom-px left-0 right-0 h-[2px] bg-[var(--color-accent)]" />
+                            {lang === 'id' ? 'Lihat Semua Produk' : 'View All Products'}
+                            <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                        </Link>
                     </div>
                 </section>
             )}
