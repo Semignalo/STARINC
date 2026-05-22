@@ -50,17 +50,17 @@ export default function ProductCard({
             aria-label={`${title}${isOutOfStock ? ' - Stok Habis' : ''}`}
         >
             {/* Image Container */}
-            <div className="relative aspect-[3/4] overflow-hidden bg-gray-100 mb-4">
+            <div className="relative aspect-[3/4] overflow-hidden bg-gray-100 mb-4 rounded-lg">
                 {discount && !isOutOfStock && (
-                    <div className="absolute top-0 left-0 bg-red-600 text-white text-xs font-bold px-3 py-1.5 uppercase tracking-wide z-10">
+                    <div className="absolute top-3 left-3 bg-white text-gray-900 text-[10px] font-medium px-2 py-1 uppercase tracking-wider z-10 rounded">
                         {discount} off
                     </div>
                 )}
 
                 {/* Overlay Stok Habis */}
                 {isOutOfStock && (
-                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-20">
-                        <span className="bg-white text-gray-800 text-sm font-bold px-4 py-2 uppercase tracking-widest">
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-20">
+                        <span className="bg-white text-gray-800 text-xs font-medium px-3 py-1.5 uppercase tracking-widest rounded">
                             Habis
                         </span>
                     </div>
