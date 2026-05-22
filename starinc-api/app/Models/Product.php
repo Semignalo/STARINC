@@ -14,7 +14,8 @@ class Product extends Model
 
     protected $fillable = [
         'title', 'price', 'original_price', 'discount_label',
-        'category', 'description', 'main_image', 'main_image_driver', 'main_image_public_id',
+        'category', 'description', 'ingredients', 'packaging',
+        'main_image', 'main_image_driver', 'main_image_public_id',
         'video_url', 'is_promo', 'sort_order', 'stock', 'weight', 'pdf_path',
     ];
 

@@ -150,6 +150,28 @@ export default function ProductFormModal({
                     />
                 </Section>
 
+                {/* Ingredients */}
+                <Section title="Ingredients (opsional)">
+                    <Textarea
+                        name="ingredients"
+                        value={formData.ingredients}
+                        onChange={onFormChange}
+                        rows={4}
+                        placeholder="Pisahkan dengan koma atau baris baru. Contoh: Vitamin C, Niacinamide, Vitamin E..."
+                    />
+                </Section>
+
+                {/* Packaging */}
+                <Section title="Packaging & Recycling (opsional)">
+                    <Textarea
+                        name="packaging"
+                        value={formData.packaging}
+                        onChange={onFormChange}
+                        rows={3}
+                        placeholder="Contoh: Kemasan kaca daur ulang. 100% recyclable. Cara membuang..."
+                    />
+                </Section>
+
                 {/* Variants */}
                 <Section
                     title="Varian Produk (opsional)"
