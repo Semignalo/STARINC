@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { adminSettingsApi } from '../../api/settingsApi';
+import { instagramApi } from '../../api/instagramApi';
 import { useAppearance } from '../../contexts/AppearanceContext';
-import { Save, Image, Type, Palette, Video, Upload, Loader2, Instagram } from 'lucide-react';
+import { Save, Image, Type, Palette, Video, Upload, Loader2, Instagram, RefreshCw, CheckCircle, XCircle } from 'lucide-react';
 import Swal from 'sweetalert2';
 
 // Normalize upload URL to always use the current dev/prod host
@@ -735,9 +736,11 @@ export default function AdminAppearance() {
                                 <Instagram size={14} className="text-gray-400" />
                                 Instagram Feed
                             </h3>
-                            <p className="text-xs text-gray-500 mb-4">Section di paling bawah homepage. Isi handle + max 5 post (gambar + link).</p>
+                            <p className="text-xs text-gray-500 mb-4">Section di paling bawah homepage. Bisa auto-sync via Graph API atau manual input di bawah.</p>
 
-                            <div className="space-y-4">
+                            <InstagramApiStatus />
+
+                            <div className="space-y-4 mt-4">
                                 <div>
                                     <label className="block text-xs font-medium text-gray-700 mb-1.5">Instagram Handle</label>
                                     <div className="relative">
@@ -953,5 +956,103 @@ function HeroVideoUploader({ onChange, driver }) {
                 </div>
             )}
         </>
+    );
+}
+
+/**
+ * InstagramApiStatus — pill yang nampilkan status koneksi Graph API
+ * (Configured / Token expired / Not configured) + tombol Refresh now.
+ */
+function InstagramApiStatus() {
+    const [status, setStatus] = useState(null); // null = loading, object = result
+    const [refreshing, setRefreshing] = useState(false);
+
+    const load = async () => {
+        try {
+            const data = await instagramApi.status();
+            setStatus(data);
+        } catch (e) {
+            setStatus({ configured: false, ok: false, error: e.message });
+        }
+    };
+
+    useEffect(() => { load(); }, []);
+
+    const handleRefresh = async () => {
+        setRefreshing(true);
+        try {
+            await instagramApi.refresh();
+            await load();
+            Swal.fire({ icon: 'success', title: 'Refreshed', text: 'Cache Instagram di-flush, post terbaru akan di-fetch ulang.', timer: 1800, showConfirmButton: false });
+        } catch (e) {
+            Swal.fire({ icon: 'error', title: 'Gagal', text: e.message });
+        } finally {
+            setRefreshing(false);
+        }
+    };
+
+    if (status === null) {
+        return (
+            <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-[6px] text-[11px] text-gray-500 flex items-center gap-2">
+                <Loader2 size={12} className="animate-spin" /> Mengecek status Graph API…
+            </div>
+        );
+    }
+
+    if (!status.configured) {
+        return (
+            <div className="px-3 py-3 bg-gray-50 border border-gray-200 rounded-[6px]">
+                <div className="flex items-start gap-2 mb-2">
+                    <XCircle size={14} className="text-gray-400 mt-0.5 shrink-0" />
+                    <div className="min-w-0 flex-1">
+                        <p className="text-xs font-medium text-gray-900">Graph API belum dikonfigurasi</p>
+                        <p className="text-[11px] text-gray-500 mt-0.5">
+                            Isi <code className="font-mono bg-white border border-gray-200 px-1 rounded">INSTAGRAM_ACCESS_TOKEN</code> dan{' '}
+                            <code className="font-mono bg-white border border-gray-200 px-1 rounded">INSTAGRAM_BUSINESS_ID</code> di file <code className="font-mono bg-white border border-gray-200 px-1 rounded">starinc-api/.env</code> untuk auto-sync.
+                            Tanpa setup ini, akan pakai input manual di bawah.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (!status.ok) {
+        return (
+            <div className="px-3 py-3 bg-red-50 border border-red-200 rounded-[6px] flex items-start gap-2">
+                <XCircle size={14} className="text-red-500 mt-0.5 shrink-0" />
+                <div className="min-w-0 flex-1">
+                    <p className="text-xs font-medium text-red-900">Token tidak valid / expired</p>
+                    <p className="text-[11px] text-red-700 mt-0.5">{status.error || 'Unknown error'}</p>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="px-3 py-3 bg-emerald-50 border border-emerald-200 rounded-[6px]">
+            <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2 min-w-0">
+                    <CheckCircle size={14} className="text-emerald-600 shrink-0" />
+                    <div className="min-w-0">
+                        <p className="text-xs font-medium text-emerald-900">Graph API terhubung</p>
+                        {status.expires_at && (
+                            <p className="text-[11px] text-emerald-700 mt-0.5">
+                                Token expired: {new Date(status.expires_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                            </p>
+                        )}
+                    </div>
+                </div>
+                <button
+                    type="button"
+                    onClick={handleRefresh}
+                    disabled={refreshing}
+                    className="h-8 px-2.5 inline-flex items-center gap-1.5 bg-white border border-emerald-300 hover:border-emerald-500 text-emerald-700 rounded text-[11px] font-medium transition-colors disabled:opacity-50"
+                >
+                    <RefreshCw size={11} className={refreshing ? 'animate-spin' : ''} />
+                    Refresh
+                </button>
+            </div>
+        </div>
     );
 }

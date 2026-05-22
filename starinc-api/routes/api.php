@@ -54,6 +54,9 @@ Route::get('/referral/{code}', [AuthController::class, 'lookupReferral']);
 // Testimonials (public)
 Route::get('/testimonials', [TestimonialController::class, 'index']);
 
+// Instagram feed (public — auto-cached 30min)
+Route::get('/instagram/posts', [\App\Http\Controllers\Api\InstagramController::class, 'posts']);
+
 // PDF stream with CORS (public, needed because static storage files don't have CORS headers)
 Route::get('/products/{id}/pdf', [ProductController::class, 'streamPdf']);
 
@@ -111,6 +114,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Dashboard
         Route::get('/dashboard', [AdminController::class, 'dashboard']);
+
+        // Instagram
+        Route::get('/instagram/status', [\App\Http\Controllers\Api\InstagramController::class, 'status']);
+        Route::post('/instagram/refresh', [\App\Http\Controllers\Api\InstagramController::class, 'refresh']);
 
         // Orders
         Route::get('/orders', [OrderController::class, 'adminIndex']);

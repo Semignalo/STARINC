@@ -5,6 +5,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { t } from '../locales/home';
 import { productApi } from '../api/productApi';
 import { testimonialsApi } from '../api/settingsApi';
+import { instagramApi } from '../api/instagramApi';
 import { ArrowRight, Star, Quote, Instagram, X, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
 import OptimizedImage from '../components/OptimizedImage';
 
@@ -225,14 +226,39 @@ function InstagramPostModal({ posts, activeIndex, handle, onClose, onPrev, onNex
 function InstagramFeed({ settings }) {
     const handle = settings?.instagramHandle?.trim();
     const [activeIdx, setActiveIdx] = useState(null);
+    const [apiPosts, setApiPosts] = useState(null); // null = loading, [] = no data, [{...}] = ada
+
+    // Try fetch dari Instagram Graph API (auto). Bila gagal/empty, fallback manual.
+    useEffect(() => {
+        let cancelled = false;
+        instagramApi.getPosts(5)
+            .then(res => {
+                if (cancelled) return;
+                if (res?.configured && Array.isArray(res.posts) && res.posts.length > 0) {
+                    // Normalize ke shape internal
+                    setApiPosts(res.posts.map(p => ({
+                        image:   p.image,
+                        url:     p.permalink,
+                        caption: p.caption || '',
+                    })));
+                } else {
+                    setApiPosts([]);
+                }
+            })
+            .catch(() => { if (!cancelled) setApiPosts([]); });
+        return () => { cancelled = true; };
+    }, []);
 
     if (!handle) return null;
 
-    const posts = Array.from({ length: 5 }, (_, i) => ({
+    // Posts dari API kalau ada, else fallback ke manual input via Appearance Settings
+    const manualPosts = Array.from({ length: 5 }, (_, i) => ({
         image:   settings?.[`instagramPost${i + 1}Image`],
         url:     settings?.[`instagramPost${i + 1}Url`] || `https://instagram.com/${handle}`,
         caption: settings?.[`instagramPost${i + 1}Caption`] || '',
     })).filter(p => p.image);
+
+    const posts = (apiPosts && apiPosts.length > 0) ? apiPosts : manualPosts;
 
     if (posts.length === 0) return null;
 
