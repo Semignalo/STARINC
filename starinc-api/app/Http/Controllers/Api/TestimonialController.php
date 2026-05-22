@@ -19,7 +19,8 @@ class TestimonialController extends Controller
             fn () => Testimonial::where('is_active', true)
                 ->orderBy('sort_order')
                 ->orderBy('id')
-                ->get(),
+                ->get()
+                ->toArray(),
         );
         return response()->json($testimonials);
     }

@@ -212,7 +212,12 @@ export default function Home() {
             )}
 
             {/* ── Testimonials ─────────────────────────────────── */}
-            {((testimonials?.length ?? 0) > 0 || tx.testimonials?.length > 0) && (
+            {(() => {
+                const list = Array.isArray(testimonials) && testimonials.length > 0
+                    ? testimonials
+                    : (Array.isArray(tx.testimonials) ? tx.testimonials : []);
+                if (list.length === 0) return null;
+                return (
                 <section className="border-t border-gray-100 py-16 md:py-24 px-4 md:px-8">
                     <div className="max-w-6xl mx-auto">
                         <div className="text-center mb-12">
@@ -220,7 +225,7 @@ export default function Home() {
                             <h2 className="text-2xl md:text-3xl font-medium text-gray-900 tracking-tight">{tx.testimTitle}</h2>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            {(testimonials ?? tx.testimonials).slice(0, 6).map((item, i) => (
+                            {list.slice(0, 6).map((item, i) => (
                                 <figure key={item.id ?? i} className="border border-gray-100 p-7 flex flex-col gap-5 relative bg-white">
                                     <Quote size={20} className="text-gray-200 absolute top-5 right-5" strokeWidth={1.5} />
                                     <div className="flex gap-0.5">
@@ -239,7 +244,8 @@ export default function Home() {
                         </div>
                     </div>
                 </section>
-            )}
+                );
+            })()}
 
             {/* ── Partnership CTA ──────────────────────────────── */}
             <section className="bg-gray-900 py-20 md:py-28 px-4">
