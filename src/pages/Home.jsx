@@ -536,9 +536,9 @@ export default function Home() {
                     <div className="mt-12 md:mt-14 flex justify-center px-4">
                         <Link
                             to="/products"
-                            className="group inline-flex items-center gap-3 px-8 h-12 border border-gray-900 text-gray-900 text-xs uppercase tracking-[0.25em] font-medium hover:bg-gray-900 hover:text-white transition-colors relative"
+                            className="group inline-flex items-center gap-3 px-8 h-12 border border-gray-900 text-gray-900 text-xs uppercase tracking-[0.25em] font-medium hover:bg-gray-900 hover:text-white transition-colors relative rounded-md overflow-hidden"
                         >
-                            <span className="absolute -bottom-px left-0 right-0 h-[2px] bg-[var(--color-accent)]" />
+                            <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[var(--color-accent)]" />
                             {lang === 'id' ? 'Lihat Semua Produk' : 'View All Products'}
                             <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                         </Link>
