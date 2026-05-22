@@ -16,6 +16,8 @@ class Product extends Model
         'title', 'price', 'original_price', 'discount_label',
         'category', 'description', 'ingredients', 'packaging',
         'main_image', 'main_image_driver', 'main_image_public_id',
+        'feature_image', 'feature_image_driver', 'feature_image_public_id',
+        'feature_title', 'feature_text',
         'video_url', 'is_promo', 'sort_order', 'stock', 'weight', 'pdf_path',
     ];
 
@@ -26,7 +28,7 @@ class Product extends Model
         'stock'          => 'integer',
     ];
 
-    protected $appends = ['main_image_url', 'is_out_of_stock', 'pdf_url'];
+    protected $appends = ['main_image_url', 'feature_image_url', 'is_out_of_stock', 'pdf_url'];
 
     public function variants(): HasMany
     {
@@ -55,6 +57,15 @@ class Product extends Model
             return $this->main_image;
         }
         return Storage::disk('public')->url($this->main_image);
+    }
+
+    public function getFeatureImageUrlAttribute(): ?string
+    {
+        if (!$this->feature_image) return null;
+        if ($this->feature_image_driver === 'cloudinary') {
+            return $this->feature_image;
+        }
+        return Storage::disk('public')->url($this->feature_image);
     }
 
     public function getPdfUrlAttribute(): ?string

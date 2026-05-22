@@ -1,10 +1,11 @@
-import React, { useRef } from 'react';
-import { Loader2, FileText, Trash2, Plus, X, Cloud, Server, Youtube } from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import { Loader2, FileText, Trash2, Plus, X, Cloud, Server, Youtube, Upload, ImageIcon } from 'lucide-react';
 import ProductMediaUploader from './ProductMediaUploader';
 import Modal from './ui/Modal';
 import Button from './ui/Button';
 import Input, { Textarea, Select } from './ui/Input';
 import { parseVideoUrl } from '../VideoEmbed';
+import { adminSettingsApi } from '../../api/settingsApi';
 import { cn } from '../../lib/utils';
 
 /**
@@ -169,6 +170,34 @@ export default function ProductFormModal({
                         onChange={onFormChange}
                         rows={3}
                         placeholder="Contoh: Kemasan kaca daur ulang. 100% recyclable. Cara membuang..."
+                    />
+                </Section>
+
+                {/* Feature section (image + title + text) */}
+                <Section title="Feature Section (split image + teks, opsional)">
+                    <p className="text-[11px] text-gray-500 -mt-1">
+                        Section gambar besar + judul + paragraf yang tampil di ProductDetail di bawah tab.
+                        Cocok untuk "How to use", "Origin story", "Ritual", dll. Judul bebas, tidak dipatokkan.
+                    </p>
+                    <FeatureImageUploader
+                        value={formData.featureImage}
+                        onChange={(v) => setField('featureImage', v)}
+                    />
+                    <Input
+                        label="Judul section"
+                        type="text"
+                        name="featureTitle"
+                        value={formData.featureTitle || ''}
+                        onChange={onFormChange}
+                        placeholder="contoh: the hands  |  How to use  |  Crafted with care"
+                    />
+                    <Textarea
+                        label="Paragraf"
+                        name="featureText"
+                        value={formData.featureText || ''}
+                        onChange={onFormChange}
+                        rows={5}
+                        placeholder="Tulis instruksi / cerita / penjelasan. Pisahkan paragraf dengan baris kosong."
                     />
                 </Section>
 
@@ -350,6 +379,67 @@ function StorageDriverToggle({ value, onChange }) {
                     {o.label}
                 </button>
             ))}
+        </div>
+    );
+}
+
+/**
+ * FeatureImageUploader — single image upload via adminSettingsApi.uploadFile.
+ * Pakai default driver dari config (.env MEDIA_DEFAULT_DRIVER).
+ */
+function FeatureImageUploader({ value, onChange }) {
+    const [uploading, setUploading] = useState(false);
+
+    const handleFile = async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setUploading(true);
+        try {
+            const res = await adminSettingsApi.uploadFile(file, 'products/feature');
+            onChange(res.url);
+        } catch (err) {
+            alert('Upload gagal: ' + (err?.response?.data?.message || err.message));
+        } finally {
+            setUploading(false);
+            e.target.value = '';
+        }
+    };
+
+    return (
+        <div>
+            <p className="text-[11px] font-medium text-gray-700 mb-1.5">Gambar feature</p>
+            <div className="flex items-start gap-3">
+                <div className="w-24 h-24 bg-gray-50 border border-gray-200 rounded-md overflow-hidden flex items-center justify-center flex-shrink-0">
+                    {value ? (
+                        <img src={value} alt="Feature" className="w-full h-full object-cover" />
+                    ) : (
+                        <ImageIcon size={20} className="text-gray-300" />
+                    )}
+                </div>
+                <div className="flex-1 space-y-2">
+                    <label className="inline-flex items-center gap-1.5 h-8 px-3 cursor-pointer bg-white border border-gray-200 hover:border-gray-300 rounded text-xs font-medium text-gray-700 transition-colors">
+                        {uploading ? <Loader2 size={12} className="animate-spin" /> : <Upload size={12} />}
+                        {uploading ? 'Uploading…' : 'Upload gambar'}
+                        <input type="file" accept="image/*" className="hidden" onChange={handleFile} disabled={uploading} />
+                    </label>
+                    <input
+                        type="text"
+                        value={value || ''}
+                        onChange={(e) => onChange(e.target.value)}
+                        placeholder="URL gambar (auto-isi setelah upload)"
+                        className="w-full h-8 px-2.5 bg-white border border-gray-200 rounded text-[11px] font-mono text-gray-600 focus:ring-1 focus:ring-gray-900 focus:border-gray-900 outline-none"
+                    />
+                    {value && (
+                        <button
+                            type="button"
+                            onClick={() => onChange('')}
+                            className="text-[11px] text-red-500 hover:text-red-700"
+                        >
+                            Hapus gambar
+                        </button>
+                    )}
+                </div>
+            </div>
         </div>
     );
 }

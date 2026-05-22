@@ -1,15 +1,13 @@
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { productApi } from '../api/productApi';
 import { testimonialsApi } from '../api/settingsApi';
-import { Star, Truck, ShieldCheck, Leaf, FileText, ChevronLeft, ChevronRight, ChevronRight as ChevR, Quote } from 'lucide-react';
+import { Star, Truck, ShieldCheck, Leaf, ChevronLeft, ChevronRight, ChevronRight as ChevR, Quote } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
 import SdpRedirectModal from '../components/SdpRedirectModal';
 import OptimizedImage from '../components/OptimizedImage';
 import VideoEmbed from '../components/VideoEmbed';
-
-const PdfViewer = lazy(() => import('../components/PdfViewer'));
 
 export default function ProductDetail() {
     const { id } = useParams();
@@ -363,20 +361,37 @@ export default function ProductDetail() {
                 </div>
             )}
 
-            {/* ── PDF Brochure ─────────────────────────────────── */}
-            {product.pdf_url && (
-                <div className="max-w-7xl mx-auto px-4 md:px-8 mt-12 md:mt-16">
-                    <p className="text-[10px] uppercase tracking-[0.3em] text-gray-400 mb-5 flex items-center gap-2">
-                        <FileText size={12} className="text-gray-400" /> Informasi Produk
-                    </p>
-                    <Suspense fallback={
-                        <div className="flex justify-center py-12">
-                            <div className="w-7 h-7 border-2 border-gray-200 border-t-gray-900 rounded-full animate-spin" />
+            {/* ── Feature Section (image + title + text split) ─── */}
+            {(product.feature_image_url || product.feature_image) && (product.feature_title || product.feature_text) && (
+                <section className="bg-gray-50/50 mt-16 md:mt-24 py-14 md:py-24 border-y border-gray-100">
+                    <div className="max-w-7xl mx-auto px-4 md:px-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center">
+                            {/* Image */}
+                            <div className="aspect-[4/5] md:aspect-square max-h-[700px] overflow-hidden rounded-lg bg-gray-100">
+                                <OptimizedImage
+                                    src={product.feature_image_url || product.feature_image}
+                                    alt={product.feature_title || product.title}
+                                    width={900} height={900}
+                                    sizes="(min-width: 768px) 50vw, 100vw"
+                                    wrapperClassName="w-full h-full" />
+                            </div>
+
+                            {/* Text */}
+                            <div>
+                                {product.feature_title && (
+                                    <h2 className="text-2xl md:text-3xl lg:text-4xl font-medium text-gray-900 tracking-tight mb-6">
+                                        {product.feature_title}
+                                    </h2>
+                                )}
+                                {product.feature_text && (
+                                    <div className="text-sm md:text-base text-gray-700 leading-relaxed whitespace-pre-line">
+                                        {product.feature_text}
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                    }>
-                        <PdfViewer url={`${import.meta.env.VITE_API_URL || 'http://localhost:8000/api'}/products/${product.id}/pdf`} />
-                    </Suspense>
-                </div>
+                    </div>
+                </section>
             )}
 
             {/* ── Related Products (full section) ─────────────── */}
