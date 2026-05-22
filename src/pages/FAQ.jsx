@@ -209,13 +209,13 @@ function AccordionItem({ q, a, isOpen, onToggle }) {
                 onClick={onToggle}
                 className="w-full flex items-start justify-between py-5 text-left gap-4 group"
             >
-                <span className={`text-sm font-medium leading-relaxed transition-colors ${isOpen ? 'text-[var(--color-accent)]' : 'text-gray-900 group-hover:text-[var(--color-accent)]'}`}>
+                <span className={`text-sm font-medium leading-relaxed transition-colors ${isOpen ? 'text-gray-500' : 'text-gray-900 group-hover:text-gray-500'}`}>
                     {q}
                 </span>
                 <ChevronDown
                     size={18}
                     strokeWidth={1.5}
-                    className={`shrink-0 mt-0.5 text-gray-400 transition-transform duration-300 ${isOpen ? 'rotate-180 text-[var(--color-accent)]' : ''}`}
+                    className={`shrink-0 mt-0.5 text-gray-400 transition-transform duration-300 ${isOpen ? 'rotate-180 text-gray-500' : ''}`}
                 />
             </button>
             <div className={`overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-96 pb-5' : 'max-h-0'}`}>
@@ -239,9 +239,9 @@ export default function FAQ() {
 
             {/* Hero */}
             <section className="bg-[#faf8f5] border-b border-stone-100 py-16 md:py-24 px-6 text-center">
-                <p className="text-[11px] uppercase tracking-[0.3em] text-[var(--color-accent)] mb-3">{tx.heroLabel}</p>
-                <h1 className="text-3xl md:text-5xl font-serif text-gray-900 mb-4">{tx.heroTitle}</h1>
-                <div className="h-px w-12 bg-[var(--color-accent)] mx-auto mt-5 mb-6" />
+                <p className="text-[11px] uppercase tracking-[0.3em] text-gray-500 mb-3">{tx.heroLabel}</p>
+                <h1 className="text-3xl md:text-5xl font-medium tracking-tight text-gray-900 mb-4">{tx.heroTitle}</h1>
+                <div className="h-px w-12 bg-gray-900 mx-auto mt-5 mb-6" />
                 <p className="text-gray-500 text-sm max-w-md mx-auto">{tx.heroDesc}</p>
             </section>
 
@@ -250,7 +250,7 @@ export default function FAQ() {
                 <div className="space-y-12">
                     {tx.sections.map((section, si) => (
                         <div key={`${lang}-${si}`}>
-                            <h2 className="text-[11px] uppercase tracking-[0.25em] text-[var(--color-accent)] mb-6 font-semibold">
+                            <h2 className="text-[11px] uppercase tracking-[0.25em] text-gray-500 mb-6 font-semibold">
                                 {section.category}
                             </h2>
                             <div className="bg-white border border-gray-100 rounded-sm px-6">
@@ -273,13 +273,13 @@ export default function FAQ() {
 
                 {/* Still have questions */}
                 <div className="mt-16 bg-[#faf8f5] border border-stone-100 rounded-sm p-8 text-center">
-                    <h3 className="font-serif text-xl text-gray-900 mb-2">{tx.stillQ}</h3>
+                    <h3 className="font-medium tracking-tight text-xl text-gray-900 mb-2">{tx.stillQ}</h3>
                     <p className="text-sm text-gray-500 mb-6">{tx.stillDesc}</p>
                     <a
                         href="https://wa.me/6281234567890"
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-2 bg-gray-900 text-white px-6 py-3 text-sm font-semibold tracking-wider uppercase hover:bg-[var(--color-accent)] transition-colors"
+                        className="inline-flex items-center gap-2 bg-gray-900 text-white px-6 py-3 text-sm font-semibold tracking-wider uppercase hover:bg-gray-900 transition-colors"
                     >
                         {tx.contactBtn}
                     </a>

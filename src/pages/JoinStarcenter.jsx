@@ -133,7 +133,7 @@ export default function JoinStarcenter() {
                     {benefits.map((b, i) => (
                         <div
                             key={i}
-                            className="bg-white p-7 rounded-2xl shadow-sm border border-gray-100 hover:-translate-y-1 transition-transform duration-300 flex flex-col gap-4"
+                            className="bg-white p-7  shadow-sm border border-gray-100 hover:-translate-y-1 transition-transform duration-300 flex flex-col gap-4"
                         >
                             <div className="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center flex-shrink-0">
                                 {b.icon}
@@ -186,7 +186,7 @@ export default function JoinStarcenter() {
                     </p>
                 </div>
 
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="bg-white  shadow-sm border border-gray-100 overflow-hidden">
                     {/* Table header */}
                     <div className="grid grid-cols-3 bg-gray-50 border-b border-gray-100">
                         <div className="p-5 text-sm font-semibold text-gray-500">Fitur</div>
@@ -252,7 +252,7 @@ export default function JoinStarcenter() {
 
             {/* Registration Form */}
             <div id="join-form" className="container mx-auto max-w-3xl px-4">
-                <div className="bg-white rounded-2xl p-8 md:p-12 shadow-sm border border-gray-200">
+                <div className="bg-white  p-8 md:p-12 shadow-sm border border-gray-200">
                     <div className="flex flex-col md:flex-row gap-10 items-center">
                         <div className="flex-1 w-full">
                             <h2 className="text-2xl font-bold text-gray-900 mb-2">Mulai Perjalanan Starcenter</h2>

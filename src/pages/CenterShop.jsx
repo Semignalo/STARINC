@@ -4,10 +4,10 @@ import { Navigate, Link } from 'react-router-dom';
 import { ShoppingBag, TrendingUp, Users, Banknote, Clock, ArrowRight, Crown, ChevronRight } from 'lucide-react';
 import { networkApi } from '../api/networkApi';
 
-function StatCard({ icon, label, value, sub, colorClass = 'text-[var(--color-primary)]' }) {
+function StatCard({ icon, label, value, sub, colorClass = 'text-gray-900' }) {
     const IconComp = icon;
     return (
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col gap-3">
+        <div className="bg-white  p-6 shadow-sm border border-gray-100 flex flex-col gap-3">
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center bg-gray-50 ${colorClass}`}>
                 <IconComp size={20} />
             </div>
@@ -61,7 +61,7 @@ export default function CenterShop() {
                 </p>
                 <Link
                     to="/join-starcenter"
-                    className="bg-[var(--color-accent)] text-white px-6 py-3 rounded-xl font-bold hover:opacity-90 transition flex items-center gap-2"
+                    className="bg-gray-900 text-white px-6 py-3 rounded-xl font-bold hover:opacity-90 transition flex items-center gap-2"
                 >
                     <Crown size={18} /> Upgrade ke Starcenter
                 </Link>
@@ -90,7 +90,7 @@ export default function CenterShop() {
             <div className="container mx-auto px-4 max-w-5xl">
 
                 {/* Hero Header */}
-                <div className="bg-gradient-to-r from-[var(--color-primary)] to-emerald-800 text-white rounded-2xl p-8 mb-8 shadow-lg relative overflow-hidden">
+                <div className="bg-gradient-to-r from-[var(--color-primary)] to-emerald-800 text-white  p-8 mb-8 shadow-lg relative overflow-hidden">
                     <div className="absolute right-0 top-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
                     <div className="relative z-10">
                         <div className="flex items-center gap-2 mb-2">
@@ -108,7 +108,7 @@ export default function CenterShop() {
                 {loadingStats ? (
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                         {[1,2,3,4].map(i => (
-                            <div key={i} className="bg-white rounded-2xl p-6 h-32 animate-pulse border border-gray-100" />
+                            <div key={i} className="bg-white  p-6 h-32 animate-pulse border border-gray-100" />
                         ))}
                     </div>
                 ) : (
@@ -146,7 +146,7 @@ export default function CenterShop() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Link
                         to="/profile?tab=commissions"
-                        className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition flex items-center justify-between group"
+                        className="bg-white  p-5 shadow-sm border border-gray-100 hover:shadow-md transition flex items-center justify-between group"
                     >
                         <div className="flex items-center gap-3">
                             <Banknote size={20} className="text-emerald-600" />
@@ -156,7 +156,7 @@ export default function CenterShop() {
                     </Link>
                     <Link
                         to="/profile?tab=network"
-                        className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition flex items-center justify-between group"
+                        className="bg-white  p-5 shadow-sm border border-gray-100 hover:shadow-md transition flex items-center justify-between group"
                     >
                         <div className="flex items-center gap-3">
                             <Users size={20} className="text-purple-600" />
@@ -166,10 +166,10 @@ export default function CenterShop() {
                     </Link>
                     <Link
                         to="/products"
-                        className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition flex items-center justify-between group"
+                        className="bg-white  p-5 shadow-sm border border-gray-100 hover:shadow-md transition flex items-center justify-between group"
                     >
                         <div className="flex items-center gap-3">
-                            <ShoppingBag size={20} className="text-[var(--color-accent)]" />
+                            <ShoppingBag size={20} className="text-gray-500" />
                             <span className="font-semibold text-gray-800">Belanja Sekarang</span>
                         </div>
                         <ArrowRight size={18} className="text-gray-400 group-hover:translate-x-1 transition" />

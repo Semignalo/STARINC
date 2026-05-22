@@ -48,7 +48,7 @@ function OrderTimeline({ status }) {
                                 isCancelledStep && isActive
                                     ? 'bg-red-100 border-red-400 text-red-600'
                                     : isActive
-                                    ? 'bg-[var(--color-accent)] border-[var(--color-accent)] text-white'
+                                    ? 'bg-gray-900 border-gray-900 text-white'
                                     : isCompleted
                                     ? 'bg-green-500 border-green-500 text-white'
                                     : 'bg-gray-100 border-gray-200 text-gray-400'
@@ -57,7 +57,7 @@ function OrderTimeline({ status }) {
                             </div>
                             <span className={`text-[10px] mt-1 font-medium whitespace-nowrap ${
                                 isCancelledStep && isActive ? 'text-red-500'
-                                    : isActive ? 'text-[var(--color-accent)]'
+                                    : isActive ? 'text-gray-500'
                                     : isCompleted ? 'text-green-600'
                                     : 'text-gray-400'
                             }`}>
@@ -184,7 +184,7 @@ export default function TrackOrders() {
                 {/* Header & Search */}
                 <div className="mb-8 md:flex justify-between items-end space-y-4 md:space-y-0">
                     <div>
-                        <h1 className="text-3xl font-serif text-[var(--color-primary)] mb-2">Pesanan Saya</h1>
+                        <h1 className="text-3xl font-medium tracking-tight text-gray-900 mb-2">Pesanan Saya</h1>
                         <p className="text-gray-500">Pantau status pesanan dan riwayat belanja Anda.</p>
                     </div>
 
@@ -209,7 +209,7 @@ export default function TrackOrders() {
                 {loading ? (
                     <div className="flex items-center justify-center h-48 bg-white rounded-xl border border-gray-100 shadow-sm">
                         <div className="flex flex-col items-center">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-accent)] mb-4"></div>
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mb-4"></div>
                             <span className="text-gray-500 text-sm">Memuat pesanan...</span>
                         </div>
                     </div>
@@ -220,7 +220,7 @@ export default function TrackOrders() {
                         </div>
                         <h2 className="text-xl font-bold text-gray-800 mb-2">Belum ada pesanan</h2>
                         <p className="text-gray-500 mb-6 max-w-md">Anda belum memiliki riwayat pesanan di perangkat ini. Jika Anda sudah pernah memesan, silakan cari pesanan Anda menggunakan ID Pesanan.</p>
-                        <Link to="/products" className="bg-[var(--color-accent)] text-white px-6 py-3 rounded-md font-bold uppercase tracking-widest text-sm hover:bg-[var(--color-accent-dark)] transition-colors">
+                        <Link to="/products" className="bg-gray-900 text-white px-6 py-3 rounded-md font-bold uppercase tracking-widest text-sm hover:bg-[var(--color-accent-dark)] transition-colors">
                             Mulai Belanja
                         </Link>
                     </div>
@@ -274,10 +274,10 @@ export default function TrackOrders() {
                                                         </div>
                                                         <div className="flex-1">
                                                             <h4 className="font-bold text-gray-900 text-sm md:text-base line-clamp-1">{order.items[0].product?.title || order.items[0].title}</h4>
-                                                            {order.items[0].variant?.name && <p className="text-xs font-medium text-[var(--color-primary)] mb-1">{order.items[0].variant.name}</p>}
+                                                            {order.items[0].variant?.name && <p className="text-xs font-medium text-gray-900 mb-1">{order.items[0].variant.name}</p>}
                                                             <p className="text-xs text-gray-500 mb-1">{order.items[0].quantity}x barang</p>
                                                             {order.items.length > 1 && (
-                                                                <p className="text-xs font-medium text-[var(--color-accent)]">
+                                                                <p className="text-xs font-medium text-gray-500">
                                                                     + {order.items.length - 1} produk lainnya
                                                                 </p>
                                                             )}

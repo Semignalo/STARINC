@@ -107,7 +107,7 @@ export default function CartDrawer() {
             >
                 {/* Header */}
                 <div className="p-5 border-b border-gray-100 flex items-center justify-between bg-white">
-                    <h2 className="text-xl font-serif font-medium text-[var(--color-primary)]">
+                    <h2 className="text-xl font-medium tracking-tight font-medium text-gray-900">
                         Keranjang ({getCartCount()})
                     </h2>
                     <button
@@ -207,7 +207,7 @@ export default function CartDrawer() {
                             <Link
                                 to="/products"
                                 onClick={closeCart}
-                                className="inline-flex items-center gap-2 bg-[var(--color-primary)] text-white px-6 py-3 rounded-lg text-sm font-semibold hover:opacity-90 transition"
+                                className="inline-flex items-center gap-2 bg-gray-900 text-white px-6 py-3 rounded-lg text-sm font-semibold hover:opacity-90 transition"
                             >
                                 Lihat Produk
                             </Link>
@@ -237,7 +237,7 @@ export default function CartDrawer() {
                                             <div className="min-w-0">
                                                 <h3 className="text-sm font-medium text-gray-900 line-clamp-2">{item.title}</h3>
                                                 {item.variantName && (
-                                                    <p className="text-xs font-medium text-[var(--color-primary)] mt-0.5">{item.variantName}</p>
+                                                    <p className="text-xs font-medium text-gray-900 mt-0.5">{item.variantName}</p>
                                                 )}
                                                 <p className="text-gray-500 text-xs mt-1">Rp. {item.price}</p>
                                             </div>

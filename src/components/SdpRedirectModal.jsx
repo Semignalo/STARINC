@@ -27,10 +27,10 @@ export default function SdpRedirectModal({ open, onClose, isLoggedIn = false }) 
 
                 <div className="p-7 pt-8">
                     <div className="flex items-center justify-center w-14 h-14 rounded-full bg-[var(--color-accent-light)] mb-5">
-                        <Sparkles size={26} className="text-[var(--color-accent)]" />
+                        <Sparkles size={26} className="text-gray-900" />
                     </div>
 
-                    <h3 className="text-xl font-serif text-gray-900 mb-3">
+                    <h3 className="text-xl font-medium tracking-tight text-gray-900 mb-3">
                         Pembelian eksklusif untuk Starcenter
                     </h3>
                     <p className="text-sm text-gray-600 leading-relaxed mb-5">
@@ -44,7 +44,7 @@ export default function SdpRedirectModal({ open, onClose, isLoggedIn = false }) 
                             href={SDP_URL}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="w-full py-3 bg-[var(--color-accent)] text-white font-semibold text-sm rounded-md text-center hover:opacity-90 transition flex items-center justify-center gap-2"
+                            className="w-full py-3 bg-gray-900 text-white font-semibold text-sm rounded-md text-center hover:opacity-90 transition flex items-center justify-center gap-2"
                         >
                             <ShoppingBag size={16} />
                             Beli di SDP

@@ -118,8 +118,8 @@ export default function About() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
                 <div className="relative z-10 px-8 pb-14 max-w-3xl">
-                    <p className="text-[11px] uppercase tracking-[0.3em] text-[var(--color-accent)] mb-3">{tx.heroLabel}</p>
-                    <h1 className="text-4xl md:text-6xl font-serif text-white leading-tight mb-4 whitespace-pre-line">
+                    <p className="text-[11px] uppercase tracking-[0.3em] text-gray-500 mb-3">{tx.heroLabel}</p>
+                    <h1 className="text-4xl md:text-6xl font-medium tracking-tight text-white leading-tight mb-4 whitespace-pre-line">
                         {tx.heroTitle}
                     </h1>
                     <p className="text-white/80 text-base max-w-md leading-relaxed">
@@ -130,11 +130,11 @@ export default function About() {
 
             {/* ── 2. Manifesto ─────────────────────────────────────── */}
             <section className="py-20 md:py-28 px-6 max-w-4xl mx-auto text-center">
-                <p className="text-[11px] uppercase tracking-[0.3em] text-[var(--color-accent)] mb-5">{tx.whoLabel}</p>
-                <h2 className="text-3xl md:text-4xl font-serif leading-snug text-gray-900 mb-8">
+                <p className="text-[11px] uppercase tracking-[0.3em] text-gray-500 mb-5">{tx.whoLabel}</p>
+                <h2 className="text-3xl md:text-4xl font-medium tracking-tight leading-snug text-gray-900 mb-8">
                     {tx.whoTitle}
                 </h2>
-                <div className="h-px w-12 bg-[var(--color-accent)] mx-auto mb-8" />
+                <div className="h-px w-12 bg-gray-900 mx-auto mb-8" />
                 <p className="text-gray-500 leading-relaxed text-base max-w-2xl mx-auto">
                     {tx.whoDesc}
                 </p>
@@ -143,13 +143,13 @@ export default function About() {
             {/* ── 3. Split: Story Left, Photo Right ────────────────── */}
             <section className="grid md:grid-cols-2 gap-0">
                 <div className="bg-[#faf8f5] flex flex-col justify-center px-10 py-16 md:py-24 order-2 md:order-1">
-                    <p className="text-[11px] uppercase tracking-[0.3em] text-[var(--color-accent)] mb-4">{tx.storyLabel}</p>
-                    <h2 className="text-3xl font-serif mb-6 leading-snug whitespace-pre-line">{tx.storyTitle}</h2>
+                    <p className="text-[11px] uppercase tracking-[0.3em] text-gray-500 mb-4">{tx.storyLabel}</p>
+                    <h2 className="text-3xl font-medium tracking-tight mb-6 leading-snug whitespace-pre-line">{tx.storyTitle}</h2>
                     <p className="text-gray-500 leading-relaxed mb-4">{tx.storyP1}</p>
                     <p className="text-gray-500 leading-relaxed mb-8">{tx.storyP2}</p>
                     <Link
                         to="/products"
-                        className="inline-flex items-center gap-2 text-sm font-semibold text-gray-900 border-b border-gray-900 pb-0.5 w-fit hover:text-[var(--color-accent)] hover:border-[var(--color-accent)] transition-colors"
+                        className="inline-flex items-center gap-2 text-sm font-semibold text-gray-900 border-b border-gray-900 pb-0.5 w-fit hover:text-gray-500 hover:border-gray-900 transition-colors"
                     >
                         {tx.storyLink} <ArrowRight size={14} />
                     </Link>
@@ -178,17 +178,17 @@ export default function About() {
             <section className="py-20 md:py-28 px-6">
                 <div className="max-w-6xl mx-auto">
                     <div className="text-center mb-14">
-                        <p className="text-[11px] uppercase tracking-[0.3em] text-[var(--color-accent)] mb-3">{tx.valuesLabel}</p>
-                        <h2 className="text-3xl md:text-4xl font-serif">{tx.valuesTitle}</h2>
-                        <div className="h-px w-12 bg-[var(--color-accent)] mx-auto mt-5" />
+                        <p className="text-[11px] uppercase tracking-[0.3em] text-gray-500 mb-3">{tx.valuesLabel}</p>
+                        <h2 className="text-3xl md:text-4xl font-medium tracking-tight">{tx.valuesTitle}</h2>
+                        <div className="h-px w-12 bg-gray-900 mx-auto mt-5" />
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                         {tx.values.map((v, i) => {
                             const Icon = VALUE_ICONS[i];
                             return (
                                 <div key={i} className="text-center group">
-                                    <div className="w-14 h-14 rounded-full bg-[var(--color-accent)]/10 flex items-center justify-center mx-auto mb-5 group-hover:bg-[var(--color-accent)]/20 transition-colors">
-                                        <Icon size={24} className="text-[var(--color-accent)]" strokeWidth={1.5} />
+                                    <div className="w-14 h-14 rounded-full bg-gray-900/10 flex items-center justify-center mx-auto mb-5 group-hover:bg-gray-900/20 transition-colors">
+                                        <Icon size={24} className="text-gray-500" strokeWidth={1.5} />
                                     </div>
                                     <h3 className="font-semibold text-gray-900 mb-2">{v.title}</h3>
                                     <p className="text-sm text-gray-500 leading-relaxed">{v.desc}</p>
@@ -209,8 +209,8 @@ export default function About() {
             <section className="py-20 md:py-28 px-6">
                 <div className="max-w-6xl mx-auto">
                     <div className="text-center mb-14">
-                        <p className="text-[11px] uppercase tracking-[0.3em] text-[var(--color-accent)] mb-3">{tx.rangeLabel}</p>
-                        <h2 className="text-3xl md:text-4xl font-serif">{tx.rangeTitle}</h2>
+                        <p className="text-[11px] uppercase tracking-[0.3em] text-gray-500 mb-3">{tx.rangeLabel}</p>
+                        <h2 className="text-3xl md:text-4xl font-medium tracking-tight">{tx.rangeTitle}</h2>
                     </div>
 
                     {/* Row 1: wide left, narrow right */}
@@ -219,8 +219,8 @@ export default function About() {
                             <img src="/about/snow-kissed-bag.jpg" alt="Snow Kissed" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                         </div>
                         <div className="md:col-span-2 flex flex-col justify-center pl-0 md:pl-4">
-                            <p className="text-[11px] uppercase tracking-[0.2em] text-[var(--color-accent)] mb-3">{tx.snow.label}</p>
-                            <h3 className="text-2xl font-serif mb-4 whitespace-pre-line">{tx.snow.title}</h3>
+                            <p className="text-[11px] uppercase tracking-[0.2em] text-gray-500 mb-3">{tx.snow.label}</p>
+                            <h3 className="text-2xl font-medium tracking-tight mb-4 whitespace-pre-line">{tx.snow.title}</h3>
                             <p className="text-gray-500 text-sm leading-relaxed">{tx.snow.desc}</p>
                         </div>
                     </div>
@@ -228,8 +228,8 @@ export default function About() {
                     {/* Row 2: narrow left, wide right */}
                     <div className="grid md:grid-cols-5 gap-6 mb-6">
                         <div className="md:col-span-2 flex flex-col justify-center pr-0 md:pr-4 order-2 md:order-1">
-                            <p className="text-[11px] uppercase tracking-[0.2em] text-[var(--color-accent)] mb-3">{tx.prime.label}</p>
-                            <h3 className="text-2xl font-serif mb-4 whitespace-pre-line">{tx.prime.title}</h3>
+                            <p className="text-[11px] uppercase tracking-[0.2em] text-gray-500 mb-3">{tx.prime.label}</p>
+                            <h3 className="text-2xl font-medium tracking-tight mb-4 whitespace-pre-line">{tx.prime.title}</h3>
                             <p className="text-gray-500 text-sm leading-relaxed">{tx.prime.desc}</p>
                         </div>
                         <div className="md:col-span-3 h-[320px] overflow-hidden rounded-sm group order-1 md:order-2">
@@ -255,15 +255,15 @@ export default function About() {
                 <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[var(--color-accent)]/40 to-transparent" />
                 <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-12 items-center">
                     <div>
-                        <p className="text-[11px] uppercase tracking-[0.3em] text-[var(--color-accent)] mb-4">{tx.philLabel}</p>
-                        <h2 className="text-3xl md:text-4xl font-serif text-white mb-6 leading-snug whitespace-pre-line">
+                        <p className="text-[11px] uppercase tracking-[0.3em] text-gray-500 mb-4">{tx.philLabel}</p>
+                        <h2 className="text-3xl md:text-4xl font-medium tracking-tight text-white mb-6 leading-snug whitespace-pre-line">
                             {tx.philTitle}
                         </h2>
                         <p className="text-white/60 leading-relaxed mb-6">{tx.philDesc}</p>
                         <div className="space-y-3">
                             {tx.ingredients.map((item, i) => (
                                 <div key={i} className="flex items-center gap-3">
-                                    <div className="w-1 h-1 rounded-full bg-[var(--color-accent)]" />
+                                    <div className="w-1 h-1 rounded-full bg-gray-900" />
                                     <p className="text-white/70 text-sm">{item}</p>
                                 </div>
                             ))}
@@ -282,20 +282,20 @@ export default function About() {
 
             {/* ── 9. Quote ─────────────────────────────────────────── */}
             <section className="py-24 px-6 text-center max-w-3xl mx-auto">
-                <div className="text-5xl font-serif text-[var(--color-accent)]/30 mb-4">"</div>
-                <blockquote className="text-2xl md:text-3xl font-serif text-gray-900 leading-relaxed italic mb-6">
+                <div className="text-5xl font-medium tracking-tight text-gray-500/30 mb-4">"</div>
+                <blockquote className="text-2xl md:text-3xl font-medium tracking-tight text-gray-900 leading-relaxed italic mb-6">
                     {tx.quote}
                 </blockquote>
-                <p className="text-sm text-[var(--color-accent)] tracking-widest uppercase">{tx.quoteBy}</p>
+                <p className="text-sm text-gray-500 tracking-widest uppercase">{tx.quoteBy}</p>
             </section>
 
             {/* ── 10. CTA ──────────────────────────────────────────── */}
             <section className="bg-[#faf8f5] py-16 px-6 text-center border-t border-stone-100">
-                <h2 className="text-2xl md:text-3xl font-serif mb-4">{tx.ctaTitle}</h2>
+                <h2 className="text-2xl md:text-3xl font-medium tracking-tight mb-4">{tx.ctaTitle}</h2>
                 <p className="text-gray-500 text-sm mb-8 max-w-md mx-auto">{tx.ctaDesc}</p>
                 <Link
                     to="/products"
-                    className="inline-flex items-center gap-2 bg-gray-900 text-white px-8 py-3.5 text-sm font-semibold tracking-wider uppercase hover:bg-[var(--color-accent)] transition-colors"
+                    className="inline-flex items-center gap-2 bg-gray-900 text-white px-8 py-3.5 text-sm font-semibold tracking-wider uppercase hover:bg-gray-900 transition-colors"
                 >
                     {tx.ctaBtn} <ArrowRight size={15} />
                 </Link>

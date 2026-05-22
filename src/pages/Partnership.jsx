@@ -163,7 +163,7 @@ export default function Partnership() {
                 <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[var(--color-accent)]/50 to-transparent" />
 
                 <div className="relative z-10 container mx-auto px-6 py-24 max-w-4xl text-center">
-                    <h1 className="text-4xl md:text-6xl font-serif text-white leading-tight mb-6 whitespace-pre-line">
+                    <h1 className="text-4xl md:text-6xl font-medium tracking-tight text-white leading-tight mb-6 whitespace-pre-line">
                         {tx.heroTitle}
                     </h1>
                     <p className="text-white/60 text-base md:text-lg max-w-xl mx-auto leading-relaxed mb-10">
@@ -184,7 +184,7 @@ export default function Partnership() {
                     <div className="container mx-auto px-6 py-5 grid grid-cols-3 gap-4 max-w-2xl text-center">
                         {tx.stats.map((s, i) => (
                             <div key={i}>
-                                <p className="text-xl font-serif text-white">{s.val}</p>
+                                <p className="text-xl font-medium tracking-tight text-white">{s.val}</p>
                                 <p className="text-[10px] uppercase tracking-widest text-white/80 mt-0.5">{s.label}</p>
                             </div>
                         ))}
@@ -196,17 +196,17 @@ export default function Partnership() {
             <section className="py-20 md:py-28 px-6">
                 <div className="max-w-6xl mx-auto">
                     <div className="text-center mb-14">
-                        <p className="text-[11px] uppercase tracking-[0.3em] text-[var(--color-accent)] mb-3">{tx.benefitsLabel}</p>
-                        <h2 className="text-3xl md:text-4xl font-serif">{tx.benefitsTitle}</h2>
-                        <div className="h-px w-12 bg-[var(--color-accent)] mx-auto mt-5" />
+                        <p className="text-[11px] uppercase tracking-[0.3em] text-gray-500 mb-3">{tx.benefitsLabel}</p>
+                        <h2 className="text-3xl md:text-4xl font-medium tracking-tight">{tx.benefitsTitle}</h2>
+                        <div className="h-px w-12 bg-gray-900 mx-auto mt-5" />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {tx.benefits.map((b, i) => {
                             const Icon = ICONS[i];
                             return (
-                                <div key={i} className="group border border-gray-100 rounded-sm p-7 hover:border-[var(--color-accent)]/40 hover:shadow-lg hover:shadow-[var(--color-accent)]/5 transition-all">
-                                    <div className="w-12 h-12 rounded-full bg-[var(--color-accent)]/8 flex items-center justify-center mb-5 group-hover:bg-[var(--color-accent)]/15 transition-colors">
-                                        <Icon size={22} className="text-[var(--color-accent)]" strokeWidth={1.5} />
+                                <div key={i} className="group border border-gray-100 rounded-sm p-7 hover:border-gray-900/40 hover:shadow-lg hover:shadow-[var(--color-accent)]/5 transition-all">
+                                    <div className="w-12 h-12 rounded-full bg-gray-900/8 flex items-center justify-center mb-5 group-hover:bg-gray-900/15 transition-colors">
+                                        <Icon size={22} className="text-gray-500" strokeWidth={1.5} />
                                     </div>
                                     <h3 className="font-semibold text-gray-900 mb-2">{b.title}</h3>
                                     <p className="text-sm text-gray-500 leading-relaxed">{b.desc}</p>
@@ -223,19 +223,19 @@ export default function Partnership() {
                     <img src="/partnership/community.jpg" alt="Komunitas Starcenter" className="w-full h-full object-cover object-center" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                     <div className="absolute bottom-8 left-8 right-8">
-                        <p className="text-white font-serif text-xl">{tx.quote}</p>
+                        <p className="text-white font-medium tracking-tight text-xl">{tx.quote}</p>
                         <p className="text-white/60 text-xs mt-2 uppercase tracking-widest">{tx.quoteBy}</p>
                     </div>
                 </div>
                 <div className="bg-[#faf8f5] flex flex-col justify-center px-10 py-16">
-                    <p className="text-[11px] uppercase tracking-[0.3em] text-[var(--color-accent)] mb-4">{tx.compLabel}</p>
-                    <h2 className="text-2xl font-serif mb-8 leading-snug whitespace-pre-line">{tx.compTitle}</h2>
+                    <p className="text-[11px] uppercase tracking-[0.3em] text-gray-500 mb-4">{tx.compLabel}</p>
+                    <h2 className="text-2xl font-medium tracking-tight mb-8 leading-snug whitespace-pre-line">{tx.compTitle}</h2>
                     <div className="space-y-4">
                         {tx.compRows.map((row, i) => (
                             <div key={i} className="grid grid-cols-3 gap-2 items-center text-sm border-b border-gray-100 pb-4 last:border-0 last:pb-0">
                                 <span className="text-gray-500 text-xs">{row.label}</span>
                                 <div className="text-center text-xs text-gray-400 bg-gray-100 rounded px-2 py-1.5">{row.regular}</div>
-                                <div className="text-center text-xs text-[var(--color-accent)] bg-[var(--color-accent)]/8 rounded px-2 py-1.5 font-semibold">{row.star}</div>
+                                <div className="text-center text-xs text-gray-500 bg-gray-900/8 rounded px-2 py-1.5 font-semibold">{row.star}</div>
                             </div>
                         ))}
                     </div>
@@ -246,16 +246,16 @@ export default function Partnership() {
             <section id="cara-bergabung" className="py-20 md:py-28 px-6">
                 <div className="max-w-5xl mx-auto">
                     <div className="text-center mb-14">
-                        <p className="text-[11px] uppercase tracking-[0.3em] text-[var(--color-accent)] mb-3">{tx.stepsLabel}</p>
-                        <h2 className="text-3xl md:text-4xl font-serif">{tx.stepsTitle}</h2>
-                        <div className="h-px w-12 bg-[var(--color-accent)] mx-auto mt-5" />
+                        <p className="text-[11px] uppercase tracking-[0.3em] text-gray-500 mb-3">{tx.stepsLabel}</p>
+                        <h2 className="text-3xl md:text-4xl font-medium tracking-tight">{tx.stepsTitle}</h2>
+                        <div className="h-px w-12 bg-gray-900 mx-auto mt-5" />
                     </div>
                     <div className="grid md:grid-cols-4 gap-8 relative">
                         <div className="hidden md:block absolute top-8 left-[12.5%] right-[12.5%] h-px bg-gradient-to-r from-[var(--color-accent)]/20 via-[var(--color-accent)]/50 to-[var(--color-accent)]/20" />
                         {tx.steps.map((step, i) => (
                             <div key={i} className="relative text-center">
-                                <div className="w-16 h-16 rounded-full border-2 border-[var(--color-accent)] bg-white flex items-center justify-center mx-auto mb-5 relative z-10">
-                                    <span className="font-serif text-lg text-[var(--color-accent)]">{step.num}</span>
+                                <div className="w-16 h-16 rounded-full border-2 border-gray-900 bg-white flex items-center justify-center mx-auto mb-5 relative z-10">
+                                    <span className="font-medium tracking-tight text-lg text-gray-500">{step.num}</span>
                                 </div>
                                 <h3 className="font-semibold text-gray-900 mb-2 text-sm">{step.title}</h3>
                                 <p className="text-xs text-gray-500 leading-relaxed">{step.desc}</p>
@@ -265,7 +265,7 @@ export default function Partnership() {
                     <div className="text-center mt-12">
                         <Link
                             to="/daftar-center"
-                            className="inline-flex items-center gap-2 bg-gray-900 text-white px-10 py-4 text-xs font-bold tracking-widest uppercase hover:bg-[var(--color-accent)] transition-colors"
+                            className="inline-flex items-center gap-2 bg-gray-900 text-white px-10 py-4 text-xs font-bold tracking-widest uppercase hover:bg-gray-900 transition-colors"
                         >
                             {tx.stepsCta} <ArrowRight size={14} />
                         </Link>
@@ -291,8 +291,8 @@ export default function Partnership() {
                 <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[var(--color-accent)]/30 to-transparent" />
                 <div className="max-w-3xl mx-auto">
                     <div className="text-center mb-12">
-                        <p className="text-[11px] uppercase tracking-[0.3em] text-[var(--color-accent)] mb-3">{tx.faqLabel}</p>
-                        <h2 className="text-3xl font-serif text-white">{tx.faqTitle}</h2>
+                        <p className="text-[11px] uppercase tracking-[0.3em] text-gray-500 mb-3">{tx.faqLabel}</p>
+                        <h2 className="text-3xl font-medium tracking-tight text-white">{tx.faqTitle}</h2>
                     </div>
                     <div className="divide-y divide-white/10 border border-white/10 rounded-sm px-6">
                         {tx.faqs.map((f, i) => <FaqItem key={`${lang}-${i}`} {...f} />)}
@@ -304,8 +304,8 @@ export default function Partnership() {
             <section className="py-24 px-6 text-center relative overflow-hidden">
                 <div className="absolute inset-0 bg-[url('/partnership/duo-girls.jpg')] bg-cover bg-center opacity-5" />
                 <div className="relative z-10 max-w-2xl mx-auto">
-                    <p className="text-[11px] uppercase tracking-[0.3em] text-[var(--color-accent)] mb-4">{tx.ctaReadyLabel}</p>
-                    <h2 className="text-3xl md:text-4xl font-serif mb-5 leading-snug whitespace-pre-line">
+                    <p className="text-[11px] uppercase tracking-[0.3em] text-gray-500 mb-4">{tx.ctaReadyLabel}</p>
+                    <h2 className="text-3xl md:text-4xl font-medium tracking-tight mb-5 leading-snug whitespace-pre-line">
                         {tx.ctaTitle}
                     </h2>
                     <p className="text-gray-500 text-sm max-w-md mx-auto mb-10 leading-relaxed">
@@ -314,7 +314,7 @@ export default function Partnership() {
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
                         <Link
                             to="/daftar-center"
-                            className="inline-flex items-center justify-center gap-2 bg-[var(--color-accent)] text-white px-8 py-4 text-xs font-bold tracking-widest uppercase hover:bg-[var(--color-accent-dark)] transition-colors"
+                            className="inline-flex items-center justify-center gap-2 bg-gray-900 text-white px-8 py-4 text-xs font-bold tracking-widest uppercase hover:bg-[var(--color-accent-dark)] transition-colors"
                         >
                             {tx.ctaBtn1} <ArrowRight size={14} />
                         </Link>

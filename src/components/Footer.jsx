@@ -125,7 +125,7 @@ export default function Footer() {
                 href="https://wa.me/62811253599"
                 target="_blank"
                 rel="noreferrer"
-                className="fixed bottom-6 right-4 z-50 flex items-center bg-[var(--color-accent)] rounded-full shadow-lg shadow-black/20 pl-4 py-3 pr-3 active:scale-95 transition-all text-white"
+                className="fixed bottom-6 right-4 z-50 flex items-center bg-gray-900 rounded-full shadow-lg shadow-black/20 pl-4 py-3 pr-3 active:scale-95 transition-all text-white"
             >
                 <span className="mr-2 text-sm font-bold">Chat</span>
                 <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">

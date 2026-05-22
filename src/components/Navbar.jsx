@@ -141,16 +141,16 @@ export default function Navbar() {
                                             </div>
                                         </div>
                                         <div className="py-2">
-                                            <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[var(--color-accent)]">
+                                            <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900">
                                                 Profil Saya
                                             </Link>
                                             {userRole === 'starcenter' && (
-                                                <Link to="/center" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[var(--color-accent)]">
+                                                <Link to="/center" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900">
                                                     Center Shop
                                                 </Link>
                                             )}
                                             {userRole === 'admin' && (
-                                                <Link to="/admin" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[var(--color-accent)]">
+                                                <Link to="/admin" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900">
                                                     Admin Dashboard
                                                 </Link>
                                             )}
@@ -179,7 +179,7 @@ export default function Navbar() {
                                     className="min-w-[36px] min-h-[36px] flex items-center justify-center hover:bg-gray-50 rounded-full transition-colors relative active:scale-95"
                                 >
                                     <ShoppingBag size={20} strokeWidth={1.5} className="text-gray-900" />
-                                    <span className="absolute top-0 right-0 bg-[var(--color-accent)] text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-bold">
+                                    <span className="absolute top-0 right-0 bg-gray-900 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-bold">
                                         {getCartCount()}
                                     </span>
                                 </button>
@@ -226,7 +226,7 @@ export default function Navbar() {
                             <li key={item.name}>
                                 <Link
                                     to={item.path}
-                                    className="block px-6 py-4 text-gray-900 hover:bg-[var(--color-accent-light)] hover:text-[var(--color-accent-dark)] font-medium text-lg border-l-4 border-transparent hover:border-[var(--color-accent)] transition-all"
+                                    className="block px-6 py-4 text-gray-900 hover:bg-[var(--color-accent-light)] hover:text-[var(--color-accent-dark)] font-medium text-lg border-l-4 border-transparent hover:border-gray-900 transition-all"
                                     onClick={() => setIsOpen(false)}
                                 >
                                     {item.name}
@@ -238,7 +238,7 @@ export default function Navbar() {
                                 <li>
                                     <Link
                                         to="/profile"
-                                        className="block px-6 py-4 text-gray-900 hover:bg-[var(--color-accent-light)] hover:text-[var(--color-accent-dark)] font-medium text-lg border-l-4 border-transparent hover:border-[var(--color-accent)] transition-all"
+                                        className="block px-6 py-4 text-gray-900 hover:bg-[var(--color-accent-light)] hover:text-[var(--color-accent-dark)] font-medium text-lg border-l-4 border-transparent hover:border-gray-900 transition-all"
                                         onClick={() => setIsOpen(false)}
                                     >
                                         {lang === 'id' ? 'Profil Saya' : 'My Profile'}
@@ -248,7 +248,7 @@ export default function Navbar() {
                                     <li>
                                         <Link
                                             to="/admin"
-                                            className="block px-6 py-4 text-gray-900 hover:bg-[var(--color-accent-light)] hover:text-[var(--color-accent-dark)] font-medium text-lg border-l-4 border-transparent hover:border-[var(--color-accent)] transition-all"
+                                            className="block px-6 py-4 text-gray-900 hover:bg-[var(--color-accent-light)] hover:text-[var(--color-accent-dark)] font-medium text-lg border-l-4 border-transparent hover:border-gray-900 transition-all"
                                             onClick={() => setIsOpen(false)}
                                         >
                                             Admin Dashboard
@@ -280,7 +280,7 @@ export default function Navbar() {
                         <Link
                             to="/login"
                             onClick={() => setIsOpen(false)}
-                            className="w-full py-3 block text-center bg-[var(--color-accent)] text-white font-bold rounded-lg shadow-md active:scale-95 transition-transform"
+                            className="w-full py-3 block text-center bg-gray-900 text-white font-bold rounded-lg shadow-md active:scale-95 transition-transform"
                         >
                             Login / Register
                         </Link>

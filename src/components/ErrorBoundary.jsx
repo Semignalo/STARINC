@@ -41,7 +41,7 @@ class ErrorBoundary extends Component {
             </details>
             <button
               onClick={this.handleReload}
-              className="px-6 py-3 bg-[var(--color-accent)] text-white rounded-lg font-semibold hover:opacity-90 transition-opacity"
+              className="px-6 py-3 bg-gray-900 text-white rounded-lg font-semibold hover:opacity-90 transition-opacity"
             >
               Muat Ulang Halaman
             </button>

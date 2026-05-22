@@ -96,7 +96,7 @@ export default function Invoice() {
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-[60vh]">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--color-accent)]" />
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900" />
             </div>
         );
     }
@@ -105,8 +105,8 @@ export default function Invoice() {
         return (
             <div className="container mx-auto px-4 py-20 text-center">
                 <AlertCircle className="mx-auto h-12 w-12 text-red-500 mb-4" />
-                <h2 className="text-2xl font-serif mb-4">Invoice Not Found</h2>
-                <Link to="/" className="text-[var(--color-accent)] underline">Return to Home</Link>
+                <h2 className="text-2xl font-medium tracking-tight mb-4">Invoice Not Found</h2>
+                <Link to="/" className="text-gray-500 underline">Return to Home</Link>
             </div>
         );
     }
@@ -118,7 +118,7 @@ export default function Invoice() {
                 {/* Header */}
                 <div className="invoice-print-header p-8 text-center text-white bg-gray-800">
                     <CheckCircle className="mx-auto h-16 w-16 mb-4 text-gray-400" />
-                    <h1 className="text-3xl font-serif mb-2">Order Dibuat!</h1>
+                    <h1 className="text-3xl font-medium tracking-tight mb-2">Order Dibuat!</h1>
                     <p className="text-gray-300">Silakan selesaikan pembayaran agar pesanan Anda segera diproses.</p>
                 </div>
 
@@ -148,7 +148,7 @@ export default function Invoice() {
                                             {paymentConfig.account_number}
                                         </span>
                                         <button onClick={() => handleCopy(paymentConfig.account_number)}
-                                            className="text-[var(--color-accent)] hover:text-gray-900 flex items-center gap-1 text-sm font-medium transition-colors">
+                                            className="text-gray-500 hover:text-gray-900 flex items-center gap-1 text-sm font-medium transition-colors">
                                             <Copy size={16} /> Salin
                                         </button>
                                     </div>
@@ -170,7 +170,7 @@ export default function Invoice() {
                         {order.discount_amount > 0 && (
                             <div className="flex justify-between text-sm">
                                 <span className="text-gray-500">Diskon Member ({order.discount_percent}%)</span>
-                                <span className="font-medium text-[var(--color-primary)]">- Rp. {parseFloat(order.discount_amount).toLocaleString('id-ID')}</span>
+                                <span className="font-medium text-gray-900">- Rp. {parseFloat(order.discount_amount).toLocaleString('id-ID')}</span>
                             </div>
                         )}
                         <div className="flex justify-between text-sm">
@@ -194,7 +194,7 @@ export default function Invoice() {
                                     <div key={idx} className="flex justify-between text-sm">
                                         <div>
                                             <p className="font-medium text-gray-800">{item.product_title}</p>
-                                            {item.variant_name && <p className="text-xs text-[var(--color-primary)]">{item.variant_name}</p>}
+                                            {item.variant_name && <p className="text-xs text-gray-900">{item.variant_name}</p>}
                                             <p className="text-xs text-gray-500">{item.quantity} × Rp. {parseFloat(item.unit_price || 0).toLocaleString('id-ID')}</p>
                                         </div>
                                         <p className="font-medium text-gray-900 whitespace-nowrap ml-4">
