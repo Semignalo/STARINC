@@ -19,20 +19,23 @@ use Illuminate\Support\Facades\Log;
  */
 class InstagramService
 {
+    // Instagram Login API (token IGAA...) endpoint base.
+    // Bila Anda pakai Facebook Login (token EAAh...), ganti ke graph.facebook.com.
     private string $apiBase;
 
     public function __construct()
     {
-        $this->apiBase = 'https://graph.facebook.com/' . config('instagram.api_version', 'v21.0');
+        $version = config('instagram.api_version', 'v21.0');
+        $this->apiBase = "https://graph.instagram.com/{$version}";
     }
 
     /**
-     * Cek apakah service ter-configure dengan token + business id.
+     * Cek apakah service ter-configure dengan token.
+     * Business ID opsional (hanya dipakai untuk Facebook Login API).
      */
     public function isConfigured(): bool
     {
-        return !empty(config('instagram.access_token'))
-            && !empty(config('instagram.business_id'));
+        return !empty(config('instagram.access_token'));
     }
 
     /**
@@ -76,33 +79,26 @@ class InstagramService
         if (empty($token)) {
             return ['ok' => false, 'error' => 'INSTAGRAM_ACCESS_TOKEN belum diisi di .env'];
         }
-        if (empty(config('instagram.business_id'))) {
-            return ['ok' => false, 'error' => 'INSTAGRAM_BUSINESS_ID belum diisi di .env'];
-        }
 
         try {
-            $resp = Http::timeout(10)->get("{$this->apiBase}/debug_token", [
-                'input_token'  => $token,
+            // Instagram Login API: panggil GET /me untuk validasi token
+            $resp = Http::timeout(10)->get("{$this->apiBase}/me", [
+                'fields'       => 'id,username,account_type',
                 'access_token' => $token,
             ]);
 
             if (!$resp->successful()) {
-                return ['ok' => false, 'error' => 'API call gagal: HTTP ' . $resp->status()];
+                $error = $resp->json('error.message') ?? 'API call gagal: HTTP ' . $resp->status();
+                return ['ok' => false, 'error' => $error];
             }
 
-            $data = $resp->json('data') ?? [];
-            if (!($data['is_valid'] ?? false)) {
-                return ['ok' => false, 'error' => $data['error']['message'] ?? 'Token tidak valid'];
-            }
-
-            $expiresAt = isset($data['expires_at']) && $data['expires_at'] > 0
-                ? date('c', $data['expires_at'])
-                : null;
+            $data = $resp->json();
 
             return [
-                'ok' => true,
-                'expires_at' => $expiresAt,
-                'scopes' => $data['scopes'] ?? [],
+                'ok'           => true,
+                'username'     => $data['username'] ?? null,
+                'account_type' => $data['account_type'] ?? null,
+                'expires_at'   => null, // Instagram Login token tidak expose expires_at di /me endpoint
             ];
         } catch (\Throwable $e) {
             return ['ok' => false, 'error' => $e->getMessage()];
@@ -113,11 +109,11 @@ class InstagramService
 
     private function fetchFromApi(int $limit): array
     {
-        $businessId  = config('instagram.business_id');
         $accessToken = config('instagram.access_token');
 
         try {
-            $resp = Http::timeout(10)->get("{$this->apiBase}/{$businessId}/media", [
+            // Instagram Login API: pakai /me/media (token sudah scoped ke user)
+            $resp = Http::timeout(10)->get("{$this->apiBase}/me/media", [
                 'fields'       => 'id,media_type,media_url,thumbnail_url,permalink,caption,timestamp',
                 'limit'        => $limit,
                 'access_token' => $accessToken,
