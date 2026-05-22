@@ -6,7 +6,7 @@ import { t } from '../locales/home';
 import { productApi } from '../api/productApi';
 import { testimonialsApi } from '../api/settingsApi';
 import { instagramApi } from '../api/instagramApi';
-import { ArrowRight, Star, Quote, Instagram, X, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
+import { ArrowRight, Star, Quote, Instagram, X, ChevronLeft, ChevronRight, ExternalLink, Copy, Play } from 'lucide-react';
 import OptimizedImage from '../components/OptimizedImage';
 
 /* ─────────────────────────────────────────────────────────────
@@ -94,6 +94,30 @@ function FeaturedSplit({ mediaUrl, mediaIsVideo, label, title, description, ctaT
             </div>
         </section>
     );
+}
+
+/* ─────────────────────────────────────────────────────────────
+   MediaTypeIcon — overlay icon di pojok kanan-atas thumbnail
+   menandakan tipe post (carousel / video). Image tidak ada icon.
+───────────────────────────────────────────────────────────── */
+function MediaTypeIcon({ type }) {
+    const t = (type || '').toLowerCase();
+
+    if (t === 'carousel_album' || t === 'carousel') {
+        return (
+            <span className="absolute top-2 right-2 z-10 text-white" style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.5))' }}>
+                <Copy size={18} strokeWidth={2} />
+            </span>
+        );
+    }
+    if (t === 'video' || t === 'reels' || t === 'reel') {
+        return (
+            <span className="absolute top-2 right-2 z-10 text-white" style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.5))' }}>
+                <Play size={18} strokeWidth={2} fill="currentColor" />
+            </span>
+        );
+    }
+    return null;
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -240,6 +264,7 @@ function InstagramFeed({ settings }) {
                         image:   p.image,
                         url:     p.permalink,
                         caption: p.caption || '',
+                        type:    p.type || 'image', // image | video | carousel_album
                     })));
                 } else {
                     setApiPosts([]);
@@ -284,12 +309,13 @@ function InstagramFeed({ settings }) {
                      style={{ scrollbarWidth: 'none' }}>
                     {posts.map((p, i) => (
                         <button key={i} onClick={() => setActiveIdx(i)}
-                                className="snap-start shrink-0 w-[70vw] max-w-[280px] aspect-square bg-gray-100 overflow-hidden group relative">
+                                className="snap-start shrink-0 w-[60vw] max-w-[240px] aspect-[4/5] bg-gray-100 overflow-hidden group relative">
                             <OptimizedImage src={p.image} alt={`Instagram post ${i + 1}`}
-                                width={400} height={400}
-                                sizes="70vw"
+                                width={400} height={500}
+                                sizes="60vw"
                                 className="group-hover:opacity-90 transition-opacity"
                                 wrapperClassName="absolute inset-0" />
+                            <MediaTypeIcon type={p.type} />
                         </button>
                     ))}
                 </div>
@@ -298,12 +324,13 @@ function InstagramFeed({ settings }) {
                 <div className="hidden md:grid grid-cols-5 gap-0">
                     {posts.map((p, i) => (
                         <button key={i} onClick={() => setActiveIdx(i)}
-                                className="relative aspect-square bg-gray-100 overflow-hidden group cursor-pointer">
+                                className="relative aspect-[4/5] bg-gray-100 overflow-hidden group cursor-pointer">
                             <OptimizedImage src={p.image} alt={`Instagram post ${i + 1}`}
-                                width={500} height={500}
+                                width={500} height={625}
                                 sizes="20vw"
                                 className="group-hover:opacity-90 transition-opacity"
                                 wrapperClassName="absolute inset-0" />
+                            <MediaTypeIcon type={p.type} />
                             <span className="absolute inset-0 bg-gray-900/0 group-hover:bg-gray-900/20 transition-colors flex items-center justify-center">
                                 <Instagram size={28} className="text-white opacity-0 group-hover:opacity-100 transition-opacity" strokeWidth={1.5} />
                             </span>
