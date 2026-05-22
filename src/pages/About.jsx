@@ -142,7 +142,7 @@ export default function About() {
 
             {/* ── 3. Split: Story Left, Photo Right ────────────────── */}
             <section className="grid md:grid-cols-2 gap-0">
-                <div className="bg-[#faf8f5] flex flex-col justify-center px-10 py-16 md:py-24 order-2 md:order-1">
+                <div className="bg-gray-50/50 flex flex-col justify-center px-10 py-16 md:py-24 order-2 md:order-1">
                     <p className="text-[11px] uppercase tracking-[0.3em] text-gray-500 mb-4">{tx.storyLabel}</p>
                     <h2 className="text-3xl font-medium tracking-tight mb-6 leading-snug whitespace-pre-line">{tx.storyTitle}</h2>
                     <p className="text-gray-500 leading-relaxed mb-4">{tx.storyP1}</p>
@@ -215,7 +215,7 @@ export default function About() {
 
                     {/* Row 1: wide left, narrow right */}
                     <div className="grid md:grid-cols-5 gap-6 mb-6">
-                        <div className="md:col-span-3 h-[320px] overflow-hidden rounded-sm group">
+                        <div className="md:col-span-3 h-[320px] overflow-hidden rounded-lg group">
                             <img src="/about/snow-kissed-bag.jpg" alt="Snow Kissed" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                         </div>
                         <div className="md:col-span-2 flex flex-col justify-center pl-0 md:pl-4">
@@ -232,17 +232,17 @@ export default function About() {
                             <h3 className="text-2xl font-medium tracking-tight mb-4 whitespace-pre-line">{tx.prime.title}</h3>
                             <p className="text-gray-500 text-sm leading-relaxed">{tx.prime.desc}</p>
                         </div>
-                        <div className="md:col-span-3 h-[320px] overflow-hidden rounded-sm group order-1 md:order-2">
+                        <div className="md:col-span-3 h-[320px] overflow-hidden rounded-lg group order-1 md:order-2">
                             <img src="/about/primeherb-fig.png" alt="Primeherb" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                         </div>
                     </div>
 
                     {/* Row 3: two equal */}
                     <div className="grid md:grid-cols-2 gap-6">
-                        <div className="h-[280px] overflow-hidden rounded-sm group">
+                        <div className="h-[280px] overflow-hidden rounded-lg group">
                             <img src="/about/skin-swatches.png" alt="For All Skin Tones" className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700" />
                         </div>
-                        <div className="h-[280px] overflow-hidden rounded-sm group">
+                        <div className="h-[280px] overflow-hidden rounded-lg group">
                             <img src="/about/products-fridge.png" alt="Product Collection" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                         </div>
                     </div>
@@ -270,10 +270,10 @@ export default function About() {
                         </div>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
-                        <div className="h-52 overflow-hidden rounded-sm">
+                        <div className="h-52 overflow-hidden rounded-lg">
                             <img src="/about/cstar-lemon.jpg" alt="C-Star" className="w-full h-full object-cover" />
                         </div>
-                        <div className="h-52 overflow-hidden rounded-sm mt-8">
+                        <div className="h-52 overflow-hidden rounded-lg mt-8">
                             <img src="/about/product-aloe.jpg" alt="Aloe" className="w-full h-full object-cover" />
                         </div>
                     </div>
@@ -290,7 +290,7 @@ export default function About() {
             </section>
 
             {/* ── 10. CTA ──────────────────────────────────────────── */}
-            <section className="bg-[#faf8f5] py-16 px-6 text-center border-t border-stone-100">
+            <section className="bg-gray-50/50 py-16 px-6 text-center border-t border-stone-100">
                 <h2 className="text-2xl md:text-3xl font-medium tracking-tight mb-4">{tx.ctaTitle}</h2>
                 <p className="text-gray-500 text-sm mb-8 max-w-md mx-auto">{tx.ctaDesc}</p>
                 <Link

@@ -250,7 +250,7 @@ export default function Checkout() {
         }
     };
 
-    const inputClass = "w-full h-11 px-3 bg-white border border-gray-200 text-sm placeholder:text-gray-400 focus:ring-1 focus:ring-gray-900 focus:border-gray-900 outline-none transition-colors";
+    const inputClass = "w-full h-11 px-3 bg-white border border-gray-200 text-sm placeholder:text-gray-400 focus:ring-1 focus:ring-gray-900 focus:border-gray-900 outline-none transition-colors rounded-md";
 
     return (
         <div className="max-w-6xl mx-auto px-4 py-10 md:py-14">
@@ -259,11 +259,11 @@ export default function Checkout() {
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8 lg:gap-12">
 
                 {/* Left Form */}
-                <div className="bg-white border border-gray-200 p-6 md:p-8">
+                <div className="bg-white border border-gray-200 p-6 md:p-8 rounded-lg">
 
                     {/* Inactive Warning */}
                     {isInactive && (
-                        <div className="mb-6 px-4 py-3 bg-amber-50 border border-amber-200 flex items-start gap-3">
+                        <div className="mb-6 px-4 py-3 bg-amber-50 border border-amber-200 flex items-start gap-3 rounded-md">
                             <AlertTriangle size={14} className="text-amber-600 flex-shrink-0 mt-0.5" />
                             <div>
                                 <p className="text-xs font-medium text-amber-900">Akun Tidak Aktif</p>
@@ -276,7 +276,7 @@ export default function Checkout() {
 
                     {/* MOQ Info for starcenter */}
                     {isStarcenter && subtotal < MOQ_FIRST_ORDER && (
-                        <div className="mb-6 px-4 py-3 bg-gray-50 border border-gray-200 flex items-start gap-3">
+                        <div className="mb-6 px-4 py-3 bg-gray-50 border border-gray-200 flex items-start gap-3 rounded-md">
                             <AlertTriangle size={14} className="text-gray-700 flex-shrink-0 mt-0.5" />
                             <div>
                                 <p className="text-xs font-medium text-gray-900">Info Minimum Order Pertama</p>
@@ -401,7 +401,7 @@ export default function Checkout() {
                             )}
 
                             <button type="submit" disabled={!canSubmit}
-                                className={`w-full h-12 text-xs uppercase tracking-[0.2em] mt-6 ${
+                                className={`w-full h-12 text-xs uppercase tracking-[0.25em] mt-6 rounded-md ${
                                     !canSubmit ? 'bg-gray-100 text-gray-300 cursor-not-allowed' : 'btn-primary'
                                 }`}>
                                 {loading ? 'Memproses…' : isInactive ? 'Akun Tidak Aktif' : (rajaOngkirEnabled && !selectedShipping) ? 'Pilih Pengiriman' : 'Place Order'}
@@ -410,7 +410,7 @@ export default function Checkout() {
                     </div>
 
                     {/* Right Summary */}
-                    <div className="bg-gray-50 border border-gray-200 p-6 md:p-7 h-fit lg:sticky lg:top-20">
+                    <div className="bg-gray-50 border border-gray-200 p-6 md:p-7 h-fit lg:sticky lg:top-20 rounded-lg">
                         <p className="text-[10px] uppercase tracking-[0.3em] text-gray-400 mb-2">Order</p>
                         <h2 className="text-lg font-medium text-gray-900 mb-6 tracking-tight pb-5 border-b border-gray-200">Order Summary</h2>
 
@@ -474,7 +474,7 @@ export default function Checkout() {
                         </div>
 
                         {/* Payment method note */}
-                        <div className="mt-6 p-3 bg-gray-50 border border-gray-200">
+                        <div className="mt-6 p-3 bg-white border border-gray-200 rounded-md">
                             <p className="text-xs font-medium text-gray-900">Pembayaran via Transfer Bank</p>
                             <p className="text-[11px] text-gray-600 mt-0.5">Info rekening akan ditampilkan setelah order dibuat.</p>
                         </div>

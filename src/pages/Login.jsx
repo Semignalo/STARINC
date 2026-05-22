@@ -147,7 +147,7 @@ export default function Login() {
         }
     };
 
-    const inputClass = (extra = '') => `w-full h-11 px-3 bg-white border border-gray-200 text-sm placeholder:text-gray-400 focus:ring-1 focus:ring-gray-900 focus:border-gray-900 outline-none transition-colors ${extra}`;
+    const inputClass = (extra = '') => `w-full h-11 px-3 bg-white border border-gray-200 text-sm placeholder:text-gray-400 focus:ring-1 focus:ring-gray-900 focus:border-gray-900 outline-none transition-colors rounded-md ${extra}`;
 
     return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 py-12">
@@ -166,7 +166,7 @@ export default function Login() {
                 </div>
 
                 {/* Form Card */}
-                <div className="bg-white border border-gray-200 p-7">
+                <div className="bg-white border border-gray-200 p-7 rounded-lg">
                     <form onSubmit={handleSubmit} className="space-y-4">
                         {!isLogin && (
                             <>
@@ -216,7 +216,7 @@ export default function Login() {
                                     onChange={(e) => setEmail(e.target.value)}
                                     onBlur={() => setEmailTouched(true)}
                                     required
-                                    className={`w-full h-11 pl-9 pr-9 bg-white border text-sm placeholder:text-gray-400 outline-none transition-colors ${
+                                    className={`w-full h-11 pl-9 pr-9 bg-white border text-sm placeholder:text-gray-400 outline-none transition-colors rounded-md ${
                                         emailError
                                             ? 'border-red-300 focus:ring-1 focus:ring-red-400 focus:border-red-400'
                                             : 'border-gray-200 focus:ring-1 focus:ring-gray-900 focus:border-gray-900'
@@ -371,7 +371,7 @@ export default function Login() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full flex items-center justify-center gap-2 h-11 btn-primary text-xs uppercase tracking-[0.2em]"
+                            className="w-full flex items-center justify-center gap-2 h-11 btn-primary text-xs uppercase tracking-[0.25em] rounded-md"
                         >
                             {loading ? (
                                 <span>{tx.processing}</span>
@@ -409,7 +409,7 @@ export default function Login() {
                 )}
 
                 {!isLogin && (
-                    <div className="mt-5 p-4 bg-white border border-gray-200 text-center text-xs text-gray-600">
+                    <div className="mt-5 p-4 bg-white border border-gray-200 text-center text-xs text-gray-600 rounded-md">
                         {tx.partnerCta}{' '}
                         <button
                             type="button"

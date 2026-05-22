@@ -36,7 +36,7 @@ export default function ForgotPassword() {
                     </p>
                 </div>
 
-                <div className="bg-white border border-gray-200 p-7">
+                <div className="bg-white border border-gray-200 p-7 rounded-lg">
                     {!submitted ? (
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
@@ -50,7 +50,7 @@ export default function ForgotPassword() {
                                         required
                                         autoComplete="email"
                                         placeholder="kamu@email.com"
-                                        className="w-full h-11 pl-9 pr-3 bg-white border border-gray-200 text-sm placeholder:text-gray-400 focus:ring-1 focus:ring-gray-900 focus:border-gray-900 outline-none transition-colors"
+                                        className="w-full h-11 pl-9 pr-3 bg-white border border-gray-200 text-sm placeholder:text-gray-400 focus:ring-1 focus:ring-gray-900 focus:border-gray-900 outline-none transition-colors rounded-md"
                                     />
                                 </div>
                             </div>
@@ -58,7 +58,7 @@ export default function ForgotPassword() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full h-11 btn-primary text-xs uppercase tracking-[0.2em]"
+                                className="w-full h-11 btn-primary text-xs uppercase tracking-[0.25em] rounded-md"
                             >
                                 {loading ? 'Mengirim…' : 'Kirim Link Reset'}
                             </button>

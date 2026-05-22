@@ -51,7 +51,7 @@ export default function ResetPassword() {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 py-12">
                 <div className="w-full max-w-md">
-                    <div className="bg-white border border-gray-200 p-8 text-center">
+                    <div className="bg-white border border-gray-200 p-8 text-center rounded-lg">
                         <div className="w-12 h-12 mx-auto mb-5 border border-gray-200 rounded-full flex items-center justify-center">
                             <AlertCircle className="h-5 w-5 text-gray-900" />
                         </div>
@@ -59,7 +59,7 @@ export default function ResetPassword() {
                         <p className="text-sm text-gray-600 mb-6">{error}</p>
                         <button
                             onClick={() => navigate('/login')}
-                            className="h-11 px-6 bg-gray-900 hover:bg-gray-800 text-white text-xs uppercase tracking-[0.2em] transition-colors"
+                            className="h-11 px-6 btn-primary text-xs uppercase tracking-[0.25em] rounded-md"
                         >
                             Kembali ke Login
                         </button>
@@ -69,7 +69,7 @@ export default function ResetPassword() {
         );
     }
 
-    const inputClass = "w-full h-11 pl-9 pr-9 bg-white border border-gray-200 text-sm placeholder:text-gray-400 focus:ring-1 focus:ring-gray-900 focus:border-gray-900 outline-none transition-colors";
+    const inputClass = "w-full h-11 pl-9 pr-9 bg-white border border-gray-200 text-sm placeholder:text-gray-400 focus:ring-1 focus:ring-gray-900 focus:border-gray-900 outline-none transition-colors rounded-md";
 
     return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 py-12">
@@ -80,7 +80,7 @@ export default function ResetPassword() {
                     <p className="text-sm text-gray-500">Masukkan password baru Anda</p>
                 </div>
 
-                <div className="bg-white border border-gray-200 p-7">
+                <div className="bg-white border border-gray-200 p-7 rounded-lg">
                     {!submitted ? (
                         <form onSubmit={handleSubmit} className="space-y-4">
                             {error && (
@@ -132,7 +132,7 @@ export default function ResetPassword() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full h-11 btn-primary text-xs uppercase tracking-[0.2em]"
+                                className="w-full h-11 btn-primary text-xs uppercase tracking-[0.25em] rounded-md"
                             >
                                 {loading ? 'Mereset…' : 'Reset Password'}
                             </button>

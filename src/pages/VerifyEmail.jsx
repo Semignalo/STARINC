@@ -54,14 +54,14 @@ export default function VerifyEmail() {
                     </div>
 
                     {email && (
-                        <div className="bg-white border border-gray-200 p-7 space-y-4">
+                        <div className="bg-white border border-gray-200 p-7 space-y-4 rounded-lg">
                             <p className="text-xs text-gray-500 text-center">
                                 Kirim ulang ke: <span className="font-medium text-gray-900">{email}</span>
                             </p>
                             <button
                                 onClick={handleResend}
                                 disabled={resendLoading || countdown > 0}
-                                className="w-full h-11 inline-flex items-center justify-center gap-2 bg-gray-900 hover:bg-gray-800 disabled:bg-gray-300 text-white text-xs uppercase tracking-[0.2em] transition-colors"
+                                className="w-full h-11 inline-flex items-center justify-center gap-2 btn-primary text-xs uppercase tracking-[0.25em] rounded-md"
                             >
                                 <RefreshCw size={14} className={resendLoading ? 'animate-spin' : ''} />
                                 {resendLoading ? 'Mengirim…' : countdown > 0 ? `Kirim ulang (${countdown}s)` : 'Kirim Ulang Link'}
@@ -102,7 +102,7 @@ export default function VerifyEmail() {
                     <p className="text-sm text-gray-500">Satu langkah lagi untuk aktivasi akun</p>
                 </div>
 
-                <div className="bg-white border border-gray-200 p-7 space-y-5">
+                <div className="bg-white border border-gray-200 p-7 space-y-5 rounded-lg">
                     <div>
                         <p className="text-xs text-gray-500 text-center mb-3">Kami mengirimkan link verifikasi ke:</p>
                         {email && (
@@ -121,7 +121,7 @@ export default function VerifyEmail() {
                         <button
                             onClick={handleResend}
                             disabled={!email || resendLoading || countdown > 0}
-                            className="w-full h-11 inline-flex items-center justify-center gap-2 border border-gray-900 text-gray-900 text-xs uppercase tracking-[0.2em] hover:bg-gray-900 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                            className="w-full h-11 inline-flex items-center justify-center gap-2 border border-gray-900 text-gray-900 text-xs uppercase tracking-[0.25em] rounded-md hover:bg-gray-900 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                         >
                             <RefreshCw size={14} className={resendLoading ? 'animate-spin' : ''} />
                             {resendLoading ? 'Mengirim…' : countdown > 0 ? `Kirim ulang (${countdown}s)` : 'Kirim Ulang Email'}

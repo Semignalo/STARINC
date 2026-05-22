@@ -33,7 +33,7 @@ export default function Profile() {
             <div className="max-w-5xl mx-auto">
 
                 {/* Header */}
-                <div className="bg-white border border-gray-200 p-7 md:p-9 mb-6">
+                <div className="bg-white border border-gray-200 p-7 md:p-9 mb-6 rounded-lg">
                     <div className="flex items-center justify-between mb-6">
                         <p className="text-[10px] uppercase tracking-[0.3em] text-gray-400">Account</p>
                         <button onClick={() => setActiveTab('settings')}
@@ -92,7 +92,7 @@ export default function Profile() {
                 )}
 
                 {activeTab === 'settings' && (
-                    <div className="mb-4 flex justify-between items-center bg-white p-4 border border-gray-200">
+                    <div className="mb-4 flex justify-between items-center bg-white p-4 border border-gray-200 rounded-md">
                         <h2 className="text-sm font-medium text-gray-900 flex items-center gap-2">
                             <Settings size={14} className="text-gray-400" /> Pengaturan Profil
                         </h2>
@@ -112,7 +112,7 @@ export default function Profile() {
                 {activeTab === 'overview' && (
                     <>
                         {isInactive && (
-                            <div className="bg-amber-50 border border-amber-200 p-5 mb-6 flex items-start gap-3">
+                            <div className="bg-amber-50 border border-amber-200 p-5 mb-6 flex items-start gap-3 rounded-md">
                                 <AlertTriangle size={16} className="text-amber-600 flex-shrink-0 mt-0.5" />
                                 <div>
                                     <p className="text-sm font-medium text-amber-900 mb-0.5">Akun Tidak Aktif</p>
@@ -126,7 +126,7 @@ export default function Profile() {
                         {userRole === 'starcenter' && (
                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                                 {/* Stats */}
-                                <div className="lg:col-span-2 bg-white border border-gray-200 p-7">
+                                <div className="lg:col-span-2 bg-white border border-gray-200 p-7 rounded-lg">
                                     <p className="text-[10px] uppercase tracking-[0.3em] text-gray-400 mb-2">Account Summary</p>
                                     <h2 className="text-lg font-medium text-gray-900 mb-6 tracking-tight">Ringkasan Akun</h2>
                                     <div className="grid grid-cols-2 gap-6">
@@ -170,7 +170,7 @@ export default function Profile() {
                         )}
 
                         {userRole === 'admin' && (
-                            <div className="bg-white border border-gray-200 p-7 text-center">
+                            <div className="bg-white border border-gray-200 p-7 text-center rounded-lg">
                                 <div className="w-12 h-12 mx-auto mb-4 border border-gray-200 rounded-full flex items-center justify-center">
                                     <ShieldCheck className="text-gray-900" size={18} />
                                 </div>
