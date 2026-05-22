@@ -22,7 +22,7 @@ function ProductCardSimple({ id, title, price, main_image_url, main_image, image
 
     return (
         <Link to={`/product/${id}`} className="group block">
-            <div className="relative aspect-[3/4] overflow-hidden bg-gray-50 mb-4 rounded-lg">
+            <div className="relative aspect-square overflow-hidden bg-gray-50 mb-4 rounded-lg">
                 <OptimizedImage
                     src={imageUrl || '/logo.png'}
                     alt={title}
