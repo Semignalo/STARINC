@@ -24,4 +24,10 @@ export const instagramApi = {
         const { data } = await apiClient.get('/instagram/status');
         return data;
     },
+
+    /** Admin: refresh Instagram Login token (perpanjang 60 hari) */
+    refreshToken: async () => {
+        const { data } = await apiClient.post('/instagram/refresh-token');
+        return data;
+    },
 };

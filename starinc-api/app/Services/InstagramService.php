@@ -20,8 +20,12 @@ use Illuminate\Support\Facades\Log;
 class InstagramService
 {
     // Instagram Login API (token IGAA...) endpoint base.
-    // Bila Anda pakai Facebook Login (token EAAh...), ganti ke graph.facebook.com.
     private string $apiBase;
+    private string $apiBaseNoVersion = 'https://graph.instagram.com';
+
+    // Cache keys untuk token yang di-refresh oleh sistem (di luar .env)
+    const TOKEN_CACHE_KEY      = 'instagram:active_token';
+    const EXPIRES_AT_CACHE_KEY = 'instagram:token_expires_at';
 
     public function __construct()
     {
@@ -30,12 +34,35 @@ class InstagramService
     }
 
     /**
-     * Cek apakah service ter-configure dengan token.
-     * Business ID opsional (hanya dipakai untuk Facebook Login API).
+     * Token aktif: token hasil refresh terbaru (cache) > token dari .env.
+     * Pattern: user isi .env sekali, sistem refresh & simpan token baru di cache.
      */
+    public function getActiveToken(): ?string
+    {
+        return Cache::get(self::TOKEN_CACHE_KEY) ?: config('instagram.access_token');
+    }
+
+    /**
+     * Timestamp kapan token expire (Unix seconds). Null bila belum pernah refresh.
+     */
+    public function getExpiresAt(): ?int
+    {
+        return Cache::get(self::EXPIRES_AT_CACHE_KEY);
+    }
+
+    /**
+     * Sisa hari sampai token expired. Null bila belum pernah refresh.
+     */
+    public function getDaysRemaining(): ?int
+    {
+        $expiresAt = $this->getExpiresAt();
+        if (!$expiresAt) return null;
+        return max(0, (int) ceil(($expiresAt - time()) / 86400));
+    }
+
     public function isConfigured(): bool
     {
-        return !empty(config('instagram.access_token'));
+        return !empty($this->getActiveToken());
     }
 
     /**
@@ -75,13 +102,12 @@ class InstagramService
      */
     public function validateToken(): array
     {
-        $token = config('instagram.access_token');
+        $token = $this->getActiveToken();
         if (empty($token)) {
             return ['ok' => false, 'error' => 'INSTAGRAM_ACCESS_TOKEN belum diisi di .env'];
         }
 
         try {
-            // Instagram Login API: panggil GET /me untuk validasi token
             $resp = Http::timeout(10)->get("{$this->apiBase}/me", [
                 'fields'       => 'id,username,account_type',
                 'access_token' => $token,
@@ -93,14 +119,74 @@ class InstagramService
             }
 
             $data = $resp->json();
+            $expiresAt = $this->getExpiresAt();
 
             return [
-                'ok'           => true,
-                'username'     => $data['username'] ?? null,
-                'account_type' => $data['account_type'] ?? null,
-                'expires_at'   => null, // Instagram Login token tidak expose expires_at di /me endpoint
+                'ok'             => true,
+                'username'       => $data['username'] ?? null,
+                'account_type'   => $data['account_type'] ?? null,
+                'expires_at'     => $expiresAt ? date('c', $expiresAt) : null,
+                'days_remaining' => $this->getDaysRemaining(),
+                'using_refreshed_token' => Cache::has(self::TOKEN_CACHE_KEY),
             ];
         } catch (\Throwable $e) {
+            return ['ok' => false, 'error' => $e->getMessage()];
+        }
+    }
+
+    /**
+     * Refresh Instagram Login token.
+     *
+     * Endpoint: GET /refresh_access_token?grant_type=ig_refresh_token&access_token=...
+     * Response: { access_token, token_type, expires_in (seconds) }
+     *
+     * Token harus minimal 24 jam umurnya untuk bisa di-refresh.
+     * Refresh memperpanjang masa berlaku menjadi 60 hari dari saat refresh.
+     */
+    public function refreshToken(): array
+    {
+        $token = $this->getActiveToken();
+        if (empty($token)) {
+            return ['ok' => false, 'error' => 'Tidak ada token untuk di-refresh'];
+        }
+
+        try {
+            $resp = Http::timeout(15)->get("{$this->apiBaseNoVersion}/refresh_access_token", [
+                'grant_type'   => 'ig_refresh_token',
+                'access_token' => $token,
+            ]);
+
+            if (!$resp->successful()) {
+                $err = $resp->json('error.message') ?? 'Refresh gagal: HTTP ' . $resp->status();
+                Log::warning('Instagram refresh_access_token failed', ['body' => $resp->json()]);
+                return ['ok' => false, 'error' => $err];
+            }
+
+            $data = $resp->json();
+            $newToken  = $data['access_token'] ?? null;
+            $expiresIn = (int) ($data['expires_in'] ?? 0);
+
+            if (!$newToken || $expiresIn <= 0) {
+                return ['ok' => false, 'error' => 'Response refresh tidak valid'];
+            }
+
+            $expiresAt = time() + $expiresIn;
+
+            // Simpan ke cache forever (60 hari validity, kita pakai longer cache untuk safety)
+            Cache::forever(self::TOKEN_CACHE_KEY, $newToken);
+            Cache::forever(self::EXPIRES_AT_CACHE_KEY, $expiresAt);
+
+            // Bust posts cache karena pakai token baru (technically masih valid, but be safe)
+            Cache::forget("instagram:posts:limit=" . config('instagram.feed_limit', 5));
+
+            return [
+                'ok'         => true,
+                'expires_in' => $expiresIn,
+                'expires_at' => date('c', $expiresAt),
+                'days_remaining' => (int) ceil($expiresIn / 86400),
+            ];
+        } catch (\Throwable $e) {
+            Log::error('Instagram refresh error', ['msg' => $e->getMessage()]);
             return ['ok' => false, 'error' => $e->getMessage()];
         }
     }
@@ -109,7 +195,7 @@ class InstagramService
 
     private function fetchFromApi(int $limit): array
     {
-        $accessToken = config('instagram.access_token');
+        $accessToken = $this->getActiveToken();
 
         try {
             // Instagram Login API: pakai /me/media (token sudah scoped ke user)

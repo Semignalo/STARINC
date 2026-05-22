@@ -991,6 +991,41 @@ function InstagramApiStatus() {
         }
     };
 
+    const handleRefreshTokenClick = async () => {
+        const confirm = await Swal.fire({
+            icon: 'question',
+            title: 'Refresh token Instagram?',
+            text: 'Ini akan memperpanjang masa berlaku token menjadi 60 hari dari sekarang.',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, refresh',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#111827',
+        });
+        if (!confirm.isConfirmed) return;
+
+        setRefreshing(true);
+        try {
+            const res = await instagramApi.refreshToken();
+            await load();
+            if (res.ok) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Token diperpanjang',
+                    text: `Berlaku ${res.days_remaining} hari lagi.`,
+                    timer: 2200,
+                    showConfirmButton: false,
+                });
+            } else {
+                Swal.fire({ icon: 'error', title: 'Gagal refresh token', text: res.error || 'Unknown error' });
+            }
+        } catch (e) {
+            const msg = e?.response?.data?.error || e.message;
+            Swal.fire({ icon: 'error', title: 'Gagal', text: msg });
+        } finally {
+            setRefreshing(false);
+        }
+    };
+
     if (status === null) {
         return (
             <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-[6px] text-[11px] text-gray-500 flex items-center gap-2">
@@ -1029,29 +1064,77 @@ function InstagramApiStatus() {
         );
     }
 
+    // Warning bila token <14 hari, urgent bila <3 hari
+    const days = status.days_remaining;
+    const urgent = days !== null && days <= 3;
+    const warning = days !== null && days <= 14 && days > 3;
+
+    const containerClass = urgent
+        ? 'bg-red-50 border-red-200'
+        : warning
+            ? 'bg-amber-50 border-amber-200'
+            : 'bg-emerald-50 border-emerald-200';
+    const textClass = urgent ? 'text-red-900' : warning ? 'text-amber-900' : 'text-emerald-900';
+    const subTextClass = urgent ? 'text-red-700' : warning ? 'text-amber-700' : 'text-emerald-700';
+    const iconClass = urgent ? 'text-red-600' : warning ? 'text-amber-600' : 'text-emerald-600';
+
     return (
-        <div className="px-3 py-3 bg-emerald-50 border border-emerald-200 rounded-[6px]">
+        <div className={`px-3 py-3 border rounded-[6px] ${containerClass}`}>
             <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2 min-w-0">
-                    <CheckCircle size={14} className="text-emerald-600 shrink-0" />
+                    <CheckCircle size={14} className={`${iconClass} shrink-0`} />
                     <div className="min-w-0">
-                        <p className="text-xs font-medium text-emerald-900">Graph API terhubung</p>
-                        {status.expires_at && (
-                            <p className="text-[11px] text-emerald-700 mt-0.5">
-                                Token expired: {new Date(status.expires_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                        <p className={`text-xs font-medium ${textClass}`}>
+                            Graph API terhubung
+                            {status.username && <span className="text-gray-500 font-normal ml-1.5">— @{status.username}</span>}
+                        </p>
+                        {days !== null ? (
+                            <p className={`text-[11px] mt-0.5 ${subTextClass}`}>
+                                Token expired dalam <span className="font-semibold">{days} hari</span>
+                                {urgent && ' — segera refresh / regenerate'}
+                                {warning && ' — disarankan refresh sekarang'}
+                            </p>
+                        ) : (
+                            <p className={`text-[11px] mt-0.5 ${subTextClass}`}>
+                                Belum pernah di-refresh sistem. Klik "Refresh Token" untuk perpanjang 60 hari.
                             </p>
                         )}
                     </div>
                 </div>
-                <button
-                    type="button"
-                    onClick={handleRefresh}
-                    disabled={refreshing}
-                    className="h-8 px-2.5 inline-flex items-center gap-1.5 bg-white border border-emerald-300 hover:border-emerald-500 text-emerald-700 rounded text-[11px] font-medium transition-colors disabled:opacity-50"
-                >
-                    <RefreshCw size={11} className={refreshing ? 'animate-spin' : ''} />
-                    Refresh
-                </button>
+                <div className="flex flex-col sm:flex-row gap-1.5 shrink-0">
+                    <button
+                        type="button"
+                        onClick={handleRefreshTokenClick}
+                        disabled={refreshing}
+                        className={`h-8 px-2.5 inline-flex items-center gap-1.5 bg-white border rounded text-[11px] font-medium transition-colors disabled:opacity-50 ${
+                            urgent
+                                ? 'border-red-300 hover:border-red-500 text-red-700'
+                                : warning
+                                    ? 'border-amber-300 hover:border-amber-500 text-amber-700'
+                                    : 'border-emerald-300 hover:border-emerald-500 text-emerald-700'
+                        }`}
+                        title="Perpanjang masa berlaku token 60 hari"
+                    >
+                        <RefreshCw size={11} className={refreshing ? 'animate-spin' : ''} />
+                        Refresh Token
+                    </button>
+                    <button
+                        type="button"
+                        onClick={handleRefresh}
+                        disabled={refreshing}
+                        className={`h-8 px-2.5 inline-flex items-center gap-1.5 bg-white border rounded text-[11px] font-medium transition-colors disabled:opacity-50 ${
+                            urgent
+                                ? 'border-red-300 hover:border-red-500 text-red-700'
+                                : warning
+                                    ? 'border-amber-300 hover:border-amber-500 text-amber-700'
+                                    : 'border-emerald-300 hover:border-emerald-500 text-emerald-700'
+                        }`}
+                        title="Flush cache + fetch ulang post"
+                    >
+                        <RefreshCw size={11} className={refreshing ? 'animate-spin' : ''} />
+                        Refresh Cache
+                    </button>
+                </div>
             </div>
         </div>
     );

@@ -118,6 +118,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // Instagram
         Route::get('/instagram/status', [\App\Http\Controllers\Api\InstagramController::class, 'status']);
         Route::post('/instagram/refresh', [\App\Http\Controllers\Api\InstagramController::class, 'refresh']);
+        Route::post('/instagram/refresh-token', [\App\Http\Controllers\Api\InstagramController::class, 'refreshToken']);
 
         // Orders
         Route::get('/orders', [OrderController::class, 'adminIndex']);

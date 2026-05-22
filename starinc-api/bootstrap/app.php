@@ -35,6 +35,8 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withSchedule(function (Schedule $schedule): void {
         $schedule->command('app:check-inactive-users')->dailyAt('01:00');
+        // Refresh Instagram token tiap Senin pagi (skip kalau >14 hari masih valid)
+        $schedule->command('instagram:refresh-token')->weeklyOn(1, '02:00');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

@@ -46,4 +46,13 @@ class InstagramController extends Controller
             ...$validation,
         ]);
     }
+
+    /**
+     * Admin: refresh Instagram Login token (perpanjang 60 hari).
+     */
+    public function refreshToken()
+    {
+        $result = $this->instagram->refreshToken();
+        return response()->json($result, $result['ok'] ? 200 : 422);
+    }
 }
