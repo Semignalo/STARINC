@@ -19,7 +19,7 @@ class NetworkController extends Controller
         if ($user->role === 'starcenter' || $user->role === 'admin') {
             // Starcenter: ambil semua downline hingga 7 level
             $network = StarcenterNetwork::where('upline_id', $user->id)
-                ->with(['downline.tier'])
+                ->with('downline')
                 ->orderBy('depth', 'asc')
                 ->get();
 
@@ -29,17 +29,15 @@ class NetworkController extends Controller
                     'name' => $net->downline->name,
                     'email' => $net->downline->email,
                     'referrer_id' => $net->downline->referrer_id,
-                    'tier' => $net->downline->tier,
                     'created_at' => $net->downline->created_at,
                     'cumulative_spending' => $net->downline->cumulative_spending,
                     'level' => $net->depth,
                 ];
             });
         } else {
-            // Regular user: hanya referral langsung (Level 1)
+            // Fallback (non-starcenter): hanya referral langsung (Level 1)
             $referrals = $user->referrals()
-                ->with('tier')
-                ->select('id', 'name', 'email', 'referrer_id', 'tier_id', 'created_at', 'cumulative_spending')
+                ->select('id', 'name', 'email', 'referrer_id', 'created_at', 'cumulative_spending')
                 ->orderBy('created_at', 'desc')
                 ->get()
                 ->map(function ($ref) {
