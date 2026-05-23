@@ -478,7 +478,7 @@ export default function Home() {
         <div className="flex flex-col w-full overflow-hidden bg-white">
 
             {/* ── Hero ─────────────────────────────────────────── */}
-            <section className="relative w-full h-[100vh] min-h-[600px] overflow-hidden bg-gray-900">
+            <section className="relative w-full h-[100vh] min-h-[600px] overflow-hidden bg-[#0F172A]">
                 {settings?.heroVideoUrl && (
                     <video
                         key={settings.heroVideoUrl}
@@ -490,19 +490,24 @@ export default function Home() {
                         <source src={settings.heroVideoUrl} type="video/mp4" />
                     </video>
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-black/10" />
+                <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[var(--color-accent)]/60 to-transparent" />
+
                 <div className="absolute inset-0 flex flex-col items-center justify-end pb-[10%] px-6 text-center">
+                    <p className="text-[10px] uppercase tracking-[0.4em] text-[var(--color-accent)]/90 mb-5">
+                        {lang === 'en' ? 'STARINC' : 'STARINC'}
+                    </p>
                     <h1 className="text-4xl sm:text-5xl md:text-6xl font-medium text-white mb-6 leading-tight tracking-tight max-w-2xl">
                         {settings?.heroTitle || 'True Radiance'}
                     </h1>
-                    <p className="text-white/80 mb-10 max-w-md mx-auto text-sm leading-relaxed">
+                    <p className="text-white/70 mb-10 max-w-md mx-auto text-sm leading-relaxed">
                         {settings?.heroSubtitle || (lang === 'en'
                             ? 'Discover the new Gold Standard for your skin.'
                             : 'Temukan standar baru keemasan untuk kulitmu.')}
                     </p>
                     <Link
                         to={settings?.heroCtaUrl || '/products'}
-                        className="inline-flex items-center gap-2 px-6 h-11 bg-white text-gray-900 text-xs uppercase tracking-[0.2em] hover:bg-gray-100 transition-colors"
+                        className="inline-flex items-center gap-2 px-7 h-12 bg-white text-gray-900 text-xs uppercase tracking-[0.25em] hover:bg-gray-100 transition-colors rounded-md"
                     >
                         {tx.heroBtn} <ArrowRight size={13} />
                     </Link>
@@ -583,24 +588,25 @@ export default function Home() {
                     : (Array.isArray(tx.testimonials) ? tx.testimonials : []);
                 if (list.length === 0) return null;
                 return (
-                <section className="border-t border-gray-100 py-16 md:py-24 px-4 md:px-8">
+                <section className="border-t border-gray-100 py-16 md:py-24 px-4 md:px-8 bg-gray-50/40">
                     <div className="max-w-6xl mx-auto">
                         <div className="text-center mb-12">
                             <p className="text-[10px] uppercase tracking-[0.3em] text-gray-400 mb-3">{tx.testimLabel}</p>
                             <h2 className="text-2xl md:text-3xl font-medium text-gray-900 tracking-tight">{tx.testimTitle}</h2>
+                            <div className="h-px w-12 bg-gray-900 mx-auto mt-5" />
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                             {list.slice(0, 6).map((item, i) => (
-                                <figure key={item.id ?? i} className="border border-gray-100 p-7 flex flex-col gap-5 relative bg-white">
-                                    <Quote size={20} className="text-gray-200 absolute top-5 right-5" strokeWidth={1.5} />
+                                <figure key={item.id ?? i} className="border border-gray-200 rounded-lg p-7 flex flex-col gap-5 relative bg-white hover:border-gray-300 transition-colors">
+                                    <Quote size={18} className="text-gray-200 absolute top-5 right-5" strokeWidth={1.5} />
                                     <div className="flex gap-0.5">
                                         {Array.from({ length: item.rating ?? 5 }).map((_, s) => (
-                                            <Star key={s} size={11} className="text-gray-900 fill-gray-900" />
+                                            <Star key={s} size={11} className="text-[var(--color-accent)] fill-[var(--color-accent)]" />
                                         ))}
                                     </div>
                                     <blockquote className="text-sm text-gray-600 leading-relaxed flex-1">"{item.text}"</blockquote>
                                     <figcaption className="border-t border-gray-100 pt-4">
-                                        <p className="font-medium text-gray-900 text-sm">{item.name}</p>
+                                        <p className="font-medium text-gray-900 text-sm tracking-tight">{item.name}</p>
                                         {item.product && <p className="text-[11px] text-gray-400 mt-0.5">{item.product}</p>}
                                         {item.location && <p className="text-[11px] text-gray-400">{item.location}</p>}
                                     </figcaption>
@@ -613,9 +619,10 @@ export default function Home() {
             })()}
 
             {/* ── Partnership CTA ──────────────────────────────── */}
-            <section className="bg-gray-900 py-20 md:py-28 px-4">
-                <div className="max-w-2xl mx-auto text-center">
-                    <p className="text-[10px] uppercase tracking-[0.3em] text-[var(--admin-accent,#C5A059)] mb-5">{tx.ctaLabel}</p>
+            <section className="bg-[#0F172A] py-20 md:py-28 px-4 relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[var(--color-accent)]/50 to-transparent" />
+                <div className="max-w-2xl mx-auto text-center relative z-10">
+                    <p className="text-[10px] uppercase tracking-[0.3em] text-[var(--color-accent)] mb-5">{tx.ctaLabel}</p>
                     <h2 className="text-3xl md:text-4xl font-medium text-white mb-5 leading-tight tracking-tight whitespace-pre-line">
                         {tx.ctaTitle}
                     </h2>
@@ -623,10 +630,10 @@ export default function Home() {
                         {tx.ctaDesc}
                     </p>
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                        <Link to="/daftar-center" className="inline-flex items-center justify-center px-6 h-11 bg-white text-gray-900 text-xs uppercase tracking-[0.2em] hover:bg-gray-100 transition-colors">
+                        <Link to="/daftar-center" className="inline-flex items-center justify-center px-7 h-12 bg-white text-gray-900 text-xs uppercase tracking-[0.25em] hover:bg-gray-100 transition-colors rounded-md">
                             {tx.ctaBtn1}
                         </Link>
-                        <Link to="/partnership" className="inline-flex items-center justify-center px-6 h-11 border border-white/40 text-white text-xs uppercase tracking-[0.2em] hover:border-white hover:bg-white/5 transition-colors">
+                        <Link to="/partnership" className="inline-flex items-center justify-center px-7 h-12 border border-white/30 text-white text-xs uppercase tracking-[0.25em] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors rounded-md">
                             {tx.ctaBtn2}
                         </Link>
                     </div>
@@ -637,9 +644,10 @@ export default function Home() {
             <InstagramFeed settings={settings} />
 
             {/* ── Quote ────────────────────────────────────────── */}
-            <section className="py-24 md:py-32 px-6 border-t border-gray-100">
+            <section className="py-24 md:py-32 px-6 border-t border-gray-100 bg-white">
                 <div className="max-w-2xl mx-auto text-center">
-                    <p className="text-xl md:text-2xl text-gray-800 italic leading-relaxed mb-8 whitespace-pre-line">
+                    <Quote size={28} className="text-[var(--color-accent)]/70 mx-auto mb-8" strokeWidth={1.2} />
+                    <p className="text-xl md:text-2xl text-gray-900 leading-relaxed mb-8 whitespace-pre-line italic tracking-tight">
                         {tx.quoteText}
                     </p>
                     <div className="w-8 h-px bg-gray-300 mx-auto mb-5" />
