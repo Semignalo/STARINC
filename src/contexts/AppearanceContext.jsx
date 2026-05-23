@@ -86,25 +86,23 @@ export function AppearanceProvider({ children }) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchSettings = async () => {
-            // Cek cache terlebih dahulu
-            const cached = readCache();
-            if (cached) {
-                const normalizedCached = normalizeStorageUrls(cached);
-                setSettings(prev => ({ ...prev, ...normalizedCached }));
-                if (cached.accentColor) {
-                    document.documentElement.style.setProperty('--color-accent', cached.accentColor);
-                }
-                setLoading(false);
-                return;
+        // Stale-while-revalidate: tampilkan cache instan (jika ada), lalu fetch ulang di background
+        const cached = readCache();
+        if (cached) {
+            const normalizedCached = normalizeStorageUrls(cached);
+            setSettings(prev => ({ ...prev, ...normalizedCached }));
+            if (cached.accentColor) {
+                document.documentElement.style.setProperty('--color-accent', cached.accentColor);
             }
+            setLoading(false);
+        }
 
-            // Cache miss — fetch dari API
+        // Always re-fetch dari API agar perubahan admin (logo, warna, dll.) langsung visible
+        (async () => {
             try {
                 const data = normalizeStorageUrls(await settingsApi.getAppearance());
                 setSettings(prev => ({ ...prev, ...data }));
                 writeCache(data);
-
                 if (data.accentColor) {
                     document.documentElement.style.setProperty('--color-accent', data.accentColor);
                 }
@@ -113,9 +111,7 @@ export function AppearanceProvider({ children }) {
             } finally {
                 setLoading(false);
             }
-        };
-
-        fetchSettings();
+        })();
     }, []);
 
     /**
