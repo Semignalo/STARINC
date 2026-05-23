@@ -27,20 +27,19 @@ function StepIndicator({ current }) {
                 const active = current === step.id;
                 return (
                     <div key={step.id} className="flex items-center">
-                        <div className="flex flex-col items-center gap-1">
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all ${
-                                done ? 'bg-emerald-500 border-emerald-500 text-white' :
-                                active ? 'bg-gray-900 border-primary text-white' :
-                                'bg-white border-gray-300 text-gray-400'
+                        <div className="flex flex-col items-center gap-1.5">
+                            <div className={`w-9 h-9 rounded-full flex items-center justify-center border transition-colors ${
+                                done || active ? 'bg-gray-900 border-gray-900 text-white' :
+                                'bg-white border-gray-200 text-gray-300'
                             }`}>
-                                {done ? <CheckCircle2 size={20} /> : <Icon size={18} />}
+                                {done ? <CheckCircle2 size={14} /> : <Icon size={14} />}
                             </div>
-                            <span className={`text-xs font-medium ${active ? 'text-gray-900' : done ? 'text-emerald-600' : 'text-gray-400'}`}>
+                            <span className={`text-[10px] uppercase tracking-[0.15em] ${active ? 'text-gray-900' : done ? 'text-gray-700' : 'text-gray-400'}`}>
                                 {step.label}
                             </span>
                         </div>
                         {i < STEPS.length - 1 && (
-                            <div className={`w-12 sm:w-20 h-0.5 mx-1 mb-4 ${done ? 'bg-emerald-400' : 'bg-gray-200'}`} />
+                            <div className={`w-10 sm:w-16 h-px mx-2 mb-5 ${done ? 'bg-gray-900' : 'bg-gray-200'}`} />
                         )}
                     </div>
                 );
@@ -53,12 +52,12 @@ function FileUploadField({ label, name, value, onChange, hint, required }) {
     const inputRef = useRef();
     return (
         <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-gray-700 mb-1.5">
                 {label}{required && <span className="text-red-500 ml-1">*</span>}
             </label>
             <div
                 onClick={() => inputRef.current?.click()}
-                className="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center cursor-pointer hover:border-primary hover:bg-gray-900/5 transition-all"
+                className="border border-dashed border-gray-300 rounded-md p-4 text-center cursor-pointer hover:border-gray-900 hover:bg-gray-50 transition-colors"
             >
                 {value ? (
                     <div className="flex items-center justify-center gap-2 text-emerald-600">
@@ -112,10 +111,10 @@ function OcrScanButton({ onScanned, disabled }) {
                 type="button"
                 disabled={disabled || scanning}
                 onClick={() => inputRef.current?.click()}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg border border-primary text-gray-900 text-sm font-medium hover:bg-gray-900/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="inline-flex items-center gap-2 h-9 px-4 rounded-md border border-gray-200 hover:border-gray-900 text-gray-700 text-xs uppercase tracking-[0.2em] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-                {scanning ? <Loader2 size={16} className="animate-spin" /> : <ScanLine size={16} />}
-                {scanning ? 'Memindai...' : 'Scan OCR'}
+                {scanning ? <Loader2 size={12} className="animate-spin" /> : <ScanLine size={12} />}
+                {scanning ? 'Memindai…' : 'Scan OCR'}
             </button>
             {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
             <input
@@ -175,53 +174,50 @@ function KtpUploadWithOcr({ onFileChange, onScanned }) {
 
     return (
         <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-gray-700 mb-1.5">
                 Foto KTP <span className="text-red-500">*</span>
             </label>
 
             {!file ? (
                 <div
                     onClick={() => inputRef.current?.click()}
-                    className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center cursor-pointer hover:border-primary hover:bg-gray-900/5 transition-all"
+                    className="border border-dashed border-gray-300 rounded-md p-6 text-center cursor-pointer hover:border-gray-900 hover:bg-gray-50 transition-colors"
                 >
-                    <Upload size={28} className="mx-auto mb-2 text-gray-400" />
-                    <p className="text-sm text-gray-500">Klik untuk upload foto KTP</p>
+                    <Upload size={20} className="mx-auto mb-2 text-gray-400" />
+                    <p className="text-sm text-gray-700">Klik untuk upload foto KTP</p>
                     <p className="text-xs text-gray-400 mt-1">JPG/PNG, maks 5MB — akan di-scan otomatis</p>
                 </div>
             ) : (
-                <div className="relative rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
+                <div className="relative rounded-md overflow-hidden border border-gray-200 bg-gray-50">
                     <img
                         src={previewUrl}
                         alt="Preview KTP"
-                        className="w-full object-cover max-h-52 rounded-xl"
+                        className="w-full object-cover max-h-52"
                     />
 
-                    {/* Scanning overlay */}
                     {scanning && (
-                        <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-2 rounded-xl">
+                        <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-2">
                             <div className="relative">
-                                <ScanLine size={36} className="text-white/40" />
+                                <ScanLine size={28} className="text-white/40" />
                                 <div className="absolute inset-0 flex items-center justify-center">
-                                    <Loader2 size={20} className="animate-spin text-white" />
+                                    <Loader2 size={16} className="animate-spin text-white" />
                                 </div>
                             </div>
-                            <span className="text-white text-sm font-medium">Memindai KTP...</span>
+                            <span className="text-white text-sm">Memindai KTP…</span>
                             <span className="text-white/60 text-xs">Mengisi data secara otomatis</span>
                         </div>
                     )}
 
-                    {/* Success badge */}
                     {scanDone && !scanning && (
-                        <div className="absolute top-2 left-2 bg-emerald-500 text-white text-xs px-2.5 py-1 rounded-full flex items-center gap-1 shadow">
-                            <CheckCircle2 size={12} /> Data terisi otomatis
+                        <div className="absolute top-2 left-2 bg-gray-900 text-white text-[10px] uppercase tracking-[0.15em] px-2 py-1 rounded-md flex items-center gap-1">
+                            <CheckCircle2 size={10} /> Data Terisi
                         </div>
                     )}
 
-                    {/* Change photo button */}
                     <button
                         type="button"
                         onClick={() => inputRef.current?.click()}
-                        className="absolute bottom-2 right-2 bg-white/90 backdrop-blur-sm text-gray-700 text-xs px-3 py-1.5 rounded-full shadow-md hover:bg-white transition font-medium"
+                        className="absolute bottom-2 right-2 bg-white/95 backdrop-blur-sm text-gray-700 text-[10px] uppercase tracking-[0.15em] px-3 py-1.5 rounded-md hover:bg-white transition-colors"
                     >
                         Ganti Foto
                     </button>
@@ -558,25 +554,26 @@ export default function DaftarCenter() {
         }
     };
 
-    const inputCls = (field) => `w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition ${
-        errors[field] ? 'border-red-400 bg-red-50' : 'border-gray-300'
+    const inputCls = (field) => `w-full h-11 px-3 bg-white border text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 transition-colors rounded-md ${
+        errors[field] ? 'border-red-300 focus:ring-red-400 focus:border-red-400 bg-red-50/30' : 'border-gray-200 focus:ring-gray-900 focus:border-gray-900'
     }`;
 
     if (submitted) {
         return (
-            <div className="min-h-screen bg-neutral-50 flex items-center justify-center p-6">
-                <div className="bg-white  shadow-lg p-10 max-w-md w-full text-center">
-                    <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <CheckCircle2 size={36} className="text-emerald-500" />
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+                <div className="bg-white border border-gray-200 rounded-lg p-10 max-w-md w-full text-center">
+                    <div className="w-14 h-14 border border-gray-200 rounded-full flex items-center justify-center mx-auto mb-5">
+                        <CheckCircle2 size={20} className="text-emerald-700" />
                     </div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">Pendaftaran Terkirim!</h2>
-                    <p className="text-gray-500 mb-6 text-sm leading-relaxed">
+                    <p className="text-[10px] uppercase tracking-[0.3em] text-gray-400 mb-2">Submitted</p>
+                    <h2 className="text-xl font-medium text-gray-900 tracking-tight mb-3">Pendaftaran Terkirim</h2>
+                    <p className="text-sm text-gray-500 mb-6 leading-relaxed">
                         Terima kasih telah mendaftar sebagai mitra Starcenter. Tim kami akan meninjau
-                        pendaftaran Anda dalam <strong>1–3 hari kerja</strong> dan menghubungi via email.
+                        pendaftaran Anda dalam <strong className="text-gray-900">1–3 hari kerja</strong> dan menghubungi via email.
                     </p>
                     <button
                         onClick={() => navigate('/')}
-                        className="w-full py-3 bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-900/90 transition"
+                        className="w-full h-11 btn-primary text-xs uppercase tracking-[0.25em] rounded-md"
                     >
                         Kembali ke Beranda
                     </button>
@@ -586,20 +583,21 @@ export default function DaftarCenter() {
     }
 
     return (
-        <div className="min-h-screen bg-neutral-50 py-8 px-4">
+        <div className="min-h-screen bg-gray-50 pt-20 pb-12 px-4">
             <div className="max-w-xl mx-auto">
                 {/* Header */}
-                <div className="text-center mb-6">
-                    <div className="inline-flex items-center justify-center w-14 h-14 bg-gray-900/10  mb-3">
-                        <Building2 size={28} className="text-gray-900" />
+                <div className="text-center mb-8">
+                    <div className="inline-flex items-center justify-center w-12 h-12 border border-gray-200 rounded-full mb-4">
+                        <Building2 size={18} className="text-gray-700" />
                     </div>
-                    <h1 className="text-2xl font-bold text-gray-900">Daftar sebagai Starcenter</h1>
-                    <p className="text-gray-500 text-sm mt-1">Isi data lengkap untuk bergabung sebagai mitra</p>
+                    <p className="text-[10px] uppercase tracking-[0.3em] text-gray-400 mb-2">Partner Application</p>
+                    <h1 className="text-2xl md:text-3xl font-medium text-gray-900 tracking-tight">Daftar sebagai Starcenter</h1>
+                    <p className="text-sm text-gray-500 mt-2">Isi data lengkap untuk bergabung sebagai mitra.</p>
                 </div>
 
                 <StepIndicator current={step} />
 
-                <div className="bg-white  shadow-sm border border-gray-100 p-6 sm:p-8">
+                <div className="bg-white border border-gray-200 rounded-lg p-6 sm:p-8">
                     {errors._global && (
                         <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
                             {errors._global}
@@ -609,13 +607,13 @@ export default function DaftarCenter() {
                     {/* ── Step 1: Identitas ── */}
                     {step === 1 && (
                         <div className="space-y-5">
-                            <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                                <User size={20} className="text-gray-900" /> Identitas Diri
+                            <h2 className="text-sm font-medium text-gray-900 tracking-tight flex items-center gap-2">
+                                <User size={14} className="text-gray-400" /> Identitas Diri
                             </h2>
 
                             {/* Center Name */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
                                     Nama Center <span className="text-red-500">*</span>
                                 </label>
                                 <div className="relative">
@@ -648,7 +646,7 @@ export default function DaftarCenter() {
 
                             {/* Full Name */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
                                     Nama Lengkap <span className="text-red-500">*</span>
                                 </label>
                                 <input
@@ -663,7 +661,7 @@ export default function DaftarCenter() {
 
                             {/* NIK */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
                                     NIK (16 digit)
                                 </label>
                                 <input
@@ -680,7 +678,7 @@ export default function DaftarCenter() {
                             {/* Birth Place & Date */}
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-xs font-medium text-gray-700 mb-1.5">
                                         Tempat Lahir <span className="text-red-500">*</span>
                                     </label>
                                     <input
@@ -693,7 +691,7 @@ export default function DaftarCenter() {
                                     {errors.birth_place && <p className="text-xs text-red-500 mt-1">{errors.birth_place}</p>}
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-xs font-medium text-gray-700 mb-1.5">
                                         Tanggal Lahir <span className="text-red-500">*</span>
                                     </label>
                                     <input
@@ -717,8 +715,8 @@ export default function DaftarCenter() {
                                             key={v}
                                             type="button"
                                             onClick={() => setGender(v)}
-                                            className={`flex-1 py-2.5 rounded-xl border-2 text-sm font-medium transition-all ${
-                                                gender === v ? 'border-primary bg-gray-900 text-white' : 'border-gray-200 text-gray-600 hover:border-primary/50'
+                                            className={`flex-1 h-11 rounded-md border text-sm transition-colors ${
+                                                gender === v ? 'border-gray-900 bg-gray-900 text-white' : 'border-gray-200 text-gray-700 hover:border-gray-400'
                                             }`}
                                         >
                                             {l}
@@ -730,7 +728,7 @@ export default function DaftarCenter() {
 
                             {/* Religion */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
                                     Agama <span className="text-red-500">*</span>
                                 </label>
                                 <select
@@ -746,7 +744,7 @@ export default function DaftarCenter() {
 
                             {/* Marital Status */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
                                     Status Pernikahan <span className="text-red-500">*</span>
                                 </label>
                                 <select
@@ -762,7 +760,7 @@ export default function DaftarCenter() {
 
                             {/* Occupation */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
                                     Pekerjaan <span className="text-red-500">*</span>
                                 </label>
                                 <input
@@ -780,12 +778,12 @@ export default function DaftarCenter() {
                     {/* ── Step 2: Kontak ── */}
                     {step === 2 && (
                         <div className="space-y-5">
-                            <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                                <Phone size={20} className="text-gray-900" /> Informasi Kontak
+                            <h2 className="text-sm font-medium text-gray-900 tracking-tight flex items-center gap-2">
+                                <Phone size={14} className="text-gray-400" /> Informasi Kontak
                             </h2>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
                                     Email <span className="text-red-500">*</span>
                                 </label>
                                 <input
@@ -799,7 +797,7 @@ export default function DaftarCenter() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
                                     No. Telepon / WhatsApp <span className="text-red-500">*</span>
                                 </label>
                                 <input
@@ -813,7 +811,7 @@ export default function DaftarCenter() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
                                     Link Online Shop
                                     <span className="text-gray-400 font-normal ml-1">(opsional)</span>
                                 </label>
@@ -837,12 +835,12 @@ export default function DaftarCenter() {
                     {/* ── Step 3: Bank & Pajak ── */}
                     {step === 3 && (
                         <div className="space-y-5">
-                            <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                                <Landmark size={20} className="text-gray-900" /> Rekening Bank & Pajak
+                            <h2 className="text-sm font-medium text-gray-900 tracking-tight flex items-center gap-2">
+                                <Landmark size={14} className="text-gray-400" /> Rekening Bank & Pajak
                             </h2>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
                                     Nama Bank <span className="text-red-500">*</span>
                                 </label>
                                 <input
@@ -856,7 +854,7 @@ export default function DaftarCenter() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
                                     Nomor Rekening <span className="text-red-500">*</span>
                                 </label>
                                 <div className="relative">
@@ -875,7 +873,7 @@ export default function DaftarCenter() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
                                     Nama Pemilik Rekening <span className="text-red-500">*</span>
                                 </label>
                                 <input
@@ -924,7 +922,7 @@ export default function DaftarCenter() {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-xs font-medium text-gray-700 mb-1.5">
                                         Nomor NPWP
                                         <span className="text-gray-400 font-normal ml-1">(opsional)</span>
                                     </label>
@@ -950,8 +948,8 @@ export default function DaftarCenter() {
                     {/* ── Step 4: Referral ── */}
                     {step === 4 && (
                         <div className="space-y-5">
-                            <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                                <Users size={20} className="text-gray-900" /> Kode Referral Inisiator
+                            <h2 className="text-sm font-medium text-gray-900 tracking-tight flex items-center gap-2">
+                                <Users size={14} className="text-gray-400" /> Kode Referral Inisiator
                             </h2>
 
                             <p className="text-sm text-gray-500">
@@ -960,7 +958,7 @@ export default function DaftarCenter() {
                             </p>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
                                     Kode Referral
                                     <span className="text-gray-400 font-normal ml-1">(opsional)</span>
                                 </label>
@@ -991,16 +989,16 @@ export default function DaftarCenter() {
                             </div>
 
                             {/* Summary box */}
-                            <div className="bg-gray-50 rounded-xl p-4 space-y-2 text-sm">
-                                <p className="font-semibold text-gray-700 mb-2">Ringkasan Pendaftaran</p>
-                                <div className="flex justify-between"><span className="text-gray-500">Nama Center</span><span className="font-medium">{centerName}</span></div>
-                                <div className="flex justify-between"><span className="text-gray-500">Nama Lengkap</span><span className="font-medium">{fullName}</span></div>
-                                <div className="flex justify-between"><span className="text-gray-500">Email</span><span className="font-medium">{email}</span></div>
-                                <div className="flex justify-between"><span className="text-gray-500">No. HP</span><span className="font-medium">{phone}</span></div>
-                                <div className="flex justify-between"><span className="text-gray-500">Bank</span><span className="font-medium">{bankName} · {bankNumber}</span></div>
+                            <div className="bg-gray-50 border border-gray-200 rounded-md p-5 space-y-2 text-sm">
+                                <p className="text-[10px] uppercase tracking-[0.3em] text-gray-400 mb-3">Ringkasan</p>
+                                <div className="flex justify-between"><span className="text-gray-500">Nama Center</span><span className="text-gray-900">{centerName}</span></div>
+                                <div className="flex justify-between"><span className="text-gray-500">Nama Lengkap</span><span className="text-gray-900">{fullName}</span></div>
+                                <div className="flex justify-between"><span className="text-gray-500">Email</span><span className="text-gray-900">{email}</span></div>
+                                <div className="flex justify-between"><span className="text-gray-500">No. HP</span><span className="text-gray-900 tabular-nums">{phone}</span></div>
+                                <div className="flex justify-between"><span className="text-gray-500">Bank</span><span className="text-gray-900">{bankName} · {bankNumber}</span></div>
                             </div>
 
-                            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs text-amber-700 leading-relaxed">
+                            <div className="bg-amber-50/50 border border-amber-200 rounded-md p-4 text-xs text-amber-800 leading-relaxed">
                                 Dengan mengirim formulir ini, Anda menyetujui bahwa data yang diberikan
                                 adalah benar dan dapat dipertanggungjawabkan. Tim kami akan menghubungi
                                 Anda dalam 1–3 hari kerja.
@@ -1014,9 +1012,9 @@ export default function DaftarCenter() {
                             <button
                                 type="button"
                                 onClick={goBack}
-                                className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gray-300 text-gray-600 text-sm font-medium hover:bg-gray-50 transition"
+                                className="inline-flex items-center gap-1.5 h-11 px-5 rounded-md border border-gray-200 hover:border-gray-400 text-gray-700 text-xs uppercase tracking-[0.25em] transition-colors"
                             >
-                                <ChevronLeft size={16} /> Sebelumnya
+                                <ChevronLeft size={14} /> Sebelumnya
                             </button>
                         ) : (
                             <div />
@@ -1027,30 +1025,30 @@ export default function DaftarCenter() {
                                 type="button"
                                 onClick={goNext}
                                 disabled={step === 1 && centerNameStatus === 'checking'}
-                                className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gray-900 text-white text-sm font-semibold hover:bg-gray-900/90 transition disabled:opacity-50"
+                                className="inline-flex items-center gap-1.5 h-11 px-6 btn-primary text-xs uppercase tracking-[0.25em] rounded-md disabled:opacity-50"
                             >
-                                Lanjut <ChevronRight size={16} />
+                                Lanjut <ChevronRight size={14} />
                             </button>
                         ) : (
                             <button
                                 type="button"
                                 onClick={handleSubmit}
                                 disabled={submitting || referralStatus === 'invalid'}
-                                className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gray-900 text-white text-sm font-semibold hover:bg-gray-900/90 transition disabled:opacity-50"
+                                className="inline-flex items-center gap-1.5 h-11 px-6 btn-primary text-xs uppercase tracking-[0.25em] rounded-md disabled:opacity-50"
                             >
                                 {submitting ? (
-                                    <><Loader2 size={16} className="animate-spin" /> Mengirim...</>
+                                    <><Loader2 size={12} className="animate-spin" /> Mengirim…</>
                                 ) : (
-                                    <><CheckCircle2 size={16} /> Kirim Pendaftaran</>
+                                    <><CheckCircle2 size={12} /> Kirim Pendaftaran</>
                                 )}
                             </button>
                         )}
                     </div>
                 </div>
 
-                <p className="text-center text-xs text-gray-400 mt-6">
+                <p className="text-center text-xs text-gray-500 mt-6">
                     Sudah punya akun?{' '}
-                    <button onClick={() => navigate('/login')} className="text-gray-900 hover:underline font-medium">
+                    <button onClick={() => navigate('/login')} className="text-gray-900 hover:underline">
                         Masuk di sini
                     </button>
                 </p>

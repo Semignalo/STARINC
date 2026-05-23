@@ -27,7 +27,7 @@ export default function Invoice() {
 
     const handleCopy = (text) => {
         navigator.clipboard.writeText(String(text || ''));
-        Swal.fire({ title: 'Tersalin!', icon: 'success', toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 });
+        Swal.fire({ title: 'Tersalin', icon: 'success', toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 });
     };
 
     const handleCancel = async () => {
@@ -37,8 +37,8 @@ export default function Invoice() {
             text: 'Pesanan yang dibatalkan tidak dapat dipulihkan.',
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#dc2626',
-            cancelButtonColor: '#6b7280',
+            confirmButtonColor: '#0F172A',
+            cancelButtonColor: '#9ca3af',
             confirmButtonText: 'Ya, Batalkan',
             cancelButtonText: 'Kembali',
         });
@@ -47,7 +47,7 @@ export default function Invoice() {
         setCancelling(true);
         try {
             await orderApi.cancelOrder(order.order_number);
-            await Swal.fire({ title: 'Pesanan Dibatalkan', icon: 'success', confirmButtonColor: '#111827' });
+            await Swal.fire({ title: 'Pesanan Dibatalkan', icon: 'success', confirmButtonColor: '#0F172A' });
             window.location.reload();
         } catch (err) {
             Swal.fire('Gagal', getErrorMessage(err, 'Gagal membatalkan pesanan.'), 'error');
@@ -71,7 +71,7 @@ export default function Invoice() {
         setUploadingProof(true);
         try {
             await orderApi.uploadPaymentProof(order.order_id, file);
-            Swal.fire('Berhasil!', 'Bukti pembayaran diunggah dan sedang diverifikasi.', 'success');
+            Swal.fire('Berhasil', 'Bukti pembayaran diunggah dan sedang diverifikasi.', 'success');
             window.location.reload();
         } catch (err) {
             Swal.fire('Gagal', getErrorMessage(err), 'error');
@@ -81,105 +81,121 @@ export default function Invoice() {
     };
 
     const proofStatus = order?.payment_proof?.status;
-    const paymentStatusLabel = (proofStatus === 'approved' || ['processing', 'shipped', 'completed'].includes(order?.status))
+    const isPaid = proofStatus === 'approved' || ['processing', 'shipped', 'completed'].includes(order?.status);
+    const paymentStatusLabel = isPaid
         ? 'Lunas'
         : proofStatus === 'rejected' ? 'Bukti Ditolak'
-        : proofStatus === 'pending' ? 'Bukti Diterima — Menunggu Verifikasi'
+        : proofStatus === 'pending' ? 'Menunggu Verifikasi'
         : 'Menunggu Pembayaran';
 
-    const paymentStatusClass = (proofStatus === 'approved' || ['processing', 'shipped', 'completed'].includes(order?.status))
-        ? 'text-green-600 bg-green-100'
-        : proofStatus === 'rejected' ? 'text-red-600 bg-red-100'
-        : proofStatus === 'pending' ? 'text-blue-600 bg-blue-100'
-        : 'text-orange-600 bg-orange-100';
+    const paymentStatusClass = isPaid
+        ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+        : proofStatus === 'rejected' ? 'bg-gray-100 text-gray-500 border-gray-200'
+        : proofStatus === 'pending' ? 'bg-blue-50 text-blue-700 border-blue-200'
+        : 'bg-amber-50 text-amber-700 border-amber-200';
+
+    const fmt = (v) => `Rp${parseFloat(v || 0).toLocaleString('id-ID')}`;
 
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-[60vh]">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900" />
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
             </div>
         );
     }
 
     if (!order) {
         return (
-            <div className="container mx-auto px-4 py-20 text-center">
-                <AlertCircle className="mx-auto h-12 w-12 text-red-500 mb-4" />
-                <h2 className="text-2xl font-medium tracking-tight mb-4">Invoice Not Found</h2>
-                <Link to="/" className="text-gray-500 underline">Return to Home</Link>
+            <div className="min-h-screen bg-gray-50 pt-20 pb-12 px-4 flex flex-col items-center justify-center text-center">
+                <div className="w-14 h-14 border border-gray-200 rounded-full flex items-center justify-center mb-5">
+                    <AlertCircle size={18} className="text-gray-400" />
+                </div>
+                <p className="text-[10px] uppercase tracking-[0.3em] text-gray-400 mb-2">404</p>
+                <h2 className="text-xl font-medium tracking-tight text-gray-900 mb-2">Invoice Tidak Ditemukan</h2>
+                <Link to="/" className="text-sm text-gray-500 hover:text-gray-900 underline transition-colors mt-2">
+                    Kembali ke Beranda
+                </Link>
             </div>
         );
     }
 
     return (
-        <div className="container mx-auto px-4 py-12 md:py-20 flex justify-center">
-            <div className="invoice-print-wrapper w-full max-w-xl bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+        <div className="min-h-screen bg-gray-50 pt-20 pb-12 px-4">
+            <div className="invoice-print-wrapper max-w-xl mx-auto bg-white border border-gray-200 rounded-lg overflow-hidden">
 
-                {/* Header */}
-                <div className="invoice-print-header p-8 text-center text-white bg-gray-800">
-                    <CheckCircle className="mx-auto h-16 w-16 mb-4 text-gray-400" />
-                    <h1 className="text-3xl font-medium tracking-tight mb-2">Order Dibuat!</h1>
-                    <p className="text-gray-300">Silakan selesaikan pembayaran agar pesanan Anda segera diproses.</p>
+                {/* Header — navy with gold accent */}
+                <div className="invoice-print-header bg-[#0F172A] text-white p-9 text-center relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[var(--color-accent)]/50 to-transparent" />
+                    <div className="w-14 h-14 mx-auto mb-4 border border-white/20 rounded-full flex items-center justify-center">
+                        <CheckCircle size={20} className="text-[var(--color-accent)]" />
+                    </div>
+                    <p className="text-[10px] uppercase tracking-[0.3em] text-[var(--color-accent)] mb-2">Order Created</p>
+                    <h1 className="text-2xl font-medium tracking-tight mb-2">Pesanan Berhasil Dibuat</h1>
+                    <p className="text-sm text-white/60 leading-relaxed">
+                        Selesaikan pembayaran agar pesanan segera diproses.
+                    </p>
                 </div>
 
                 {/* Content */}
-                <div className="p-8 space-y-8">
+                <div className="p-7 md:p-8 space-y-7">
 
+                    {/* Total */}
                     <div className="text-center">
-                        <p className="text-sm text-gray-500 mb-1">Total Pembayaran</p>
-                        <h2 className="text-4xl font-bold text-gray-900">
-                            Rp. {order.total?.toLocaleString('id-ID')}
-                        </h2>
+                        <p className="text-[10px] uppercase tracking-[0.3em] text-gray-400 mb-2">Total Pembayaran</p>
+                        <p className="text-3xl md:text-4xl font-medium text-gray-900 tabular-nums tracking-tight">
+                            {fmt(order.total)}
+                        </p>
                     </div>
 
                     {/* Bank Transfer Info */}
                     {paymentConfig && (
-                        <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
-                            <h3 className="font-bold text-gray-900 mb-4">Informasi Transfer Bank</h3>
+                        <div className="bg-gray-50 border border-gray-200 p-6 rounded-lg">
+                            <p className="text-[10px] uppercase tracking-[0.3em] text-gray-400 mb-1">Bank Transfer</p>
+                            <h3 className="text-sm font-medium text-gray-900 tracking-tight mb-5">Informasi Transfer</h3>
                             <div className="space-y-4">
                                 <div>
-                                    <p className="text-sm text-gray-500">Bank</p>
-                                    <p className="font-medium text-lg uppercase">{paymentConfig.bank_name}</p>
+                                    <p className="text-[10px] uppercase tracking-[0.25em] text-gray-400 mb-1">Bank</p>
+                                    <p className="text-base font-medium text-gray-900 uppercase">{paymentConfig.bank_name}</p>
                                 </div>
                                 <div>
-                                    <p className="text-sm text-gray-500">Nomor Rekening</p>
-                                    <div className="flex items-center justify-between bg-white px-4 py-3 border border-gray-200 rounded-md mt-1">
-                                        <span className="font-bold text-xl tracking-wider text-gray-900">
+                                    <p className="text-[10px] uppercase tracking-[0.25em] text-gray-400 mb-1.5">Nomor Rekening</p>
+                                    <div className="flex items-center justify-between bg-white border border-gray-200 px-4 h-12 rounded-md">
+                                        <span className="text-lg font-medium tabular-nums tracking-wider text-gray-900">
                                             {paymentConfig.account_number}
                                         </span>
                                         <button onClick={() => handleCopy(paymentConfig.account_number)}
-                                            className="text-gray-500 hover:text-gray-900 flex items-center gap-1 text-sm font-medium transition-colors">
-                                            <Copy size={16} /> Salin
+                                            className="text-gray-500 hover:text-gray-900 flex items-center gap-1.5 text-xs transition-colors">
+                                            <Copy size={12} /> Salin
                                         </button>
                                     </div>
                                 </div>
                                 <div>
-                                    <p className="text-sm text-gray-500">Atas Nama</p>
-                                    <p className="font-medium">{paymentConfig.account_name}</p>
+                                    <p className="text-[10px] uppercase tracking-[0.25em] text-gray-400 mb-1">Atas Nama</p>
+                                    <p className="text-sm font-medium text-gray-900">{paymentConfig.account_name}</p>
                                 </div>
                             </div>
                         </div>
                     )}
 
                     {/* Order Meta */}
-                    <div className="border-t border-gray-100 pt-6 space-y-2">
+                    <div className="border-t border-gray-100 pt-6 space-y-2.5">
                         <div className="flex justify-between text-sm">
                             <span className="text-gray-500">No. Order</span>
-                            <span className="font-mono font-medium">#{order.order_number}</span>
+                            <span className="font-mono text-xs text-gray-900">#{order.order_number}</span>
                         </div>
                         {order.discount_amount > 0 && (
                             <div className="flex justify-between text-sm">
                                 <span className="text-gray-500">Diskon Member ({order.discount_percent}%)</span>
-                                <span className="font-medium text-gray-900">- Rp. {parseFloat(order.discount_amount).toLocaleString('id-ID')}</span>
+                                <span className="text-gray-900 tabular-nums">- {fmt(order.discount_amount)}</span>
                             </div>
                         )}
                         <div className="flex justify-between text-sm">
                             <span className="text-gray-500">Ongkos Kirim</span>
-                            <span className="font-medium">Rp. {parseFloat(order.shipping_cost || 0).toLocaleString('id-ID')}</span>
+                            <span className="text-gray-900 tabular-nums">{fmt(order.shipping_cost)}</span>
                         </div>
-                        <div className="flex justify-between text-sm">
+                        <div className="flex justify-between text-sm items-center">
                             <span className="text-gray-500">Status Pembayaran</span>
-                            <span className={`font-bold px-2 py-0.5 rounded-full text-xs ${paymentStatusClass}`}>
+                            <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] uppercase tracking-[0.15em] border ${paymentStatusClass}`}>
                                 {paymentStatusLabel}
                             </span>
                         </div>
@@ -188,17 +204,17 @@ export default function Invoice() {
                     {/* Items */}
                     {order.items?.length > 0 && (
                         <div className="border-t border-gray-100 pt-6">
-                            <h4 className="text-sm font-bold text-gray-900 mb-3">Pesanan Kamu</h4>
+                            <p className="text-[10px] uppercase tracking-[0.3em] text-gray-400 mb-4">Items</p>
                             <div className="space-y-3">
                                 {order.items.map((item, idx) => (
                                     <div key={idx} className="flex justify-between text-sm">
-                                        <div>
-                                            <p className="font-medium text-gray-800">{item.product_title}</p>
-                                            {item.variant_name && <p className="text-xs text-gray-900">{item.variant_name}</p>}
-                                            <p className="text-xs text-gray-500">{item.quantity} × Rp. {parseFloat(item.unit_price || 0).toLocaleString('id-ID')}</p>
+                                        <div className="min-w-0 flex-1">
+                                            <p className="font-medium text-gray-900">{item.product_title}</p>
+                                            {item.variant_name && <p className="text-xs text-gray-500 mt-0.5">{item.variant_name}</p>}
+                                            <p className="text-xs text-gray-500 mt-0.5 tabular-nums">{item.quantity} × {fmt(item.unit_price)}</p>
                                         </div>
-                                        <p className="font-medium text-gray-900 whitespace-nowrap ml-4">
-                                            Rp. {parseFloat(item.line_total || 0).toLocaleString('id-ID')}
+                                        <p className="font-medium text-gray-900 whitespace-nowrap ml-4 tabular-nums">
+                                            {fmt(item.line_total)}
                                         </p>
                                     </div>
                                 ))}
@@ -209,17 +225,18 @@ export default function Invoice() {
                     {/* Upload Bukti Transfer */}
                     {order.status === 'pending_payment' && proofStatus !== 'approved' && proofStatus !== 'pending' && (
                         <div className="border-t border-gray-100 pt-6 print:hidden">
-                            <h4 className="text-sm font-bold text-gray-900 mb-2">Upload Bukti Transfer</h4>
+                            <p className="text-[10px] uppercase tracking-[0.3em] text-gray-400 mb-1">Payment Proof</p>
+                            <h4 className="text-sm font-medium text-gray-900 tracking-tight mb-1">Upload Bukti Transfer</h4>
                             <p className="text-xs text-gray-500 mb-4">Verifikasi max. 1×24 jam setelah bukti diterima.</p>
                             <input type="file" accept="image/jpeg,image/png,application/pdf"
                                 id="paymentProofInvoice" className="hidden"
                                 onChange={(e) => handleUploadProof(e.target.files[0])} />
                             <button onClick={() => document.getElementById('paymentProofInvoice').click()}
                                 disabled={uploadingProof}
-                                className="w-full flex items-center justify-center gap-2 border border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition disabled:opacity-60">
+                                className="w-full h-11 flex items-center justify-center gap-2 btn-primary text-xs uppercase tracking-[0.25em] rounded-md disabled:opacity-60">
                                 {uploadingProof
-                                    ? <><span className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600" /> Mengunggah...</>
-                                    : <><Upload size={18} /> Pilih File Bukti Transfer</>
+                                    ? <><span className="animate-spin rounded-full h-3 w-3 border-b-2 border-white" /> Mengunggah…</>
+                                    : <><Upload size={12} /> Pilih File Bukti</>
                                 }
                             </button>
                         </div>
@@ -227,24 +244,25 @@ export default function Invoice() {
 
                     {/* Batalkan Pesanan */}
                     {order.status === 'pending_payment' && (
-                        <div className="border-t border-gray-100 pt-4 print:hidden">
+                        <div className="print:hidden">
                             <button onClick={handleCancel} disabled={cancelling}
-                                className="w-full flex items-center justify-center gap-2 border border-red-300 text-red-600 py-2.5 rounded-lg text-sm font-medium hover:bg-red-50 transition disabled:opacity-60">
+                                className="w-full h-11 flex items-center justify-center gap-2 border border-gray-200 hover:border-gray-400 text-gray-500 hover:text-gray-900 text-xs uppercase tracking-[0.25em] rounded-md transition-colors disabled:opacity-60">
                                 {cancelling
-                                    ? <><span className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-500" /> Membatalkan...</>
-                                    : <><XCircle size={16} /> Batalkan Pesanan</>
+                                    ? <><span className="animate-spin rounded-full h-3 w-3 border-b-2 border-gray-500" /> Membatalkan…</>
+                                    : <><XCircle size={12} /> Batalkan Pesanan</>
                                 }
                             </button>
                         </div>
                     )}
 
-                    <div className="text-center pt-4 flex flex-col md:flex-row justify-center items-center gap-4 print:hidden">
+                    {/* Print + Back */}
+                    <div className="border-t border-gray-100 pt-6 flex flex-col sm:flex-row justify-center items-center gap-3 print:hidden">
                         <button onClick={() => window.print()}
-                            className="flex items-center gap-2 bg-gray-900 text-white px-6 py-2.5 rounded-lg hover:bg-gray-800 transition">
-                            <Printer size={18} /> Cetak / Download Invoice
+                            className="inline-flex items-center gap-2 h-11 px-6 bg-white border border-gray-200 hover:border-gray-400 text-gray-700 text-xs uppercase tracking-[0.25em] rounded-md transition-colors">
+                            <Printer size={12} /> Cetak Invoice
                         </button>
-                        <Link to="/" className="text-sm text-gray-500 underline hover:text-gray-900">
-                            Kembali ke Halaman Utama
+                        <Link to="/" className="text-xs text-gray-500 hover:text-gray-900 underline transition-colors">
+                            Kembali ke Beranda
                         </Link>
                     </div>
 
