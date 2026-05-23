@@ -10,7 +10,7 @@ function formatCurrency(value) {
 export default function DashboardCharts({ monthly_stats, top_products }) {
     return (
         <>
-            <div className="bg-white p-6 rounded-xl shadow-sm">
+            <div className="bg-white p-6 rounded-lg shadow-sm">
                 <h3 className="text-lg font-bold text-gray-800 mb-4">Pendapatan Bulanan</h3>
                 <div className="h-64">
                     <ResponsiveContainer width="100%" height="100%">
@@ -33,7 +33,7 @@ export default function DashboardCharts({ monthly_stats, top_products }) {
                 </div>
             </div>
 
-            <div className="bg-white p-6 rounded-xl shadow-sm min-h-[300px]">
+            <div className="bg-white p-6 rounded-lg shadow-sm min-h-[300px]">
                 <h3 className="text-lg font-bold text-gray-800 mb-4">Top 5 Produk (Terjual)</h3>
                 <div className="h-64">
                     <ResponsiveContainer width="100%" height="100%">

@@ -480,12 +480,12 @@ export default function UserDetail() {
                     <div className="space-y-5">
                         {network.downlines.length > 0 && (
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                                <div className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
+                                <div className="bg-white border border-gray-100 rounded-lg p-4 shadow-sm">
                                     <p className="text-xs text-gray-500 font-medium">Total Downline</p>
                                     <p className="text-2xl font-bold text-gray-900 mt-1">{network.total_downlines}</p>
                                 </div>
                                 {Object.entries(levelCounts).slice(0, 3).map(([lvl, cnt]) => (
-                                    <div key={lvl} className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
+                                    <div key={lvl} className="bg-white border border-gray-100 rounded-lg p-4 shadow-sm">
                                         <p className="text-xs text-gray-500 font-medium">Level {lvl}</p>
                                         <p className="text-2xl font-bold text-purple-700 mt-1">{cnt}</p>
                                     </div>
@@ -494,7 +494,7 @@ export default function UserDetail() {
                         )}
 
                         {network.uplines.length > 0 && (
-                            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+                            <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-5">
                                 <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-3">Upline Chain</h3>
                                 <div className="flex flex-col gap-1.5">
                                     {network.uplines.map((upline, i) => (
@@ -522,7 +522,7 @@ export default function UserDetail() {
                         )}
 
                         {network.downlines.length > 0 ? (
-                            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                            <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
                                 <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
                                     <h3 className="font-bold text-gray-900 flex items-center gap-2">
                                         <Users size={18} /> Jaringan Downline
@@ -575,7 +575,7 @@ export default function UserDetail() {
                                 </div>
                             </div>
                         ) : (
-                            <div className="bg-gray-50 rounded-xl p-8 text-center text-gray-400">
+                            <div className="bg-gray-50 rounded-lg p-8 text-center text-gray-400">
                                 <GitBranch size={32} className="mx-auto mb-2 opacity-40" />
                                 <p className="text-sm">Belum ada downline dalam jaringan ini.</p>
                             </div>
@@ -586,7 +586,7 @@ export default function UserDetail() {
 
             {/* Orders Tab */}
             {activeTab === 'orders' && user.orders && (
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left text-sm">
                             <thead className="bg-gray-50 border-b border-gray-100">
@@ -619,7 +619,7 @@ export default function UserDetail() {
 
             {/* Commissions Tab */}
             {activeTab === 'commissions' && (
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
                     <p className="text-gray-500 text-sm">Commission history akan ditampilkan di sini.</p>
                 </div>
             )}

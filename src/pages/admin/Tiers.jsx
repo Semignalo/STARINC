@@ -61,7 +61,7 @@ export default function AdminTiers() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {tiers.map(tier => (
-                    <div key={tier.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                    <div key={tier.id} className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
                         <div className="flex items-center gap-3 mb-4 border-b border-gray-100 pb-4">
                             <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-white uppercase text-xs 
                                 ${tier.slug === 'bronze' ? 'bg-[#cd7f32]' : 

@@ -26,17 +26,18 @@ export default function SdpRedirectModal({ open, onClose, isLoggedIn = false }) 
                 </button>
 
                 <div className="p-7 pt-8">
-                    <div className="flex items-center justify-center w-14 h-14 rounded-full bg-[var(--color-accent-light)] mb-5">
-                        <Sparkles size={26} className="text-gray-900" />
+                    <div className="flex items-center justify-center w-12 h-12 rounded-full border border-gray-200 mb-5">
+                        <Sparkles size={18} className="text-[var(--color-accent)]" />
                     </div>
 
+                    <p className="text-[10px] uppercase tracking-[0.3em] text-gray-400 mb-2">Members Only</p>
                     <h3 className="text-xl font-medium tracking-tight text-gray-900 mb-3">
-                        Pembelian eksklusif untuk Starcenter
+                        Pembelian Eksklusif Starcenter
                     </h3>
-                    <p className="text-sm text-gray-600 leading-relaxed mb-5">
-                        Halaman ini adalah katalog brand <span className="font-semibold">STARINC</span>. Transaksi langsung
+                    <p className="text-sm text-gray-600 leading-relaxed mb-6">
+                        Halaman ini adalah katalog brand <span className="text-gray-900">STARINC</span>. Transaksi langsung
                         hanya tersedia untuk member Starcenter. Untuk pembelian retail, silakan kunjungi marketplace mitra
-                        kami <span className="font-semibold">SDP</span>.
+                        kami <span className="text-gray-900">SDP</span>.
                     </p>
 
                     <div className="flex flex-col gap-2.5">
@@ -44,9 +45,9 @@ export default function SdpRedirectModal({ open, onClose, isLoggedIn = false }) 
                             href={SDP_URL}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="w-full py-3 bg-gray-900 text-white font-semibold text-sm rounded-md text-center hover:opacity-90 transition flex items-center justify-center gap-2"
+                            className="w-full h-11 btn-primary text-xs uppercase tracking-[0.25em] rounded-md flex items-center justify-center gap-2"
                         >
-                            <ShoppingBag size={16} />
+                            <ShoppingBag size={12} />
                             Beli di SDP
                         </a>
 
@@ -54,7 +55,7 @@ export default function SdpRedirectModal({ open, onClose, isLoggedIn = false }) 
                             <Link
                                 to="/login"
                                 onClick={onClose}
-                                className="w-full py-3 border border-gray-900 text-gray-900 font-semibold text-sm rounded-md text-center hover:bg-gray-900 hover:text-white transition"
+                                className="w-full h-11 border border-gray-200 hover:border-gray-400 text-gray-700 text-xs uppercase tracking-[0.25em] rounded-md text-center transition-colors flex items-center justify-center"
                             >
                                 Login sebagai Starcenter
                             </Link>
@@ -63,7 +64,7 @@ export default function SdpRedirectModal({ open, onClose, isLoggedIn = false }) 
                         <Link
                             to="/partnership"
                             onClick={onClose}
-                            className="w-full py-3 text-gray-500 font-medium text-xs text-center hover:text-gray-900 transition"
+                            className="w-full py-2 text-gray-500 text-xs text-center hover:text-gray-900 transition-colors"
                         >
                             Belum jadi member? Pelajari Become Center →
                         </Link>

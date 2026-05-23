@@ -120,7 +120,7 @@ function DetailModal({ app, onClose, onApproved, onRejected }) {
                         <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                             <User size={13} /> Identitas
                         </h3>
-                        <div className="bg-gray-50 rounded-xl px-4 py-1">
+                        <div className="bg-gray-50 rounded-lg px-4 py-1">
                             <Row label="Nama Lengkap" value={app.full_name} />
                             {app.nik && <Row label="NIK" value={app.nik} />}
                             <Row label="TTL" value={app.birth_place && app.birth_date
@@ -141,7 +141,7 @@ function DetailModal({ app, onClose, onApproved, onRejected }) {
                         <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                             <Phone size={13} /> Kontak
                         </h3>
-                        <div className="bg-gray-50 rounded-xl px-4 py-1">
+                        <div className="bg-gray-50 rounded-lg px-4 py-1">
                             <Row label="Email" value={app.email} />
                             <Row label="No. Telepon" value={app.phone} />
                             {app.shop_link && <Row label="Link Toko Online" value={app.shop_link} />}
@@ -153,7 +153,7 @@ function DetailModal({ app, onClose, onApproved, onRejected }) {
                         <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                             <Landmark size={13} /> Rekening Bank
                         </h3>
-                        <div className="bg-gray-50 rounded-xl px-4 py-1">
+                        <div className="bg-gray-50 rounded-lg px-4 py-1">
                             <Row label="Bank" value={app.bank_name} />
                             <Row label="No. Rekening" value={app.bank_number} />
                             <Row label="Nama Pemilik" value={app.bank_account_name} />
@@ -173,7 +173,7 @@ function DetailModal({ app, onClose, onApproved, onRejected }) {
                             <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                                 <Users size={13} /> Referral
                             </h3>
-                            <div className="bg-gray-50 rounded-xl px-4 py-1">
+                            <div className="bg-gray-50 rounded-lg px-4 py-1">
                                 {app.referral_code && <Row label="Kode Referral" value={app.referral_code} />}
                                 {app.referrer && <Row label="Inisiator" value={`${app.referrer.name} (${app.referrer.email})`} />}
                             </div>
@@ -182,7 +182,7 @@ function DetailModal({ app, onClose, onApproved, onRejected }) {
 
                     {/* Reject reason (if already rejected) */}
                     {app.status === 'rejected' && app.reject_reason && (
-                        <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-700">
+                        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-700">
                             <p className="font-semibold mb-1">Alasan Penolakan:</p>
                             <p>{app.reject_reason}</p>
                         </div>
@@ -190,7 +190,7 @@ function DetailModal({ app, onClose, onApproved, onRejected }) {
 
                     {/* Linked user (if approved) */}
                     {app.status === 'approved' && app.user && (
-                        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-sm text-emerald-700">
+                        <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 text-sm text-emerald-700">
                             <p className="font-semibold mb-1">Akun Starcenter:</p>
                             <p>{app.user.name} — {app.user.email}</p>
                         </div>
@@ -213,13 +213,13 @@ function DetailModal({ app, onClose, onApproved, onRejected }) {
                                     onChange={e => setReason(e.target.value)}
                                     placeholder="Tuliskan alasan penolakan..."
                                     rows={3}
-                                    className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-300 focus:border-red-400"
+                                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-300 focus:border-red-400"
                                 />
                                 <div className="flex gap-2">
                                     <button
                                         type="button"
                                         onClick={() => { setRejectMode(false); setErr(''); setReason(''); }}
-                                        className="flex-1 py-2.5 rounded-xl border border-gray-300 text-sm font-medium text-gray-600 hover:bg-gray-50 transition"
+                                        className="flex-1 py-2.5 rounded-lg border border-gray-300 text-sm font-medium text-gray-600 hover:bg-gray-50 transition"
                                     >
                                         Batal
                                     </button>
@@ -227,7 +227,7 @@ function DetailModal({ app, onClose, onApproved, onRejected }) {
                                         type="button"
                                         onClick={handleReject}
                                         disabled={loading}
-                                        className="flex-1 py-2.5 rounded-xl bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition disabled:opacity-50 flex items-center justify-center gap-2"
+                                        className="flex-1 py-2.5 rounded-lg bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition disabled:opacity-50 flex items-center justify-center gap-2"
                                     >
                                         {loading ? <Loader2 size={14} className="animate-spin" /> : <XCircle size={14} />}
                                         Konfirmasi Tolak
@@ -239,7 +239,7 @@ function DetailModal({ app, onClose, onApproved, onRejected }) {
                                 <button
                                     type="button"
                                     onClick={() => setRejectMode(true)}
-                                    className="flex-1 py-2.5 rounded-xl border border-red-300 text-red-600 text-sm font-semibold hover:bg-red-50 transition flex items-center justify-center gap-2"
+                                    className="flex-1 py-2.5 rounded-lg border border-red-300 text-red-600 text-sm font-semibold hover:bg-red-50 transition flex items-center justify-center gap-2"
                                 >
                                     <XCircle size={16} /> Tolak
                                 </button>
@@ -247,7 +247,7 @@ function DetailModal({ app, onClose, onApproved, onRejected }) {
                                     type="button"
                                     onClick={handleApprove}
                                     disabled={loading}
-                                    className="flex-1 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 transition disabled:opacity-50 flex items-center justify-center gap-2"
+                                    className="flex-1 py-2.5 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 transition disabled:opacity-50 flex items-center justify-center gap-2"
                                 >
                                     {loading ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle2 size={16} />}
                                     Setujui

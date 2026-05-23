@@ -42,7 +42,7 @@ function TestimonialModal({ item, onClose, onSaved }) {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-            <div className="bg-white rounded-xl shadow-xl w-full max-w-lg">
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-lg">
                 <div className="flex items-center justify-between px-6 py-4 border-b">
                     <h2 className="font-semibold text-gray-900">{isEdit ? 'Edit Testimoni' : 'Tambah Testimoni'}</h2>
                     <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-full"><X size={18} /></button>
@@ -193,13 +193,13 @@ export default function AdminTestimonials() {
                     <Loader2 size={24} className="animate-spin text-gray-400" />
                 </div>
             ) : items.length === 0 ? (
-                <div className="text-center text-gray-400 py-16 bg-white rounded-xl border border-gray-100">
+                <div className="text-center text-gray-400 py-16 bg-white rounded-lg border border-gray-100">
                     Belum ada testimoni. Klik "Tambah" untuk mulai.
                 </div>
             ) : (
                 <div className="space-y-3">
                     {items.map((item, index) => (
-                        <div key={item.id} className={`bg-white rounded-xl border p-5 flex gap-4 items-start transition-opacity ${item.is_active ? 'border-gray-100' : 'border-gray-100 opacity-60'}`}>
+                        <div key={item.id} className={`bg-white rounded-lg border p-5 flex gap-4 items-start transition-opacity ${item.is_active ? 'border-gray-100' : 'border-gray-100 opacity-60'}`}>
                             {/* Reorder arrows */}
                             <div className="flex flex-col gap-1 shrink-0 pt-1">
                                 <button

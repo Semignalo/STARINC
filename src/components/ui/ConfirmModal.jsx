@@ -75,35 +75,35 @@ export default function ConfirmModal({
             />
 
             {/* Dialog */}
-            <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md p-6 animate-in fade-in zoom-in-95 duration-150">
+            <div className="relative bg-white rounded-lg shadow-2xl w-full max-w-md p-6 animate-in fade-in zoom-in-95 duration-150">
                 {/* Close button */}
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 transition-colors"
+                    className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 p-1 rounded-full hover:bg-gray-50 transition-colors"
                     aria-label="Tutup"
                 >
-                    <X size={18} />
+                    <X size={16} />
                 </button>
 
                 {/* Icon + Title */}
                 <div className="flex items-start gap-4 mb-4">
-                    <div className={`flex-shrink-0 w-11 h-11 rounded-full flex items-center justify-center ${
-                        isDanger ? 'bg-red-100' : 'bg-amber-100'
+                    <div className={`flex-shrink-0 w-11 h-11 rounded-full border flex items-center justify-center ${
+                        isDanger ? 'border-red-200 bg-red-50' : 'border-amber-200 bg-amber-50'
                     }`}>
                         {isDanger ? (
-                            <Trash2 size={20} className="text-red-600" />
+                            <Trash2 size={16} className="text-red-700" />
                         ) : (
-                            <AlertTriangle size={20} className="text-amber-600" />
+                            <AlertTriangle size={16} className="text-amber-700" />
                         )}
                     </div>
                     <div>
                         <h3
                             id="confirm-modal-title"
-                            className="text-base font-bold text-gray-900 leading-tight"
+                            className="text-base font-medium text-gray-900 leading-tight tracking-tight"
                         >
                             {title}
                         </h3>
-                        <p className="text-sm text-gray-500 mt-1 leading-relaxed">
+                        <p className="text-sm text-gray-500 mt-1.5 leading-relaxed">
                             {message}
                         </p>
                     </div>
@@ -113,11 +113,11 @@ export default function ConfirmModal({
                 <div className="border-t border-gray-100 my-4" />
 
                 {/* Actions */}
-                <div className="flex gap-3 justify-end">
+                <div className="flex gap-2.5 justify-end">
                     <button
                         onClick={onClose}
                         disabled={loading}
-                        className="min-w-[80px] min-h-[44px] px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+                        className="min-w-[88px] h-10 px-4 text-xs uppercase tracking-[0.2em] text-gray-700 bg-white border border-gray-200 rounded-md hover:border-gray-400 transition-colors disabled:opacity-50"
                     >
                         {cancelLabel}
                     </button>
@@ -125,14 +125,14 @@ export default function ConfirmModal({
                         ref={confirmBtnRef}
                         onClick={onConfirm}
                         disabled={loading}
-                        className={`min-w-[80px] min-h-[44px] px-4 py-2 text-sm font-bold text-white rounded-lg transition-colors disabled:opacity-60 flex items-center gap-2 ${
+                        className={`min-w-[88px] h-10 px-4 text-xs uppercase tracking-[0.2em] text-white rounded-md transition-colors disabled:opacity-60 flex items-center justify-center gap-2 ${
                             isDanger
                                 ? 'bg-red-600 hover:bg-red-700'
-                                : 'bg-amber-500 hover:bg-amber-600'
+                                : 'bg-amber-600 hover:bg-amber-700'
                         }`}
                     >
                         {loading && (
-                            <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                            <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                             </svg>

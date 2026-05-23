@@ -20,34 +20,29 @@ const NetworkNode = ({ node, isRoot = false }) => {
                 {hasChildren ? (
                     <button
                         onClick={() => setExpanded(!expanded)}
-                        className="mt-1 flex-shrink-0 bg-white border border-gray-300 rounded text-gray-500 hover:text-gray-900 hover:border-primary transition"
+                        className="mt-1 flex-shrink-0 bg-white border border-gray-200 rounded text-gray-500 hover:text-gray-900 hover:border-gray-900 transition-colors"
                     >
-                        {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                        {expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                     </button>
                 ) : (
-                    <div className="mt-1 w-4 h-4" /> // spacer
+                    <div className="mt-1 w-4 h-4" />
                 )}
-                
-                <div className={`p-3 md:p-4 rounded-xl border ${isRoot ? 'border-primary bg-gray-900/5 shadow-md' : 'border-gray-200 bg-white'} w-52 md:w-72 flex items-center gap-3 transition-all hover:shadow-md`}>
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0
-                        ${isRoot ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'}`}>
-                        {node.name ? node.name.charAt(0).toUpperCase() : <User />}
+
+                <div className={`p-3 md:p-4 rounded-md border ${isRoot ? 'border-gray-900 bg-gray-50' : 'border-gray-200 bg-white'} w-52 md:w-72 flex items-center gap-3 transition-colors`}>
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-medium text-sm flex-shrink-0 uppercase
+                        ${isRoot ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'}`}>
+                        {node.name ? node.name.charAt(0) : <User size={14} />}
                     </div>
                     <div className="flex-1 min-w-0">
-                        <div className="font-bold text-gray-900 truncate" title={node.name}>{node.name}</div>
+                        <div className="text-sm font-medium text-gray-900 truncate" title={node.name}>{node.name}</div>
                         <div className="text-xs text-gray-500 truncate">{node.email}</div>
-                        <div className="mt-1 flex items-center gap-2">
-                            {node.tier && (
-                                <span className="inline-block px-2 py-0.5 bg-yellow-100 text-yellow-800 text-[10px] font-bold uppercase rounded">
-                                    {node.tier.name || 'BRONZE'}
-                                </span>
-                            )}
-                            {node.level && (
+                        {node.level !== undefined && node.level !== 0 && (
+                            <div className="mt-1.5">
                                 <span className="text-[10px] font-mono text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">
-                                    Lvl {node.level}
+                                    L{node.level}
                                 </span>
-                            )}
-                        </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -88,7 +83,7 @@ export default function NetworkTree({ referrals, currentUser }) {
     root.children = buildTree(root.id);
 
     return (
-        <div className="bg-gray-50/50  border border-gray-100">
+        <div className="bg-gray-50/50 border border-gray-100 rounded-md">
             {referrals.length > 0 && (
                 <div className="px-6 pt-4 pb-2 flex items-center justify-between">
                     <p className="text-xs text-gray-500 flex items-center gap-1.5">

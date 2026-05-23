@@ -793,7 +793,7 @@ export default function AdminAppearance() {
                 {/* Kolom Kanan: Live Preview */}
                 <div className="space-y-4 lg:sticky lg:top-6">
 
-                    <div className="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
+                    <div className="bg-white border border-gray-100 rounded-lg shadow-sm overflow-hidden">
                         <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
                             <span className="text-sm font-semibold text-gray-700">Live Preview</span>
                             <span className="text-[10px] text-gray-400 font-mono">
