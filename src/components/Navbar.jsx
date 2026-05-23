@@ -118,57 +118,55 @@ export default function Navbar() {
                                 {currentUser ? (
                                 <div className="group relative">
                                     {/* Pill: avatar + first name */}
-                                    <button className="flex items-center gap-0 rounded-full border border-gray-200 overflow-hidden hover:border-gray-400 transition-colors bg-white">
-                                        {/* Name side */}
-                                        <span className="pl-3 pr-2 text-xs font-semibold text-gray-700 hidden sm:block whitespace-nowrap">
+                                    <button className="flex items-center rounded-full border border-gray-200 overflow-hidden hover:border-gray-400 transition-colors bg-white">
+                                        <span className="pl-3 pr-2 text-xs font-medium text-gray-700 hidden sm:block whitespace-nowrap">
                                             {firstName}
                                         </span>
-                                        {/* Avatar side */}
-                                        <div className="w-8 h-8 rounded-full bg-gray-900 flex items-center justify-center text-white font-bold text-xs shrink-0">
-                                            {(currentUser.name || currentUser.email)?.charAt(0).toUpperCase()}
+                                        <div className="w-8 h-8 rounded-full bg-gray-900 flex items-center justify-center text-white font-medium text-xs shrink-0 uppercase">
+                                            {(currentUser.name || currentUser.email)?.charAt(0)}
                                         </div>
                                     </button>
 
                                     {/* Dropdown */}
-                                    <div className="absolute right-0 top-full mt-2 w-52 bg-white shadow-xl rounded-xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
-                                        <div className="px-4 py-3 border-b border-gray-50 flex items-center gap-3">
-                                            <div className="w-9 h-9 rounded-full bg-gray-900 flex items-center justify-center text-white font-bold text-sm shrink-0">
-                                                {(currentUser.name || currentUser.email)?.charAt(0).toUpperCase()}
+                                    <div className="absolute right-0 top-full mt-2 w-56 bg-white shadow-lg rounded-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                                        <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-3">
+                                            <div className="w-9 h-9 rounded-full bg-gray-900 flex items-center justify-center text-white font-medium text-sm shrink-0 uppercase">
+                                                {(currentUser.name || currentUser.email)?.charAt(0)}
                                             </div>
                                             <div className="min-w-0">
-                                                <p className="text-sm font-semibold truncate text-gray-900">{currentUser.name || firstName}</p>
-                                                <p className="text-xs text-gray-400 capitalize">{userRole} Member</p>
+                                                <p className="text-sm font-medium truncate text-gray-900">{currentUser.name || firstName}</p>
+                                                <p className="text-[10px] uppercase tracking-[0.2em] text-gray-400 capitalize mt-0.5">{userRole}</p>
                                             </div>
                                         </div>
-                                        <div className="py-2">
-                                            <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900">
+                                        <div className="py-1.5">
+                                            <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors">
                                                 Profil Saya
                                             </Link>
                                             {userRole === 'starcenter' && (
-                                                <Link to="/center" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900">
+                                                <Link to="/center" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors">
                                                     Center Shop
                                                 </Link>
                                             )}
                                             {userRole === 'admin' && (
-                                                <Link to="/admin" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900">
+                                                <Link to="/admin" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors">
                                                     Admin Dashboard
                                                 </Link>
                                             )}
                                             <button
                                                 onClick={handleLogout}
-                                                className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 flex items-center gap-2"
+                                                className="w-full text-left px-4 py-2 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-900 flex items-center gap-2 transition-colors"
                                             >
-                                                <LogOut size={15} />
+                                                <LogOut size={13} />
                                                 Logout
                                             </button>
                                         </div>
                                     </div>
                                 </div>
                             ) : (
-                                <Link to="/login" className="flex items-center gap-0 rounded-full border border-gray-200 overflow-hidden hover:border-gray-400 transition-colors bg-white">
-                                    <span className="pl-3 pr-2 text-xs font-semibold text-gray-700 hidden sm:block">Login</span>
+                                <Link to="/login" className="flex items-center rounded-full border border-gray-200 overflow-hidden hover:border-gray-400 transition-colors bg-white">
+                                    <span className="pl-3 pr-2 text-xs font-medium text-gray-700 hidden sm:block">Login</span>
                                     <div className="w-8 h-8 rounded-full bg-gray-900 flex items-center justify-center">
-                                        <User size={16} strokeWidth={1.5} className="text-white" />
+                                        <User size={14} strokeWidth={1.5} className="text-white" />
                                     </div>
                                 </Link>
                             )}
@@ -178,10 +176,12 @@ export default function Navbar() {
                                     onClick={openCart}
                                     className="min-w-[36px] min-h-[36px] flex items-center justify-center hover:bg-gray-50 rounded-full transition-colors relative active:scale-95"
                                 >
-                                    <ShoppingBag size={20} strokeWidth={1.5} className="text-gray-900" />
-                                    <span className="absolute top-0 right-0 bg-gray-900 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-bold">
-                                        {getCartCount()}
-                                    </span>
+                                    <ShoppingBag size={18} strokeWidth={1.5} className="text-gray-900" />
+                                    {getCartCount() > 0 && (
+                                        <span className="absolute top-0 right-0 bg-gray-900 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-medium tabular-nums">
+                                            {getCartCount()}
+                                        </span>
+                                    )}
                                 </button>
                             )}
 
@@ -201,32 +201,33 @@ export default function Navbar() {
                 isOpen ? "translate-x-0" : "-translate-x-full"
             )}>
                 {/* Sidebar Header */}
-                <div className="p-5 flex justify-between items-center border-b border-gray-100 bg-gray-50">
+                <div className="p-5 flex justify-between items-center border-b border-gray-100">
                     <img src={settings?.logoUrl || '/logo.png'} alt="Starinc" className="h-7 w-auto" />
-                    <button onClick={() => setIsOpen(false)} className="p-2 hover:bg-gray-200 rounded-full transition-colors">
-                        <Menu size={20} />
+                    <button onClick={() => setIsOpen(false)} className="p-2 hover:bg-gray-50 rounded-full transition-colors" aria-label="Tutup menu">
+                        <Menu size={18} className="text-gray-700" />
                     </button>
                 </div>
 
                 {/* User Info – mobile */}
                 {currentUser && (
                     <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gray-900 flex items-center justify-center text-white font-bold text-sm shrink-0">
-                            {(currentUser.name || currentUser.email)?.charAt(0).toUpperCase()}
+                        <div className="w-10 h-10 rounded-full bg-gray-900 flex items-center justify-center text-white font-medium text-sm shrink-0 uppercase">
+                            {(currentUser.name || currentUser.email)?.charAt(0)}
                         </div>
                         <div className="min-w-0">
-                            <p className="text-sm font-semibold text-gray-900 truncate">{currentUser.name || firstName}</p>
-                            <p className="text-xs text-gray-400 capitalize">{userRole} Member</p>
+                            <p className="text-sm font-medium text-gray-900 truncate">{currentUser.name || firstName}</p>
+                            <p className="text-[10px] uppercase tracking-[0.2em] text-gray-400 capitalize mt-0.5">{userRole}</p>
                         </div>
                     </div>
                 )}
+
                 <div className="flex-1 overflow-y-auto py-2">
-                    <ul className="space-y-1">
+                    <ul>
                         {navLinks.map((item) => (
                             <li key={item.name}>
                                 <Link
                                     to={item.path}
-                                    className="block px-6 py-4 text-gray-900 hover:bg-[var(--color-accent-light)] hover:text-[var(--color-accent-dark)] font-medium text-lg border-l-4 border-transparent hover:border-gray-900 transition-all"
+                                    className="block px-6 py-3.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 border-l-2 border-transparent hover:border-gray-900 transition-colors"
                                     onClick={() => setIsOpen(false)}
                                 >
                                     {item.name}
@@ -238,7 +239,7 @@ export default function Navbar() {
                                 <li>
                                     <Link
                                         to="/profile"
-                                        className="block px-6 py-4 text-gray-900 hover:bg-[var(--color-accent-light)] hover:text-[var(--color-accent-dark)] font-medium text-lg border-l-4 border-transparent hover:border-gray-900 transition-all"
+                                        className="block px-6 py-3.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 border-l-2 border-transparent hover:border-gray-900 transition-colors"
                                         onClick={() => setIsOpen(false)}
                                     >
                                         {lang === 'id' ? 'Profil Saya' : 'My Profile'}
@@ -248,7 +249,7 @@ export default function Navbar() {
                                     <li>
                                         <Link
                                             to="/admin"
-                                            className="block px-6 py-4 text-gray-900 hover:bg-[var(--color-accent-light)] hover:text-[var(--color-accent-dark)] font-medium text-lg border-l-4 border-transparent hover:border-gray-900 transition-all"
+                                            className="block px-6 py-3.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 border-l-2 border-transparent hover:border-gray-900 transition-colors"
                                             onClick={() => setIsOpen(false)}
                                         >
                                             Admin Dashboard
@@ -259,28 +260,29 @@ export default function Navbar() {
                         )}
                     </ul>
                 </div>
+
                 {/* Language toggle – mobile sidebar */}
-                <div className="px-6 py-4 border-t border-gray-100 flex items-center gap-3">
-                    <span className="text-xs text-gray-400 uppercase tracking-widest">Language</span>
-                    <div className="flex items-center border border-gray-200 rounded-full overflow-hidden text-[11px] font-semibold">
-                        <button onClick={() => setLang('en')} className={cn('px-3 py-1 transition-colors', lang === 'en' ? 'bg-gray-900 text-white' : 'text-gray-400')}>EN</button>
-                        <button onClick={() => setLang('id')} className={cn('px-3 py-1 transition-colors', lang === 'id' ? 'bg-gray-900 text-white' : 'text-gray-400')}>ID</button>
+                <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between gap-3">
+                    <span className="text-[10px] uppercase tracking-[0.25em] text-gray-400">Language</span>
+                    <div className="flex items-center border border-gray-200 rounded-full overflow-hidden text-[11px] font-medium">
+                        <button onClick={() => setLang('en')} className={cn('px-3 py-1 transition-colors', lang === 'en' ? 'bg-gray-900 text-white' : 'text-gray-400 hover:text-gray-700')}>EN</button>
+                        <button onClick={() => setLang('id')} className={cn('px-3 py-1 transition-colors', lang === 'id' ? 'bg-gray-900 text-white' : 'text-gray-400 hover:text-gray-700')}>ID</button>
                     </div>
                 </div>
 
-                <div className="px-6 pb-6 bg-gray-50">
+                <div className="px-6 pb-6">
                     {currentUser ? (
                         <button
                             onClick={() => { setIsOpen(false); handleLogout(); }}
-                            className="w-full py-3 bg-red-500 text-white font-bold rounded-lg shadow-md active:scale-95 transition-transform flex justify-center items-center gap-2"
+                            className="w-full h-11 border border-gray-200 hover:border-gray-400 text-gray-700 text-xs uppercase tracking-[0.25em] rounded-md transition-colors flex justify-center items-center gap-2"
                         >
-                            <LogOut size={18} /> Logout
+                            <LogOut size={13} /> Logout
                         </button>
                     ) : (
                         <Link
                             to="/login"
                             onClick={() => setIsOpen(false)}
-                            className="w-full py-3 block text-center bg-gray-900 text-white font-bold rounded-lg shadow-md active:scale-95 transition-transform"
+                            className="w-full h-11 btn-primary rounded-md text-xs uppercase tracking-[0.25em] flex justify-center items-center"
                         >
                             Login / Register
                         </Link>

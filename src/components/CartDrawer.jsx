@@ -23,47 +23,34 @@ export default function CartDrawer() {
     const navigate = useNavigate();
     const closeButtonRef = useRef(null);
 
-    // Timer state for "Cart reserved"
-    const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
-    // Feedback state: track which item had a recent quantity change
+    const [timeLeft, setTimeLeft] = useState(300);
     const [changedItemId, setChangedItemId] = useState(null);
-    // MOQ threshold from API
-    const [moqThreshold, setMoqThreshold] = useState(5000000); // Default fallback
+    const [moqThreshold, setMoqThreshold] = useState(5000000);
 
-    // Focus close button when drawer opens (keyboard accessibility)
     useEffect(() => {
         if (isCartOpen && closeButtonRef.current) {
             setTimeout(() => closeButtonRef.current?.focus(), 100);
         }
     }, [isCartOpen]);
 
-    // Fetch MOQ threshold from server
     useEffect(() => {
         if (isStarcenter) {
             settingsApi.getSystemSettings()
-                .then((data) => {
-                    setMoqThreshold(data.moq_threshold ?? 5000000);
-                })
-                .catch((error) => {
-                    console.error('Failed to fetch MOQ threshold:', error);
-                    // Use default fallback
-                });
+                .then((data) => setMoqThreshold(data.moq_threshold ?? 5000000))
+                .catch((error) => console.error('Failed to fetch MOQ threshold:', error));
         }
     }, [isStarcenter]);
 
     useEffect(() => {
         if (!isCartOpen) return;
-
         const timer = setInterval(() => {
             setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
         }, 1000);
-
         return () => clearInterval(timer);
     }, [isCartOpen]);
 
     const handleUpdateQuantity = (itemId, newQty) => {
         updateQuantity(itemId, newQty);
-        // Brief visual feedback on the changed item
         setChangedItemId(itemId);
         setTimeout(() => setChangedItemId(null), 600);
     };
@@ -79,17 +66,18 @@ export default function CartDrawer() {
     const progress = Math.min((cartTotal / freeShippingThreshold) * 100, 100);
     const remainingForFreeShipping = Math.max(freeShippingThreshold - cartTotal, 0);
 
-    // MOQ (Minimum Order Quantity) logic for starcenter
     const moqProgress = isStarcenter ? Math.min((cartTotal / moqThreshold) * 100, 100) : 0;
     const moqRemaining = isStarcenter ? Math.max(moqThreshold - cartTotal, 0) : 0;
     const moqMet = isStarcenter ? cartTotal >= moqThreshold : true;
+
+    const fmt = (v) => `Rp${parseFloat(v || 0).toLocaleString('id-ID')}`;
 
     return (
         <>
             {/* Backdrop */}
             <div
                 className={cn(
-                    "fixed inset-0 z-[70] bg-black/50 transition-opacity duration-300 backdrop-blur-sm",
+                    "fixed inset-0 z-[70] bg-black/40 transition-opacity duration-300 backdrop-blur-sm",
                     isCartOpen ? "opacity-100" : "opacity-0 pointer-events-none"
                 )}
                 onClick={closeCart}
@@ -101,113 +89,116 @@ export default function CartDrawer() {
                 aria-modal="true"
                 aria-label="Keranjang belanja"
                 className={cn(
-                    "fixed inset-y-0 right-0 z-[80] w-full sm:w-[400px] bg-white shadow-2xl transform transition-transform duration-300 ease-in-out flex flex-col",
+                    "fixed inset-y-0 right-0 z-[80] w-full sm:w-[420px] bg-white shadow-2xl transform transition-transform duration-300 ease-in-out flex flex-col",
                     isCartOpen ? "translate-x-0" : "translate-x-full"
                 )}
             >
                 {/* Header */}
-                <div className="p-5 border-b border-gray-100 flex items-center justify-between bg-white">
-                    <h2 className="text-xl font-medium tracking-tight font-medium text-gray-900">
-                        Keranjang ({getCartCount()})
-                    </h2>
+                <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+                    <div>
+                        <p className="text-[10px] uppercase tracking-[0.3em] text-gray-400">Keranjang</p>
+                        <h2 className="text-base font-medium text-gray-900 tracking-tight mt-0.5">
+                            {getCartCount()} {getCartCount() === 1 ? 'Item' : 'Items'}
+                        </h2>
+                    </div>
                     <button
                         ref={closeButtonRef}
                         onClick={closeCart}
-                        className="min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300"
+                        className="w-9 h-9 flex items-center justify-center hover:bg-gray-50 rounded-full transition-colors focus:outline-none focus:ring-1 focus:ring-gray-300"
                         aria-label="Tutup keranjang"
                     >
-                        <X size={20} className="text-gray-500" />
+                        <X size={16} className="text-gray-700" />
                     </button>
                 </div>
 
                 {/* Free Shipping Progress */}
-                <div className="px-5 py-4 bg-gray-50/50">
-                    <p className="text-sm text-gray-600 mb-2">
-                        {remainingForFreeShipping > 0 ? (
-                            <>Tambah <span className="font-bold text-black">Rp. {remainingForFreeShipping.toLocaleString('id-ID')}</span> lagi untuk <span className="font-bold text-black">gratis ongkir!</span></>
-                        ) : (
-                            <span className="font-bold text-green-600">Selamat! Kamu dapat gratis ongkir.</span>
-                        )}
-                    </p>
-                    <div className="h-1.5 w-full bg-gray-200 rounded-full overflow-hidden">
-                        <div
-                            className="h-full bg-black transition-all duration-500 ease-out"
-                            style={{ width: `${progress}%` }}
-                        ></div>
+                {cart.length > 0 && (
+                    <div className="px-5 py-4 border-b border-gray-100">
+                        <p className="text-xs text-gray-600 mb-2 leading-relaxed">
+                            {remainingForFreeShipping > 0 ? (
+                                <>Tambah <span className="font-medium text-gray-900">{fmt(remainingForFreeShipping)}</span> lagi untuk <span className="font-medium text-gray-900">gratis ongkir</span></>
+                            ) : (
+                                <span className="font-medium text-gray-900">Selamat! Kamu dapat gratis ongkir.</span>
+                            )}
+                        </p>
+                        <div className="h-1 w-full bg-gray-100 rounded-full overflow-hidden">
+                            <div
+                                className="h-full bg-gray-900 transition-all duration-500 ease-out"
+                                style={{ width: `${progress}%` }}
+                            />
+                        </div>
                     </div>
-                </div>
+                )}
 
                 {/* MOQ Warning for Starcenter */}
                 {isStarcenter && cart.length > 0 && (
                     <div className={cn(
                         "px-5 py-4 border-b",
-                        moqMet
-                            ? "bg-emerald-50 border-emerald-100"
-                            : "bg-amber-50 border-amber-100"
+                        moqMet ? "bg-emerald-50/50 border-emerald-100" : "bg-amber-50/50 border-amber-100"
                     )}>
-                        <div className="flex items-start gap-3 mb-2">
+                        <div className="flex items-start gap-2.5 mb-2">
                             {moqMet ? (
-                                <ShieldCheck size={18} className="text-emerald-600 flex-shrink-0 mt-0.5" />
+                                <ShieldCheck size={14} className="text-emerald-700 flex-shrink-0 mt-0.5" />
                             ) : (
-                                <AlertTriangle size={18} className="text-amber-600 flex-shrink-0 mt-0.5" />
+                                <AlertTriangle size={14} className="text-amber-700 flex-shrink-0 mt-0.5" />
                             )}
                             <div className="flex-1">
-                                <p className={cn("text-xs font-semibold uppercase tracking-wider mb-0.5",
+                                <p className={cn("text-[10px] uppercase tracking-[0.25em] mb-1",
                                     moqMet ? "text-emerald-700" : "text-amber-700"
                                 )}>
                                     Starcenter MOQ
                                 </p>
-                                <p className={cn("text-sm",
+                                <p className={cn("text-xs leading-relaxed",
                                     moqMet ? "text-emerald-800" : "text-amber-800"
                                 )}>
                                     {moqMet ? (
-                                        <span>Minimum order terpenuhi. Anda bisa checkout!</span>
+                                        'Minimum order terpenuhi. Siap checkout.'
                                     ) : (
-                                        <>Tambah <span className="font-bold">Rp {moqRemaining.toLocaleString('id-ID')}</span> lagi untuk memenuhi MOQ Starcenter (Min. Rp 5.000.000)</>
+                                        <>Tambah <span className="font-medium">{fmt(moqRemaining)}</span> lagi untuk memenuhi MOQ (Min. {fmt(moqThreshold)})</>
                                     )}
                                 </p>
                             </div>
                         </div>
-                        <div className="h-1.5 w-full bg-white/70 rounded-full overflow-hidden">
+                        <div className="h-1 w-full bg-white rounded-full overflow-hidden">
                             <div
                                 className={cn(
                                     "h-full rounded-full transition-all duration-500 ease-out",
-                                    moqMet ? "bg-emerald-500" : "bg-amber-400"
+                                    moqMet ? "bg-emerald-600" : "bg-amber-500"
                                 )}
                                 style={{ width: `${moqProgress}%` }}
                             />
                         </div>
-                        <p className={cn("text-xs mt-1.5 text-right font-medium",
-                            moqMet ? "text-emerald-600" : "text-amber-600"
+                        <p className={cn("text-[11px] mt-1.5 text-right tabular-nums",
+                            moqMet ? "text-emerald-700" : "text-amber-700"
                         )}>
-                            Rp {cartTotal.toLocaleString('id-ID')} / Rp {moqThreshold.toLocaleString('id-ID')}
+                            {fmt(cartTotal)} / {fmt(moqThreshold)}
                         </p>
                     </div>
                 )}
 
                 {/* Hot Choice Timer */}
                 {cart.length > 0 && (
-                    <div className="bg-[#FFF4C3] px-5 py-3 flex items-center gap-2 text-sm text-yellow-900">
-                        <Clock size={16} />
-                        <span>Stok dicadangkan! Selesaikan pesanan dalam <strong>{formatTime(timeLeft)}</strong></span>
+                    <div className="bg-gray-50 px-5 py-2.5 flex items-center gap-2 text-xs text-gray-600 border-b border-gray-100">
+                        <Clock size={12} className="text-gray-400" />
+                        <span>Stok dicadangkan • Selesaikan dalam <span className="font-medium text-gray-900 tabular-nums">{formatTime(timeLeft)}</span></span>
                     </div>
                 )}
 
                 {/* Cart Items */}
-                <div className="flex-1 overflow-y-auto p-5 space-y-6">
+                <div className="flex-1 overflow-y-auto p-5 space-y-5">
                     {cart.length === 0 ? (
                         <div className="h-full flex flex-col items-center justify-center text-center gap-5 py-12">
-                            <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center">
-                                <ShoppingBag size={36} className="text-gray-300" />
+                            <div className="w-14 h-14 border border-gray-200 rounded-full flex items-center justify-center">
+                                <ShoppingBag size={20} className="text-gray-400" />
                             </div>
                             <div>
-                                <p className="font-semibold text-gray-700 mb-1">Keranjang kamu kosong</p>
-                                <p className="text-sm text-gray-400">Tambahkan produk untuk memulai belanja</p>
+                                <p className="text-sm font-medium text-gray-900 mb-1">Keranjang kosong</p>
+                                <p className="text-xs text-gray-500">Tambahkan produk untuk memulai belanja</p>
                             </div>
                             <Link
                                 to="/products"
                                 onClick={closeCart}
-                                className="inline-flex items-center gap-2 bg-gray-900 text-white px-6 py-3 rounded-lg text-sm font-semibold hover:opacity-90 transition"
+                                className="inline-flex items-center gap-2 h-11 px-6 btn-primary text-xs uppercase tracking-[0.25em] rounded-md"
                             >
                                 Lihat Produk
                             </Link>
@@ -221,11 +212,11 @@ export default function CartDrawer() {
                                 <div
                                     key={itemId}
                                     className={cn(
-                                        "flex gap-4 p-3 -mx-3 rounded-xl transition-colors duration-300",
-                                        isChanged ? "bg-emerald-50" : "bg-transparent"
+                                        "flex gap-4 transition-colors duration-300",
+                                        isChanged ? "bg-emerald-50/40 -mx-3 px-3 py-2 rounded-md" : ""
                                     )}
                                 >
-                                    <div className="w-20 h-24 flex-shrink-0 bg-gray-100 rounded-sm overflow-hidden">
+                                    <div className="w-20 h-24 flex-shrink-0 bg-gray-50 rounded-md overflow-hidden">
                                         <img
                                             src={item.main_image_url || item.image}
                                             alt={item.title}
@@ -235,46 +226,46 @@ export default function CartDrawer() {
                                     <div className="flex-1 flex flex-col justify-between min-w-0">
                                         <div className="flex justify-between items-start gap-2">
                                             <div className="min-w-0">
-                                                <h3 className="text-sm font-medium text-gray-900 line-clamp-2">{item.title}</h3>
+                                                <h3 className="text-sm font-medium text-gray-900 line-clamp-2 leading-snug">{item.title}</h3>
                                                 {item.variantName && (
-                                                    <p className="text-xs font-medium text-gray-900 mt-0.5">{item.variantName}</p>
+                                                    <p className="text-[11px] text-gray-500 mt-0.5">{item.variantName}</p>
                                                 )}
-                                                <p className="text-gray-500 text-xs mt-1">Rp. {item.price}</p>
+                                                <p className="text-gray-400 text-xs mt-1 tabular-nums">{fmt(item.price)}</p>
                                             </div>
                                             <div className={cn(
-                                                "text-sm font-bold whitespace-nowrap transition-colors duration-300",
+                                                "text-sm font-medium whitespace-nowrap tabular-nums transition-colors duration-300",
                                                 isChanged ? "text-emerald-700" : "text-gray-900"
                                             )}>
-                                                Rp. {lineTotal.toLocaleString('id-ID')}
+                                                {fmt(lineTotal)}
                                             </div>
                                         </div>
 
                                         <div className="flex items-center justify-between mt-2">
-                                            <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden">
+                                            <div className="flex items-center border border-gray-200 rounded-md overflow-hidden">
                                                 <button
                                                     onClick={() => handleUpdateQuantity(itemId, item.quantity - 1)}
-                                                    className="min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-gray-50 text-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-300 active:bg-gray-100"
+                                                    className="w-8 h-8 flex items-center justify-center hover:bg-gray-50 text-gray-600 transition-colors"
                                                     aria-label="Kurangi jumlah"
                                                 >
-                                                    <Minus size={14} />
+                                                    <Minus size={12} />
                                                 </button>
-                                                <span className="px-1 text-sm font-bold min-w-[36px] text-center select-none">
+                                                <span className="px-2 text-xs font-medium min-w-[32px] text-center select-none tabular-nums">
                                                     {item.quantity}
                                                 </span>
                                                 <button
                                                     onClick={() => handleUpdateQuantity(itemId, item.quantity + 1)}
-                                                    className="min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-gray-50 text-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-300 active:bg-gray-100"
+                                                    className="w-8 h-8 flex items-center justify-center hover:bg-gray-50 text-gray-600 transition-colors"
                                                     aria-label="Tambah jumlah"
                                                 >
-                                                    <Plus size={14} />
+                                                    <Plus size={12} />
                                                 </button>
                                             </div>
                                             <button
                                                 onClick={() => removeFromCart(itemId)}
-                                                className="min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors rounded-lg hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-300"
+                                                className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-900 transition-colors rounded-md"
                                                 aria-label={`Hapus ${item.title} dari keranjang`}
                                             >
-                                                <Trash2 size={16} />
+                                                <Trash2 size={14} />
                                             </button>
                                         </div>
                                     </div>
@@ -286,30 +277,30 @@ export default function CartDrawer() {
 
                 {/* Footer */}
                 {cart.length > 0 && (
-                    <div className="p-5 border-t border-gray-100 bg-gray-50 space-y-4">
-                        <div className="flex justify-between items-center text-lg font-bold text-gray-900">
-                            <span>Subtotal:</span>
-                            <span>Rp. {cartTotal.toLocaleString('id-ID')}</span>
+                    <div className="p-5 border-t border-gray-100 space-y-3">
+                        <div className="flex justify-between items-center">
+                            <span className="text-[10px] uppercase tracking-[0.25em] text-gray-400">Subtotal</span>
+                            <span className="text-lg font-medium text-gray-900 tabular-nums tracking-tight">{fmt(cartTotal)}</span>
                         </div>
-                        <p className="text-xs text-gray-500">Pajak dan ongkir dihitung saat checkout</p>
+                        <p className="text-[11px] text-gray-400">Pajak dan ongkir dihitung saat checkout</p>
 
-                        <div className="space-y-2">
+                        <div className="space-y-2 pt-2">
                             <button
                                 onClick={() => { if (moqMet) { closeCart(); navigate('/checkout'); } }}
                                 disabled={!moqMet}
-                                title={!moqMet ? `Minimum order Rp ${moqThreshold.toLocaleString('id-ID')} belum terpenuhi` : ''}
+                                title={!moqMet ? `Minimum order ${fmt(moqThreshold)} belum terpenuhi` : ''}
                                 className={cn(
-                                    "w-full font-bold py-3.5 rounded-sm shadow-md transition-colors uppercase tracking-widest text-sm",
+                                    "w-full h-12 rounded-md text-xs uppercase tracking-[0.25em] transition-colors",
                                     moqMet
-                                        ? "bg-[#047857] hover:bg-[#065F46] text-white cursor-pointer"
-                                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                        ? "btn-primary cursor-pointer"
+                                        : "bg-gray-100 text-gray-400 cursor-not-allowed border-b-2 border-gray-200"
                                 )}
                             >
-                                {!moqMet && isStarcenter ? `MOQ Belum Terpenuhi` : 'Checkout'}
+                                {!moqMet && isStarcenter ? 'MOQ Belum Terpenuhi' : 'Checkout'}
                             </button>
                             <button
                                 onClick={closeCart}
-                                className="w-full bg-white border border-gray-300 hover:bg-gray-50 text-gray-900 font-bold py-3.5 rounded-sm transition-colors uppercase tracking-widest text-sm"
+                                className="w-full h-12 bg-white border border-gray-200 hover:border-gray-400 text-gray-700 text-xs uppercase tracking-[0.25em] rounded-md transition-colors"
                             >
                                 Lanjut Belanja
                             </button>
