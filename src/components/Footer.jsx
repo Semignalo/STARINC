@@ -51,7 +51,7 @@ export default function Footer() {
 
                     {/* Brand */}
                     <div className="md:col-span-1 flex flex-col items-center md:items-start gap-4">
-                        <img src={settings?.logoUrl || '/logo.png'} alt="Starinc" className="h-12 w-auto brightness-0 invert" />
+                        <img src="/logo.svg" alt="Starinc" className="h-12 w-auto brightness-0 invert" />
                         <p className="text-white/40 text-xs leading-relaxed text-center md:text-left max-w-[210px]">
                             {isId
                                 ? 'Kecantikan holistik dari luar & dalam.    Dibuat untuk Indonesia.'

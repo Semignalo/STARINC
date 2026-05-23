@@ -97,7 +97,7 @@ export default function Navbar() {
                         {/* Center: Logo (absolute) */}
                         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
                             <Link to="/" className="block">
-                                <img src={settings?.logoUrl || '/logo.png'} alt="Starinc Logo" className="h-7 w-auto object-contain" />
+                                <img src="/logo.svg" alt="Starinc Logo" className="h-8 w-auto object-contain" />
                             </Link>
                         </div>
 
@@ -202,7 +202,7 @@ export default function Navbar() {
             )}>
                 {/* Sidebar Header */}
                 <div className="p-5 flex justify-between items-center border-b border-gray-100">
-                    <img src={settings?.logoUrl || '/logo.png'} alt="Starinc" className="h-7 w-auto" />
+                    <img src="/logo.svg" alt="Starinc" className="h-8 w-auto" />
                     <button onClick={() => setIsOpen(false)} className="p-2 hover:bg-gray-50 rounded-full transition-colors" aria-label="Tutup menu">
                         <Menu size={18} className="text-gray-700" />
                     </button>

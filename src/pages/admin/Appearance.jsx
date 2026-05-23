@@ -430,30 +430,21 @@ export default function AdminAppearance() {
                     <div className="bg-white p-5 rounded-[8px] border border-gray-200">
                         <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
                             <Palette size={20} className="text-gray-400" />
-                            Branding & Logo
+                            Branding
                         </h3>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-3">
-                                <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                                    <Image size={14} /> Logo
-                                </label>
-                                <ImageUploadField
-                                    label=""
-                                    fieldName="logoUrl"
-                                    value={config.logoUrl}
-                                    onChange={handleFieldChange}
-                                driver={uploadDriver}
-                                    hint="Gunakan file PNG dengan background transparan untuk hasil terbaik."
-                                />
-                                {config.logoUrl && (
-                                    <div className="p-4 bg-gray-100/50 border border-dashed border-gray-300 rounded-lg flex justify-center h-24 items-center">
-                                        <img src={config.logoUrl} alt="Preview" className="h-12 w-auto object-contain" />
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                                <div className="flex items-center gap-3">
+                                    <img src="/logo.svg" alt="Logo" className="h-8 w-auto object-contain" />
+                                    <div>
+                                        <p className="text-sm font-medium text-gray-700">Logo Starinc</p>
+                                        <p className="text-xs text-gray-400">Hardcoded ke <code>/logo.svg</code></p>
                                     </div>
-                                )}
+                                </div>
                             </div>
 
-                            <div className="space-y-3">
+                            <div className="space-y-2">
                                 <label className="text-sm font-medium text-gray-700">Accent Color (Gold)</label>
                                 <div className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
                                     <input
@@ -464,8 +455,8 @@ export default function AdminAppearance() {
                                         className="h-10 w-10 p-0 border-0 rounded cursor-pointer bg-transparent"
                                     />
                                     <div className="flex flex-col">
-                                        <span className="text-sm font-bold text-gray-700">{config.accentColor}</span>
-                                        <span className="text-xs text-gray-400">Click color box to change</span>
+                                        <span className="text-sm font-medium text-gray-700">{config.accentColor}</span>
+                                        <span className="text-xs text-gray-400">Klik kotak warna untuk ubah</span>
                                     </div>
                                 </div>
                             </div>
@@ -835,11 +826,7 @@ export default function AdminAppearance() {
 
                         {/* Branding bar */}
                         <div className="px-4 py-3 flex items-center gap-3 border-b border-gray-100 bg-white">
-                            {config.logoUrl ? (
-                                <img src={config.logoUrl} alt="Logo" className="h-7 w-auto object-contain max-w-[80px]" />
-                            ) : (
-                                <span className="text-xs text-gray-400 italic">Logo</span>
-                            )}
+                            <img src="/logo.svg" alt="Logo" className="h-7 w-auto object-contain max-w-[80px]" />
                             <div className="ml-auto flex items-center gap-2">
                                 <div
                                     className="w-4 h-4 rounded-full border border-gray-200 shadow-inner"
