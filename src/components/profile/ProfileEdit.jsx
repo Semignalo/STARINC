@@ -95,8 +95,8 @@ export default function ProfileEdit() {
     };
 
     const inputClass = (fieldError) =>
-        `w-full rounded-xl bg-gray-50 p-3 text-sm border transition focus:outline-none focus:ring-2 ${
-            fieldError ? 'border-red-400 focus:ring-red-300' : 'border-gray-200 focus:ring-primary/30 focus:border-primary'
+        `w-full h-11 px-3 rounded-md bg-white text-sm border transition-colors focus:outline-none focus:ring-1 placeholder:text-gray-400 ${
+            fieldError ? 'border-red-300 focus:ring-red-400 focus:border-red-400' : 'border-gray-200 focus:ring-gray-900 focus:border-gray-900'
         }`;
 
     const fieldError = (errors, field) =>
@@ -106,9 +106,10 @@ export default function ProfileEdit() {
         <div className="space-y-8">
 
             {/* ── Section 1: Informasi Personal ── */}
-            <div className="bg-white  p-8 shadow-sm border border-gray-100 relative overflow-hidden">
-                <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                    <User className="text-gray-900" />
+            <div className="bg-white p-7 md:p-8 border border-gray-200 rounded-lg">
+                <p className="text-[10px] uppercase tracking-[0.3em] text-gray-400 mb-2">Profile</p>
+                <h2 className="text-base font-medium text-gray-900 tracking-tight mb-6 flex items-center gap-2">
+                    <User size={14} className="text-gray-400" />
                     Informasi Personal
                 </h2>
 
@@ -117,7 +118,7 @@ export default function ProfileEdit() {
 
                         {/* Nama */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
+                            <label className="block text-xs font-medium text-gray-700 mb-1.5">Nama Lengkap</label>
                             <div className="relative">
                                 <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                                 <input
@@ -134,7 +135,7 @@ export default function ProfileEdit() {
 
                         {/* Telepon */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Nomor WhatsApp / HP</label>
+                            <label className="block text-xs font-medium text-gray-700 mb-1.5">Nomor WhatsApp / HP</label>
                             <div className="relative">
                                 <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                                 <input
@@ -150,22 +151,22 @@ export default function ProfileEdit() {
 
                         {/* Email (read-only) */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Alamat Email</label>
+                            <label className="block text-xs font-medium text-gray-700 mb-1.5">Alamat Email</label>
                             <div className="relative">
                                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                                 <input
                                     type="email"
                                     value={userData?.email || ''}
                                     disabled
-                                    className="pl-10 w-full rounded-xl border border-gray-200 bg-gray-100 p-3 text-sm text-gray-500 cursor-not-allowed"
+                                    className="pl-10 w-full h-11 px-3 rounded-md border border-gray-200 bg-gray-50 text-sm text-gray-500 cursor-not-allowed"
                                 />
                             </div>
-                            <p className="text-xs text-gray-400 mt-1">Email tidak dapat diubah.</p>
+                            <p className="text-xs text-gray-400 mt-1.5">Email tidak dapat diubah.</p>
                         </div>
 
                         {/* Kota */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Kota / Kabupaten</label>
+                            <label className="block text-xs font-medium text-gray-700 mb-1.5">Kota / Kabupaten</label>
                             <div className="relative">
                                 <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                                 <input
@@ -181,7 +182,7 @@ export default function ProfileEdit() {
 
                         {/* Alamat */}
                         <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Alamat Pengiriman</label>
+                            <label className="block text-xs font-medium text-gray-700 mb-1.5">Alamat Pengiriman</label>
                             <textarea
                                 value={profile.address}
                                 onChange={(e) => setProfile(p => ({ ...p, address: e.target.value }))}
@@ -194,7 +195,7 @@ export default function ProfileEdit() {
 
                         {/* Kode Pos */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Kode Pos</label>
+                            <label className="block text-xs font-medium text-gray-700 mb-1.5">Kode Pos</label>
                             <input
                                 type="text"
                                 value={profile.postal_code}
@@ -212,11 +213,11 @@ export default function ProfileEdit() {
                         <button
                             type="submit"
                             disabled={profileLoading}
-                            className="flex items-center gap-2 bg-gray-900 hover:bg-gray-800 disabled:opacity-60 text-white px-6 py-3 rounded-xl font-medium transition-transform active:scale-95"
+                            className="inline-flex items-center gap-2 h-11 px-6 btn-primary text-xs uppercase tracking-[0.25em] rounded-md disabled:opacity-60"
                         >
                             {profileLoading
-                                ? <><span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span> Menyimpan...</>
-                                : <><Save size={16} /> Simpan Profil</>
+                                ? <><span className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></span> Menyimpan…</>
+                                : <><Save size={12} /> Simpan Profil</>
                             }
                         </button>
                     </div>
@@ -224,9 +225,10 @@ export default function ProfileEdit() {
             </div>
 
             {/* ── Section 2: Ubah Password ── */}
-            <div className="bg-white  p-8 shadow-sm border border-gray-100 relative overflow-hidden">
-                <h2 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
-                    <KeyRound className="text-gray-900" />
+            <div className="bg-white p-7 md:p-8 border border-gray-200 rounded-lg">
+                <p className="text-[10px] uppercase tracking-[0.3em] text-gray-400 mb-2">Security</p>
+                <h2 className="text-base font-medium text-gray-900 tracking-tight mb-2 flex items-center gap-2">
+                    <KeyRound size={14} className="text-gray-400" />
                     Ubah Password
                 </h2>
                 <p className="text-sm text-gray-500 mb-6">
@@ -238,7 +240,7 @@ export default function ProfileEdit() {
 
                         {/* Current Password */}
                         <div className="md:col-span-3">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Password Saat Ini</label>
+                            <label className="block text-xs font-medium text-gray-700 mb-1.5">Password Saat Ini</label>
                             <div className="relative">
                                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                                 <input
@@ -260,7 +262,7 @@ export default function ProfileEdit() {
                         {/* New Password */}
                         <div className="md:col-span-3 md:grid md:grid-cols-2 md:gap-5 space-y-5 md:space-y-0">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Password Baru</label>
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">Password Baru</label>
                                 <div className="relative">
                                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                                     <input
@@ -281,7 +283,7 @@ export default function ProfileEdit() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Konfirmasi Password Baru</label>
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">Konfirmasi Password Baru</label>
                                 <div className="relative">
                                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                                     <input
@@ -308,11 +310,11 @@ export default function ProfileEdit() {
                         <button
                             type="submit"
                             disabled={passwordLoading}
-                            className="flex items-center gap-2 bg-gray-900 hover:bg-gray-800 disabled:opacity-60 text-white px-6 py-3 rounded-xl font-medium transition-transform active:scale-95"
+                            className="inline-flex items-center gap-2 h-11 px-6 btn-primary text-xs uppercase tracking-[0.25em] rounded-md disabled:opacity-60"
                         >
                             {passwordLoading
-                                ? <><span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span> Memperbarui...</>
-                                : <><KeyRound size={16} /> Ubah Password</>
+                                ? <><span className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></span> Memperbarui…</>
+                                : <><KeyRound size={12} /> Ubah Password</>
                             }
                         </button>
                     </div>
