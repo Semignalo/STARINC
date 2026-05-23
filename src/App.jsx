@@ -23,7 +23,6 @@ const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const VerifyEmail = lazy(() => import('./pages/VerifyEmail'));
 const Profile = lazy(() => import('./pages/Profile'));
-const CenterShop = lazy(() => import('./pages/CenterShop'));
 const JoinStarcenter = lazy(() => import('./pages/JoinStarcenter'));
 const DaftarCenter = lazy(() => import('./pages/DaftarCenter'));
 const About = lazy(() => import('./pages/About'));
@@ -64,7 +63,6 @@ function App() {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/center" element={<CenterShop />} />
           <Route path="/join-starcenter" element={<JoinStarcenter />} />
           <Route path="/daftar-center" element={<DaftarCenter />} />
         </Route>

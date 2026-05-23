@@ -157,13 +157,13 @@ export default function Profile() {
                                 <div className="bg-gray-900 text-white p-7 flex flex-col justify-center text-center">
                                     <Crown className="mx-auto text-white/80 mb-3" size={28} />
                                     <p className="text-[10px] uppercase tracking-[0.3em] text-white/50 mb-2">Members Only</p>
-                                    <h3 className="text-base font-medium mb-3 tracking-tight">Center Shop</h3>
+                                    <h3 className="text-base font-medium mb-3 tracking-tight">Diskon Starcenter</h3>
                                     <p className="text-xs text-white/60 mb-5 leading-relaxed">
-                                        Diskon {STARCENTER_DISCOUNT}% untuk semua produk. Komisi 5% rekrutan baru, 1% transaksi berikutnya.
+                                        Diskon {STARCENTER_DISCOUNT}% untuk semua produk. Komisi multi-level hingga 7 generasi.
                                     </p>
-                                    <Link to="/center"
+                                    <Link to="/products"
                                         className="inline-flex items-center justify-center gap-2 h-10 px-4 bg-white text-gray-900 text-xs uppercase tracking-[0.2em] hover:bg-gray-100 transition-colors">
-                                        <ShoppingBag size={12} /> Katalog Center
+                                        <ShoppingBag size={12} /> Belanja Produk
                                     </Link>
                                 </div>
                             </div>

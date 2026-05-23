@@ -54,7 +54,6 @@ export default function Navbar() {
         { name: lang === 'id' ? 'Konsep Kami' : 'Our concept', path: '/about' },
         { name: 'FAQ', path: '/faq' },
         { name: lang === 'id' ? 'Become Center' : 'Become Center', path: '/partnership' },
-        ...(userRole === 'starcenter' ? [{ name: 'Center Shop', path: '/center' }] : []),
     ];
 
     const firstName = currentUser?.name
@@ -142,11 +141,6 @@ export default function Navbar() {
                                             <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors">
                                                 Profil Saya
                                             </Link>
-                                            {userRole === 'starcenter' && (
-                                                <Link to="/center" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors">
-                                                    Center Shop
-                                                </Link>
-                                            )}
                                             {userRole === 'admin' && (
                                                 <Link to="/admin" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors">
                                                     Admin Dashboard
