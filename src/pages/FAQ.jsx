@@ -238,11 +238,11 @@ export default function FAQ() {
         <div className="bg-white min-h-screen">
 
             {/* Hero */}
-            <section className="bg-[#faf8f5] border-b border-stone-100 py-16 md:py-24 px-6 text-center">
-                <p className="text-[11px] uppercase tracking-[0.3em] text-gray-500 mb-3">{tx.heroLabel}</p>
+            <section className="bg-gray-50 border-b border-gray-100 py-16 md:py-24 px-6 text-center">
+                <p className="text-[11px] uppercase tracking-[0.3em] text-gray-400 mb-3">{tx.heroLabel}</p>
                 <h1 className="text-3xl md:text-5xl font-medium tracking-tight text-gray-900 mb-4">{tx.heroTitle}</h1>
                 <div className="h-px w-12 bg-gray-900 mx-auto mt-5 mb-6" />
-                <p className="text-gray-500 text-sm max-w-md mx-auto">{tx.heroDesc}</p>
+                <p className="text-gray-500 text-sm max-w-md mx-auto leading-relaxed">{tx.heroDesc}</p>
             </section>
 
             {/* Content */}
@@ -250,10 +250,10 @@ export default function FAQ() {
                 <div className="space-y-12">
                     {tx.sections.map((section, si) => (
                         <div key={`${lang}-${si}`}>
-                            <h2 className="text-[11px] uppercase tracking-[0.25em] text-gray-500 mb-6 font-semibold">
+                            <h2 className="text-[11px] uppercase tracking-[0.3em] text-gray-400 mb-6 font-medium">
                                 {section.category}
                             </h2>
-                            <div className="bg-white border border-gray-100 rounded-sm px-6">
+                            <div className="bg-white border border-gray-200 rounded-lg px-6">
                                 {section.items.map((item, ii) => {
                                     const key = `${si}-${ii}`;
                                     return (
@@ -272,14 +272,14 @@ export default function FAQ() {
                 </div>
 
                 {/* Still have questions */}
-                <div className="mt-16 bg-[#faf8f5] border border-stone-100 rounded-sm p-8 text-center">
+                <div className="mt-16 bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
                     <h3 className="font-medium tracking-tight text-xl text-gray-900 mb-2">{tx.stillQ}</h3>
                     <p className="text-sm text-gray-500 mb-6">{tx.stillDesc}</p>
                     <a
                         href="https://wa.me/6281234567890"
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-2 bg-gray-900 text-white px-6 py-3 text-sm font-semibold tracking-wider uppercase hover:bg-gray-900 transition-colors"
+                        className="inline-flex items-center gap-2 h-11 px-6 btn-primary text-xs uppercase tracking-[0.25em] rounded-md"
                     >
                         {tx.contactBtn}
                     </a>
