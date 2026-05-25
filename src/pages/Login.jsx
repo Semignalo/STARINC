@@ -79,7 +79,7 @@ export default function Login() {
 
     useEffect(() => {
         clearTimeout(debounceRef.current);
-        if (referralCode.length !== 8) {
+        if (referralCode.length < 10) {
             setReferralStatus(null);
             setReferralOwner('');
             return;
@@ -339,8 +339,8 @@ export default function Login() {
                                             value={referralCode}
                                             onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
                                             className={inputClass('pl-9 uppercase tracking-widest font-mono')}
-                                            placeholder={tx.referralPlaceholder}
-                                            maxLength={8}
+                                            placeholder="SC230200001"
+                                            maxLength={20}
                                         />
                                     </div>
                                     {referralStatus === 'loading' && (

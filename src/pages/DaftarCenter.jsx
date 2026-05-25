@@ -1,9 +1,9 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-    Upload, ScanLine, CheckCircle2, XCircle, Loader2,
-    ChevronRight, ChevronLeft, User, Phone, Landmark, Link2,
-    Building2, CreditCard, FileText, Users
+    Upload, CheckCircle2, XCircle, Loader2,
+    ChevronRight, ChevronLeft, User, Phone, Landmark, Users, Building2,
+    CreditCard, FileText, Instagram, MapPin
 } from 'lucide-react';
 import { centerApi } from '../api/centerApi';
 import { authApi } from '../api/authApi';
@@ -12,11 +12,8 @@ const STEPS = [
     { id: 1, label: 'Identitas', icon: User },
     { id: 2, label: 'Kontak', icon: Phone },
     { id: 3, label: 'Bank & Pajak', icon: Landmark },
-    { id: 4, label: 'Referral', icon: Users },
+    { id: 4, label: 'Inisiator', icon: Users },
 ];
-
-const RELIGIONS = ['Islam', 'Kristen', 'Katolik', 'Hindu', 'Buddha', 'Konghucu'];
-const MARITAL_STATUSES = ['Lajang', 'Menikah', 'Cerai'];
 
 function StepIndicator({ current }) {
     return (
@@ -48,7 +45,7 @@ function StepIndicator({ current }) {
     );
 }
 
-function FileUploadField({ label, name, value, onChange, hint, required }) {
+function FileUploadField({ label, value, onChange, hint, required }) {
     const inputRef = useRef();
     return (
         <div>
@@ -83,288 +80,6 @@ function FileUploadField({ label, name, value, onChange, hint, required }) {
     );
 }
 
-function OcrScanButton({ onScanned, disabled }) {
-    const [scanning, setScanning] = useState(false);
-    const [error, setError] = useState('');
-    const inputRef = useRef();
-
-    const handleScan = async (file) => {
-        if (!file) return;
-        setScanning(true);
-        setError('');
-        try {
-            const { createWorker } = await import('tesseract.js');
-            const worker = await createWorker('ind');
-            const { data: { text } } = await worker.recognize(file);
-            await worker.terminate();
-            onScanned(text);
-        } catch {
-            setError('Gagal membaca teks. Coba foto lebih jelas.');
-        } finally {
-            setScanning(false);
-        }
-    };
-
-    return (
-        <div>
-            <button
-                type="button"
-                disabled={disabled || scanning}
-                onClick={() => inputRef.current?.click()}
-                className="inline-flex items-center gap-2 h-9 px-4 rounded-md border border-gray-200 hover:border-gray-900 text-gray-700 text-xs uppercase tracking-[0.2em] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-                {scanning ? <Loader2 size={12} className="animate-spin" /> : <ScanLine size={12} />}
-                {scanning ? 'Memindai…' : 'Scan OCR'}
-            </button>
-            {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
-            <input
-                ref={inputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => handleScan(e.target.files[0])}
-            />
-        </div>
-    );
-}
-
-function KtpUploadWithOcr({ onFileChange, onScanned }) {
-    const [file, setFile] = useState(null);
-    const [previewUrl, setPreviewUrl] = useState(null);
-    const [scanning, setScanning] = useState(false);
-    const [scanDone, setScanDone] = useState(false);
-    const [scanError, setScanError] = useState('');
-    const [rawText, setRawText] = useState('');
-    const [showRaw, setShowRaw] = useState(false);
-    const inputRef = useRef();
-    const prevUrlRef = useRef(null);
-
-    const runOcr = async (f) => {
-        setScanning(true);
-        setScanDone(false);
-        setScanError('');
-        setRawText('');
-        try {
-            const { createWorker } = await import('tesseract.js');
-            const worker = await createWorker('ind');
-            const { data: { text } } = await worker.recognize(f);
-            await worker.terminate();
-            setRawText(text);
-            onScanned(text);
-            setScanDone(true);
-        } catch {
-            setScanError('Gagal membaca KTP. Pastikan foto jelas dan coba lagi.');
-        } finally {
-            setScanning(false);
-        }
-    };
-
-    const handleFileChange = (f) => {
-        if (!f) return;
-        if (prevUrlRef.current) URL.revokeObjectURL(prevUrlRef.current);
-        const url = URL.createObjectURL(f);
-        prevUrlRef.current = url;
-        setFile(f);
-        setPreviewUrl(url);
-        setScanDone(false);
-        setScanError('');
-        onFileChange(f);
-        runOcr(f);
-    };
-
-    return (
-        <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                Foto KTP <span className="text-red-500">*</span>
-            </label>
-
-            {!file ? (
-                <div
-                    onClick={() => inputRef.current?.click()}
-                    className="border border-dashed border-gray-300 rounded-md p-6 text-center cursor-pointer hover:border-gray-900 hover:bg-gray-50 transition-colors"
-                >
-                    <Upload size={20} className="mx-auto mb-2 text-gray-400" />
-                    <p className="text-sm text-gray-700">Klik untuk upload foto KTP</p>
-                    <p className="text-xs text-gray-400 mt-1">JPG/PNG, maks 5MB — akan di-scan otomatis</p>
-                </div>
-            ) : (
-                <div className="relative rounded-md overflow-hidden border border-gray-200 bg-gray-50">
-                    <img
-                        src={previewUrl}
-                        alt="Preview KTP"
-                        className="w-full object-cover max-h-52"
-                    />
-
-                    {scanning && (
-                        <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-2">
-                            <div className="relative">
-                                <ScanLine size={28} className="text-white/40" />
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                    <Loader2 size={16} className="animate-spin text-white" />
-                                </div>
-                            </div>
-                            <span className="text-white text-sm">Memindai KTP…</span>
-                            <span className="text-white/60 text-xs">Mengisi data secara otomatis</span>
-                        </div>
-                    )}
-
-                    {scanDone && !scanning && (
-                        <div className="absolute top-2 left-2 bg-gray-900 text-white text-[10px] uppercase tracking-[0.15em] px-2 py-1 rounded-md flex items-center gap-1">
-                            <CheckCircle2 size={10} /> Data Terisi
-                        </div>
-                    )}
-
-                    <button
-                        type="button"
-                        onClick={() => inputRef.current?.click()}
-                        className="absolute bottom-2 right-2 bg-white/95 backdrop-blur-sm text-gray-700 text-[10px] uppercase tracking-[0.15em] px-3 py-1.5 rounded-md hover:bg-white transition-colors"
-                    >
-                        Ganti Foto
-                    </button>
-                </div>
-            )}
-
-            {scanError && (
-                <div className="flex items-center gap-2 mt-2">
-                    <XCircle size={14} className="text-red-500 shrink-0" />
-                    <p className="text-xs text-red-500">{scanError}</p>
-                    <button
-                        type="button"
-                        onClick={() => file && runOcr(file)}
-                        className="text-xs text-gray-900 underline font-medium whitespace-nowrap"
-                    >
-                        Scan ulang
-                    </button>
-                </div>
-            )}
-
-            {rawText && !scanning && (
-                <div className="mt-2">
-                    <button
-                        type="button"
-                        onClick={() => setShowRaw(v => !v)}
-                        className="text-xs text-gray-400 hover:text-gray-600 underline"
-                    >
-                        {showRaw ? 'Sembunyikan' : 'Lihat'} teks OCR mentah
-                    </button>
-                    {showRaw && (
-                        <pre className="mt-1 p-2 bg-gray-100 rounded-lg text-[10px] text-gray-600 whitespace-pre-wrap break-all max-h-40 overflow-y-auto font-mono leading-relaxed">
-                            {rawText}
-                        </pre>
-                    )}
-                </div>
-            )}
-
-            <input
-                ref={inputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => handleFileChange(e.target.files[0])}
-            />
-        </div>
-    );
-}
-
-function parseKtpOcr(text) {
-    const norm = text.replace(/[ \t\u00A0]+/g, ' ');
-    const rawLines = norm.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
-
-    const fieldMap = {};
-    for (const line of rawLines) {
-        const ci = line.indexOf(':');
-        if (ci < 1 || ci > 45) continue;
-        const key = line.slice(0, ci).trim().toLowerCase();
-        const val = line.slice(ci + 1).trim().split(/  +/)[0].trim();
-        if (key && val && !fieldMap[key]) fieldMap[key] = val;
-    }
-
-    const fromMap = (...pats) => {
-        for (const p of pats) {
-            const re = new RegExp(p, 'i');
-            const k = Object.keys(fieldMap).find(k => re.test(k));
-            if (k) return fieldMap[k];
-        }
-        return '';
-    };
-
-    const fromLine = (labelRe) => {
-        const re = new RegExp(labelRe + '[^:\\n]*:\\s*([^\\n]+)', 'i');
-        for (const line of rawLines) {
-            const m = line.match(re);
-            if (m && m[1] && m[1].trim()) return m[1].trim().split(/  +/)[0].trim();
-        }
-        return '';
-    };
-
-    const fromNext = (labelRe) => {
-        const re = new RegExp('^' + labelRe + '\\s*$', 'i');
-        for (let i = 0; i < rawLines.length - 1; i++) {
-            if (re.test(rawLines[i])) return rawLines[i + 1].replace(/^[:\-]\s*/, '').trim();
-        }
-        return '';
-    };
-
-    const find = (mapPats, lineRe) =>
-        fromMap(...mapPats) || fromLine(lineRe) || fromNext(lineRe);
-
-    const result = {};
-
-    const nikM = norm.match(/NIK[^:\n]*:\s*([\d ]{14,20})/i);
-    if (nikM) result.nik = nikM[1].replace(/\s/g, '').slice(0, 16);
-
-    result.full_name = find(['^nama$', 'nama'], 'Nama');
-
-    const birthRaw = find(['^tempat', 'tempat.{0,14}lahir'], 'Tempat.{0,14}Lahir');
-    if (birthRaw) {
-        const ci = birthRaw.indexOf(',');
-        if (ci > 0) {
-            result.birth_place = birthRaw.slice(0, ci).trim();
-            const dm = birthRaw.slice(ci).match(/(\d{2})[\/\-](\d{2})[\/\-](\d{4})/);
-            if (dm) result.birth_date = dm[3] + '-' + dm[2].padStart(2,'0') + '-' + dm[1].padStart(2,'0');
-        } else {
-            const dm = birthRaw.match(/(\d{2})[\/\-](\d{2})[\/\-](\d{4})/);
-            if (dm) {
-                result.birth_date = dm[3] + '-' + dm[2].padStart(2,'0') + '-' + dm[1].padStart(2,'0');
-                result.birth_place = birthRaw.replace(dm[0], '').trim();
-            } else {
-                result.birth_place = birthRaw;
-            }
-        }
-    }
-    if (!result.birth_date) {
-        const dm = norm.match(/(\d{2})[\/\-](\d{2})[\/\-](\d{4})/);
-        if (dm) result.birth_date = dm[3] + '-' + dm[2].padStart(2,'0') + '-' + dm[1].padStart(2,'0');
-    }
-
-    const gRaw = find(['^jenis kelamin$', 'jenis.{0,5}kelamin'], 'Jenis.{0,5}Kelamin');
-    if (/laki/i.test(gRaw)) result.gender = 'L';
-    else if (/perempuan/i.test(gRaw)) result.gender = 'P';
-
-    result.religion = find(['^agama$', 'agama'], 'Agama');
-    if (!result.religion) {
-        const hit = ['Islam','Kristen','Katolik','Hindu','Buddha','Konghucu']
-            .find(r => new RegExp('\\b' + r + '\\b', 'i').test(norm));
-        if (hit) result.religion = hit;
-    }
-
-    result.marital_status = find(
-        ['^status perkawinan$', 'status perkawinan', '^status$'],
-        'Status.{0,15}Perkawinan'
-    );
-    result.occupation = find(['^pekerjaan$', 'pekerjaan'], 'Pekerjaan');
-
-    return result;
-}
-
-function parseTaxOcr(text) {
-    const match = text.match(/\d[\d\s.]{14,}/);
-    if (match) {
-        return match[0].replace(/[\s.]/g, '').slice(0, 15);
-    }
-    return '';
-}
-
 export default function DaftarCenter() {
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
@@ -372,33 +87,32 @@ export default function DaftarCenter() {
     const [submitted, setSubmitted] = useState(false);
     const [errors, setErrors] = useState({});
 
-    // Layer 1
+    // Step 1 — Identitas Center
     const [centerName, setCenterName] = useState('');
-    const [centerNameStatus, setCenterNameStatus] = useState('idle'); // idle | checking | available | taken
-    const [idCardFile, setIdCardFile] = useState(null);
+    const [centerNameStatus, setCenterNameStatus] = useState('idle');
     const [fullName, setFullName] = useState('');
     const [nik, setNik] = useState('');
     const [birthDate, setBirthDate] = useState('');
-    const [birthPlace, setBirthPlace] = useState('');
-    const [gender, setGender] = useState('');
-    const [religion, setReligion] = useState('');
-    const [maritalStatus, setMaritalStatus] = useState('');
-    const [occupation, setOccupation] = useState('');
+    const [idCardFile, setIdCardFile] = useState(null);
 
-    // Layer 2
+    // Step 2 — Kontak
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
-    const [shopLink, setShopLink] = useState('');
+    const [address, setAddress] = useState('');
+    const [city, setCity] = useState('');
+    const [igAccount, setIgAccount] = useState('');
 
-    // Layer 3
+    // Step 3 — Bank & Pajak (opsional)
     const [bankName, setBankName] = useState('');
     const [bankNumber, setBankNumber] = useState('');
     const [bankAccountName, setBankAccountName] = useState('');
+    const [bankBranch, setBankBranch] = useState('');
     const [bankBookFile, setBankBookFile] = useState(null);
     const [taxNumber, setTaxNumber] = useState('');
+    const [npwpHolderName, setNpwpHolderName] = useState('');
     const [taxDocFile, setTaxDocFile] = useState(null);
 
-    // Layer 4
+    // Step 4 — Inisiator
     const [referralCode, setReferralCode] = useState('');
     const [referralStatus, setReferralStatus] = useState('idle');
     const [referralOwner, setReferralOwner] = useState('');
@@ -406,7 +120,6 @@ export default function DaftarCenter() {
     const centerNameTimer = useRef(null);
     const referralTimer = useRef(null);
 
-    // Center name debounce check
     useEffect(() => {
         if (!centerName.trim()) { setCenterNameStatus('idle'); return; }
         setCenterNameStatus('checking');
@@ -422,14 +135,14 @@ export default function DaftarCenter() {
         return () => clearTimeout(centerNameTimer.current);
     }, [centerName]);
 
-    // Referral code debounce lookup
     useEffect(() => {
-        if (referralCode.length !== 8) { setReferralStatus('idle'); setReferralOwner(''); return; }
+        const code = referralCode.trim().toUpperCase();
+        if (code.length < 10) { setReferralStatus('idle'); setReferralOwner(''); return; }
         setReferralStatus('checking');
         clearTimeout(referralTimer.current);
         referralTimer.current = setTimeout(async () => {
             try {
-                const data = await authApi.lookupReferral(referralCode.toUpperCase());
+                const data = await authApi.lookupReferral(code);
                 setReferralOwner(data.name);
                 setReferralStatus('valid');
             } catch {
@@ -440,55 +153,23 @@ export default function DaftarCenter() {
         return () => clearTimeout(referralTimer.current);
     }, [referralCode]);
 
-    const handleKtpOcr = useCallback((text) => {
-        const parsed = parseKtpOcr(text);
-        if (parsed.nik) setNik(parsed.nik);
-        if (parsed.full_name) setFullName(parsed.full_name);
-        if (parsed.birth_date) setBirthDate(parsed.birth_date);
-        if (parsed.birth_place) setBirthPlace(parsed.birth_place);
-        if (parsed.gender) setGender(parsed.gender);
-        if (parsed.religion) {
-            const matched = RELIGIONS.find(r => parsed.religion.toLowerCase().includes(r.toLowerCase()));
-            if (matched) setReligion(matched);
-        }
-        if (parsed.marital_status) {
-            const s = parsed.marital_status.toLowerCase();
-            if (s.includes('belum') || s.includes('lajang')) setMaritalStatus('Lajang');
-            else if (s.includes('kawin') || s.includes('menikah')) setMaritalStatus('Menikah');
-            else if (s.includes('cerai')) setMaritalStatus('Cerai');
-        }
-        if (parsed.occupation) setOccupation(parsed.occupation);
-    }, []);
-
-    const handleTaxOcr = useCallback((text) => {
-        const num = parseTaxOcr(text);
-        if (num) setTaxNumber(num);
-    }, []);
-
     const validateStep = (s) => {
         const errs = {};
         if (s === 1) {
             if (!centerName.trim()) errs.center_name = 'Nama center wajib diisi';
             else if (centerNameStatus === 'taken') errs.center_name = 'Nama center sudah digunakan';
-            if (!idCardFile) errs.id_card = 'Upload foto KTP wajib';
             if (!fullName.trim()) errs.full_name = 'Nama lengkap wajib diisi';
-            if (!birthDate) errs.birth_date = 'Tanggal lahir wajib diisi';
-            if (!birthPlace.trim()) errs.birth_place = 'Tempat lahir wajib diisi';
-            if (!gender) errs.gender = 'Pilih jenis kelamin';
-            if (!religion) errs.religion = 'Pilih agama';
-            if (!maritalStatus) errs.marital_status = 'Pilih status pernikahan';
-            if (!occupation.trim()) errs.occupation = 'Pekerjaan wajib diisi';
         }
         if (s === 2) {
             if (!email.trim()) errs.email = 'Email wajib diisi';
             else if (!/\S+@\S+\.\S+/.test(email)) errs.email = 'Format email tidak valid';
             if (!phone.trim()) errs.phone = 'No. telepon wajib diisi';
+            if (!address.trim()) errs.address = 'Alamat wajib diisi';
+            if (!city.trim()) errs.city = 'Kota wajib diisi';
         }
-        if (s === 3) {
-            if (!bankName.trim()) errs.bank_name = 'Nama bank wajib diisi';
-            if (!bankNumber.trim()) errs.bank_number = 'Nomor rekening wajib diisi';
-            if (!bankAccountName.trim()) errs.bank_account_name = 'Nama pemilik rekening wajib diisi';
-            if (!bankBookFile) errs.bank_book = 'Upload buku tabungan wajib';
+        if (s === 4) {
+            if (!referralCode.trim()) errs.referral_code = 'Kode inisiator wajib diisi';
+            else if (referralStatus === 'invalid') errs.referral_code = 'Kode inisiator tidak ditemukan';
         }
         return errs;
     };
@@ -503,10 +184,8 @@ export default function DaftarCenter() {
     const goBack = () => setStep(s => s - 1);
 
     const handleSubmit = async () => {
-        if (referralStatus === 'invalid') {
-            setErrors({ referral_code: 'Kode referral tidak valid' });
-            return;
-        }
+        const errs = validateStep(4);
+        if (Object.keys(errs).length) { setErrors(errs); return; }
         setErrors({});
         setSubmitting(true);
         try {
@@ -514,23 +193,22 @@ export default function DaftarCenter() {
             fd.append('center_name', centerName.trim());
             fd.append('full_name', fullName.trim());
             if (nik.trim()) fd.append('nik', nik.trim());
-            fd.append('birth_date', birthDate);
-            fd.append('birth_place', birthPlace.trim());
-            fd.append('gender', gender);
-            fd.append('religion', religion);
-            fd.append('marital_status', maritalStatus);
-            fd.append('occupation', occupation.trim());
-            fd.append('id_card', idCardFile);
+            if (birthDate) fd.append('birth_date', birthDate);
+            if (idCardFile) fd.append('id_card', idCardFile);
             fd.append('email', email.trim());
             fd.append('phone', phone.trim());
-            if (shopLink.trim()) fd.append('shop_link', shopLink.trim());
-            fd.append('bank_name', bankName.trim());
-            fd.append('bank_number', bankNumber.trim());
-            fd.append('bank_account_name', bankAccountName.trim());
-            fd.append('bank_book', bankBookFile);
+            fd.append('address', address.trim());
+            fd.append('city', city.trim());
+            if (igAccount.trim()) fd.append('ig_account', igAccount.trim());
+            if (bankName.trim()) fd.append('bank_name', bankName.trim());
+            if (bankNumber.trim()) fd.append('bank_number', bankNumber.trim());
+            if (bankAccountName.trim()) fd.append('bank_account_name', bankAccountName.trim());
+            if (bankBranch.trim()) fd.append('bank_branch', bankBranch.trim());
+            if (bankBookFile) fd.append('bank_book', bankBookFile);
             if (taxNumber.trim()) fd.append('tax_number', taxNumber.trim());
+            if (npwpHolderName.trim()) fd.append('npwp_holder_name', npwpHolderName.trim());
             if (taxDocFile) fd.append('tax_doc', taxDocFile);
-            if (referralCode.trim()) fd.append('referral_code', referralCode.toUpperCase());
+            fd.append('referral_code', referralCode.trim().toUpperCase());
 
             await centerApi.submitApplication(fd);
             setSubmitted(true);
@@ -538,14 +216,13 @@ export default function DaftarCenter() {
             const data = err.response?.data;
             if (data?.errors) {
                 setErrors(data.errors);
-                // Jump back to step with first error
                 const errKeys = Object.keys(data.errors);
-                const step1Keys = ['center_name','full_name','birth_date','birth_place','gender','religion','marital_status','occupation','id_card'];
-                const step2Keys = ['email','phone','shop_link'];
-                const step3Keys = ['bank_name','bank_number','bank_account_name','bank_book','tax_number','tax_doc'];
-                if (errKeys.some(k => step1Keys.includes(k))) setStep(1);
-                else if (errKeys.some(k => step2Keys.includes(k))) setStep(2);
-                else if (errKeys.some(k => step3Keys.includes(k))) setStep(3);
+                const step1 = ['center_name','full_name','nik','birth_date','id_card'];
+                const step2 = ['email','phone','address','city','ig_account'];
+                const step3 = ['bank_name','bank_number','bank_account_name','bank_branch','bank_book','tax_number','npwp_holder_name','tax_doc'];
+                if (errKeys.some(k => step1.includes(k))) setStep(1);
+                else if (errKeys.some(k => step2.includes(k))) setStep(2);
+                else if (errKeys.some(k => step3.includes(k))) setStep(3);
             } else {
                 setErrors({ _global: data?.message || 'Terjadi kesalahan. Silakan coba lagi.' });
             }
@@ -585,14 +262,13 @@ export default function DaftarCenter() {
     return (
         <div className="min-h-screen bg-gray-50 pt-20 pb-12 px-4">
             <div className="max-w-xl mx-auto">
-                {/* Header */}
                 <div className="text-center mb-8">
                     <div className="inline-flex items-center justify-center w-12 h-12 border border-gray-200 rounded-full mb-4">
                         <Building2 size={18} className="text-gray-700" />
                     </div>
                     <p className="text-[10px] uppercase tracking-[0.3em] text-gray-400 mb-2">Partner Application</p>
                     <h1 className="text-2xl md:text-3xl font-medium text-gray-900 tracking-tight">Daftar sebagai Starcenter</h1>
-                    <p className="text-sm text-gray-500 mt-2">Isi data lengkap untuk bergabung sebagai mitra.</p>
+                    <p className="text-sm text-gray-500 mt-2">Isi data center untuk bergabung sebagai mitra.</p>
                 </div>
 
                 <StepIndicator current={step} />
@@ -604,24 +280,23 @@ export default function DaftarCenter() {
                         </div>
                     )}
 
-                    {/* ── Step 1: Identitas ── */}
+                    {/* Step 1: Identitas */}
                     {step === 1 && (
                         <div className="space-y-5">
                             <h2 className="text-sm font-medium text-gray-900 tracking-tight flex items-center gap-2">
-                                <User size={14} className="text-gray-400" /> Identitas Diri
+                                <User size={14} className="text-gray-400" /> Identitas Center
                             </h2>
 
-                            {/* Center Name */}
                             <div>
                                 <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                                    Nama Center <span className="text-red-500">*</span>
+                                    Nama Pendaftaran Center <span className="text-red-500">*</span>
                                 </label>
                                 <div className="relative">
                                     <input
                                         type="text"
                                         value={centerName}
                                         onChange={(e) => setCenterName(e.target.value)}
-                                        placeholder="Contoh: Starcenter Surabaya Timur"
+                                        placeholder="Contoh: Starinc Official Surabaya"
                                         className={inputCls('center_name')}
                                     />
                                     <div className="absolute inset-y-0 right-3 flex items-center">
@@ -635,16 +310,6 @@ export default function DaftarCenter() {
                                 {errors.center_name && <p className="text-xs text-red-500 mt-1">{errors.center_name}</p>}
                             </div>
 
-                            {/* KTP Upload + Auto OCR */}
-                            <div>
-                                <KtpUploadWithOcr
-                                    onFileChange={setIdCardFile}
-                                    onScanned={handleKtpOcr}
-                                />
-                                {errors.id_card && <p className="text-xs text-red-500 mt-1">{errors.id_card}</p>}
-                            </div>
-
-                            {/* Full Name */}
                             <div>
                                 <label className="block text-xs font-medium text-gray-700 mb-1.5">
                                     Nama Lengkap <span className="text-red-500">*</span>
@@ -659,40 +324,24 @@ export default function DaftarCenter() {
                                 {errors.full_name && <p className="text-xs text-red-500 mt-1">{errors.full_name}</p>}
                             </div>
 
-                            {/* NIK */}
-                            <div>
-                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                                    NIK (16 digit)
-                                </label>
-                                <input
-                                    type="text"
-                                    value={nik}
-                                    onChange={(e) => setNik(e.target.value.replace(/\D/g, '').slice(0, 16))}
-                                    placeholder="Nomor Induk Kependudukan"
-                                    maxLength={16}
-                                    className={`${inputCls('nik')} font-mono tracking-wider`}
-                                />
-                                {errors.nik && <p className="text-xs text-red-500 mt-1">{errors.nik}</p>}
-                            </div>
-
-                            {/* Birth Place & Date */}
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
                                     <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                                        Tempat Lahir <span className="text-red-500">*</span>
+                                        NIK <span className="text-gray-400 font-normal">(opsional)</span>
                                     </label>
                                     <input
                                         type="text"
-                                        value={birthPlace}
-                                        onChange={(e) => setBirthPlace(e.target.value)}
-                                        placeholder="Kota"
-                                        className={inputCls('birth_place')}
+                                        value={nik}
+                                        onChange={(e) => setNik(e.target.value.replace(/\D/g, '').slice(0, 16))}
+                                        placeholder="16 digit"
+                                        maxLength={16}
+                                        className={`${inputCls('nik')} font-mono tracking-wider`}
                                     />
-                                    {errors.birth_place && <p className="text-xs text-red-500 mt-1">{errors.birth_place}</p>}
+                                    {errors.nik && <p className="text-xs text-red-500 mt-1">{errors.nik}</p>}
                                 </div>
                                 <div>
                                     <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                                        Tanggal Lahir <span className="text-red-500">*</span>
+                                        Tanggal Lahir <span className="text-gray-400 font-normal">(opsional)</span>
                                     </label>
                                     <input
                                         type="date"
@@ -704,82 +353,21 @@ export default function DaftarCenter() {
                                 </div>
                             </div>
 
-                            {/* Gender */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Jenis Kelamin <span className="text-red-500">*</span>
-                                </label>
-                                <div className="flex gap-3">
-                                    {[{ v: 'L', l: 'Laki-laki' }, { v: 'P', l: 'Perempuan' }].map(({ v, l }) => (
-                                        <button
-                                            key={v}
-                                            type="button"
-                                            onClick={() => setGender(v)}
-                                            className={`flex-1 h-11 rounded-md border text-sm transition-colors ${
-                                                gender === v ? 'border-gray-900 bg-gray-900 text-white' : 'border-gray-200 text-gray-700 hover:border-gray-400'
-                                            }`}
-                                        >
-                                            {l}
-                                        </button>
-                                    ))}
-                                </div>
-                                {errors.gender && <p className="text-xs text-red-500 mt-1">{errors.gender}</p>}
-                            </div>
-
-                            {/* Religion */}
-                            <div>
-                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                                    Agama <span className="text-red-500">*</span>
-                                </label>
-                                <select
-                                    value={religion}
-                                    onChange={(e) => setReligion(e.target.value)}
-                                    className={inputCls('religion')}
-                                >
-                                    <option value="">Pilih agama</option>
-                                    {RELIGIONS.map(r => <option key={r} value={r}>{r}</option>)}
-                                </select>
-                                {errors.religion && <p className="text-xs text-red-500 mt-1">{errors.religion}</p>}
-                            </div>
-
-                            {/* Marital Status */}
-                            <div>
-                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                                    Status Pernikahan <span className="text-red-500">*</span>
-                                </label>
-                                <select
-                                    value={maritalStatus}
-                                    onChange={(e) => setMaritalStatus(e.target.value)}
-                                    className={inputCls('marital_status')}
-                                >
-                                    <option value="">Pilih status</option>
-                                    {MARITAL_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
-                                </select>
-                                {errors.marital_status && <p className="text-xs text-red-500 mt-1">{errors.marital_status}</p>}
-                            </div>
-
-                            {/* Occupation */}
-                            <div>
-                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                                    Pekerjaan <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    value={occupation}
-                                    onChange={(e) => setOccupation(e.target.value)}
-                                    placeholder="Pekerjaan utama"
-                                    className={inputCls('occupation')}
-                                />
-                                {errors.occupation && <p className="text-xs text-red-500 mt-1">{errors.occupation}</p>}
-                            </div>
+                            <FileUploadField
+                                label="Foto KTP (opsional)"
+                                value={idCardFile}
+                                onChange={setIdCardFile}
+                                hint="JPG/PNG, maks 5MB — bisa diupload nanti dari profil"
+                            />
+                            {errors.id_card && <p className="text-xs text-red-500 mt-1">{errors.id_card}</p>}
                         </div>
                     )}
 
-                    {/* ── Step 2: Kontak ── */}
+                    {/* Step 2: Kontak */}
                     {step === 2 && (
                         <div className="space-y-5">
                             <h2 className="text-sm font-medium text-gray-900 tracking-tight flex items-center gap-2">
-                                <Phone size={14} className="text-gray-400" /> Informasi Kontak
+                                <Phone size={14} className="text-gray-400" /> Kontak & Alamat
                             </h2>
 
                             <div>
@@ -807,56 +395,99 @@ export default function DaftarCenter() {
                                     placeholder="08xxxxxxxxxx"
                                     className={inputCls('phone')}
                                 />
+                                <p className="text-[11px] text-gray-400 mt-1">Akan dijadikan password default akun Anda.</p>
                                 {errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone}</p>}
                             </div>
 
                             <div>
                                 <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                                    Link Online Shop
-                                    <span className="text-gray-400 font-normal ml-1">(opsional)</span>
+                                    Alamat Lengkap <span className="text-red-500">*</span>
+                                </label>
+                                <textarea
+                                    value={address}
+                                    onChange={(e) => setAddress(e.target.value)}
+                                    placeholder="Jl. ..."
+                                    rows={3}
+                                    className={`${inputCls('address')} h-auto py-2.5`}
+                                />
+                                {errors.address && <p className="text-xs text-red-500 mt-1">{errors.address}</p>}
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                                    Kota <span className="text-red-500">*</span>
                                 </label>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                                        <Link2 size={16} className="text-gray-400" />
+                                        <MapPin size={16} className="text-gray-400" />
                                     </div>
                                     <input
-                                        type="url"
-                                        value={shopLink}
-                                        onChange={(e) => setShopLink(e.target.value)}
-                                        placeholder="https://tokopedia.com/toko-saya"
-                                        className={`${inputCls('shop_link')} pl-9`}
+                                        type="text"
+                                        value={city}
+                                        onChange={(e) => setCity(e.target.value)}
+                                        placeholder="Surabaya"
+                                        className={`${inputCls('city')} pl-9`}
                                     />
                                 </div>
-                                {errors.shop_link && <p className="text-xs text-red-500 mt-1">{errors.shop_link}</p>}
+                                {errors.city && <p className="text-xs text-red-500 mt-1">{errors.city}</p>}
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                                    Akun Instagram <span className="text-gray-400 font-normal">(opsional)</span>
+                                </label>
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                                        <Instagram size={16} className="text-gray-400" />
+                                    </div>
+                                    <input
+                                        type="text"
+                                        value={igAccount}
+                                        onChange={(e) => setIgAccount(e.target.value)}
+                                        placeholder="@username"
+                                        className={`${inputCls('ig_account')} pl-9`}
+                                    />
+                                </div>
                             </div>
                         </div>
                     )}
 
-                    {/* ── Step 3: Bank & Pajak ── */}
+                    {/* Step 3: Bank & Pajak (opsional) */}
                     {step === 3 && (
                         <div className="space-y-5">
                             <h2 className="text-sm font-medium text-gray-900 tracking-tight flex items-center gap-2">
-                                <Landmark size={14} className="text-gray-400" /> Rekening Bank & Pajak
+                                <Landmark size={14} className="text-gray-400" /> Rekening Bank & NPWP
                             </h2>
 
-                            <div>
-                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                                    Nama Bank <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    value={bankName}
-                                    onChange={(e) => setBankName(e.target.value)}
-                                    placeholder="Contoh: BCA, BNI, Mandiri"
-                                    className={inputCls('bank_name')}
-                                />
-                                {errors.bank_name && <p className="text-xs text-red-500 mt-1">{errors.bank_name}</p>}
+                            <p className="text-xs text-gray-500 leading-relaxed -mt-2">
+                                Semua field di bawah <strong>opsional</strong> — bisa dilengkapi nanti dari halaman profil Anda.
+                            </p>
+
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1.5">Nama Bank</label>
+                                    <input
+                                        type="text"
+                                        value={bankName}
+                                        onChange={(e) => setBankName(e.target.value)}
+                                        placeholder="BCA, BNI, Mandiri…"
+                                        className={inputCls('bank_name')}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1.5">Cabang</label>
+                                    <input
+                                        type="text"
+                                        value={bankBranch}
+                                        onChange={(e) => setBankBranch(e.target.value)}
+                                        placeholder="KCP …"
+                                        className={inputCls('bank_branch')}
+                                    />
+                                </div>
                             </div>
 
                             <div>
-                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                                    Nomor Rekening <span className="text-red-500">*</span>
-                                </label>
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">Nomor Rekening</label>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
                                         <CreditCard size={16} className="text-gray-400" />
@@ -869,13 +500,10 @@ export default function DaftarCenter() {
                                         className={`${inputCls('bank_number')} pl-9`}
                                     />
                                 </div>
-                                {errors.bank_number && <p className="text-xs text-red-500 mt-1">{errors.bank_number}</p>}
                             </div>
 
                             <div>
-                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                                    Nama Pemilik Rekening <span className="text-red-500">*</span>
-                                </label>
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">Nama Pemilik Rekening</label>
                                 <input
                                     type="text"
                                     value={bankAccountName}
@@ -883,49 +511,20 @@ export default function DaftarCenter() {
                                     placeholder="Sesuai buku tabungan"
                                     className={inputCls('bank_account_name')}
                                 />
-                                {errors.bank_account_name && <p className="text-xs text-red-500 mt-1">{errors.bank_account_name}</p>}
                             </div>
 
-                            {/* Bank Book Upload */}
-                            <div>
-                                <FileUploadField
-                                    label="Foto Buku Tabungan"
-                                    name="bank_book"
-                                    value={bankBookFile}
-                                    onChange={setBankBookFile}
-                                    hint="Halaman depan yang menampilkan nama & nomor rekening"
-                                    required
-                                />
-                                {errors.bank_book && <p className="text-xs text-red-500 mt-1">{errors.bank_book}</p>}
-                            </div>
+                            <FileUploadField
+                                label="Foto Buku Tabungan"
+                                value={bankBookFile}
+                                onChange={setBankBookFile}
+                                hint="Halaman depan dengan nama & nomor rekening"
+                            />
 
-                            <div className="border-t pt-4">
-                                <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-3">
-                                    NPWP (Opsional)
-                                </p>
-
-                                {/* Tax Doc Upload + OCR */}
-                                <div className="space-y-2 mb-4">
-                                    <FileUploadField
-                                        label="Foto NPWP"
-                                        name="tax_doc"
-                                        value={taxDocFile}
-                                        onChange={setTaxDocFile}
-                                        hint="JPG/PNG, maks 5MB"
-                                    />
-                                    <div className="flex items-center gap-2">
-                                        <OcrScanButton onScanned={handleTaxOcr} disabled={!taxDocFile} />
-                                        <span className="text-xs text-gray-400">
-                                            {taxDocFile ? 'Scan untuk isi nomor pajak otomatis' : 'Upload NPWP terlebih dahulu'}
-                                        </span>
-                                    </div>
-                                </div>
+                            <div className="border-t pt-4 space-y-4">
+                                <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold">NPWP</p>
 
                                 <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                                        Nomor NPWP
-                                        <span className="text-gray-400 font-normal ml-1">(opsional)</span>
-                                    </label>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1.5">No. NPWP</label>
                                     <div className="relative">
                                         <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
                                             <FileText size={16} className="text-gray-400" />
@@ -934,41 +533,56 @@ export default function DaftarCenter() {
                                             type="text"
                                             value={taxNumber}
                                             onChange={(e) => setTaxNumber(e.target.value)}
-                                            placeholder="15 digit nomor NPWP"
-                                            maxLength={15}
+                                            placeholder="00.000.000.0-000.000"
                                             className={`${inputCls('tax_number')} pl-9`}
                                         />
                                     </div>
-                                    {errors.tax_number && <p className="text-xs text-red-500 mt-1">{errors.tax_number}</p>}
                                 </div>
+
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1.5">Nama Pemilik NPWP</label>
+                                    <input
+                                        type="text"
+                                        value={npwpHolderName}
+                                        onChange={(e) => setNpwpHolderName(e.target.value)}
+                                        placeholder="Nama sesuai NPWP"
+                                        className={inputCls('npwp_holder_name')}
+                                    />
+                                </div>
+
+                                <FileUploadField
+                                    label="Foto NPWP"
+                                    value={taxDocFile}
+                                    onChange={setTaxDocFile}
+                                    hint="JPG/PNG, maks 5MB"
+                                />
                             </div>
                         </div>
                     )}
 
-                    {/* ── Step 4: Referral ── */}
+                    {/* Step 4: Inisiator */}
                     {step === 4 && (
                         <div className="space-y-5">
                             <h2 className="text-sm font-medium text-gray-900 tracking-tight flex items-center gap-2">
-                                <Users size={14} className="text-gray-400" /> Kode Referral Inisiator
+                                <Users size={14} className="text-gray-400" /> Kode Inisiator (Upline)
                             </h2>
 
                             <p className="text-sm text-gray-500">
-                                Masukkan kode referral dari Starcenter yang mengajak Anda bergabung.
-                                Jika tidak ada, kosongkan saja.
+                                Masukkan <strong>Kode ID Center</strong> dari Starcenter yang mengajak Anda bergabung
+                                (format: <span className="font-mono">SC230200001</span>).
                             </p>
 
                             <div>
                                 <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                                    Kode Referral
-                                    <span className="text-gray-400 font-normal ml-1">(opsional)</span>
+                                    Kode Inisiator <span className="text-red-500">*</span>
                                 </label>
                                 <div className="relative">
                                     <input
                                         type="text"
                                         value={referralCode}
                                         onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
-                                        placeholder="8 karakter"
-                                        maxLength={8}
+                                        placeholder="SC230200001"
+                                        maxLength={20}
                                         className={`${inputCls('referral_code')} pr-10 font-mono tracking-widest`}
                                     />
                                     <div className="absolute inset-y-0 right-3 flex items-center">
@@ -983,30 +597,27 @@ export default function DaftarCenter() {
                                     </p>
                                 )}
                                 {referralStatus === 'invalid' && (
-                                    <p className="text-xs text-red-500 mt-1">Kode referral tidak ditemukan</p>
+                                    <p className="text-xs text-red-500 mt-1">Kode inisiator tidak ditemukan</p>
                                 )}
                                 {errors.referral_code && <p className="text-xs text-red-500 mt-1">{errors.referral_code}</p>}
                             </div>
 
-                            {/* Summary box */}
                             <div className="bg-gray-50 border border-gray-200 rounded-md p-5 space-y-2 text-sm">
                                 <p className="text-[10px] uppercase tracking-[0.3em] text-gray-400 mb-3">Ringkasan</p>
                                 <div className="flex justify-between"><span className="text-gray-500">Nama Center</span><span className="text-gray-900">{centerName}</span></div>
                                 <div className="flex justify-between"><span className="text-gray-500">Nama Lengkap</span><span className="text-gray-900">{fullName}</span></div>
                                 <div className="flex justify-between"><span className="text-gray-500">Email</span><span className="text-gray-900">{email}</span></div>
                                 <div className="flex justify-between"><span className="text-gray-500">No. HP</span><span className="text-gray-900 tabular-nums">{phone}</span></div>
-                                <div className="flex justify-between"><span className="text-gray-500">Bank</span><span className="text-gray-900">{bankName} · {bankNumber}</span></div>
+                                <div className="flex justify-between"><span className="text-gray-500">Kota</span><span className="text-gray-900">{city}</span></div>
                             </div>
 
                             <div className="bg-amber-50/50 border border-amber-200 rounded-md p-4 text-xs text-amber-800 leading-relaxed">
-                                Dengan mengirim formulir ini, Anda menyetujui bahwa data yang diberikan
-                                adalah benar dan dapat dipertanggungjawabkan. Tim kami akan menghubungi
-                                Anda dalam 1–3 hari kerja.
+                                Setelah disetujui admin, akun Anda akan dibuat dengan password = <strong>No. HP Anda</strong>.
+                                Mohon ganti password setelah login pertama.
                             </div>
                         </div>
                     )}
 
-                    {/* Navigation Buttons */}
                     <div className="flex justify-between mt-8 pt-6 border-t border-gray-100">
                         {step > 1 ? (
                             <button
@@ -1033,7 +644,7 @@ export default function DaftarCenter() {
                             <button
                                 type="button"
                                 onClick={handleSubmit}
-                                disabled={submitting || referralStatus === 'invalid'}
+                                disabled={submitting || referralStatus !== 'valid'}
                                 className="inline-flex items-center gap-1.5 h-11 px-6 btn-primary text-xs uppercase tracking-[0.25em] rounded-md disabled:opacity-50"
                             >
                                 {submitting ? (

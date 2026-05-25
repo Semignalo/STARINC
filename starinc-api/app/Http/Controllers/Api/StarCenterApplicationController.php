@@ -5,14 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\StarcenterApplication;
 use App\Models\StarcenterNetwork;
-use App\Models\Tier;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-use Carbon\Carbon;
 
 class StarCenterApplicationController extends Controller
 {
@@ -22,7 +19,8 @@ class StarCenterApplicationController extends Controller
     public function checkCenterName(Request $request)
     {
         $name = $request->query('name', '');
-        $taken = StarcenterApplication::where('center_name', $name)->exists();
+        $taken = StarcenterApplication::where('center_name', $name)->exists()
+            || User::where('center_name', $name)->exists();
         return response()->json(['available' => !$taken]);
     }
 
@@ -34,62 +32,54 @@ class StarCenterApplicationController extends Controller
         $validated = $request->validate([
             'center_name'       => 'required|string|max:100|unique:starcenter_applications,center_name',
             'full_name'         => 'required|string|max:100',
-            'birth_date'        => 'required|date',
-            'birth_place'       => 'required|string|max:100',
-            'gender'            => 'required|in:L,P',
-            'religion'          => 'required|string|max:50',
-            'marital_status'    => 'required|string|max:50',
-            'occupation'        => 'required|string|max:100',
+            'birth_date'        => 'nullable|date',
             'nik'               => 'nullable|string|size:16',
-            'id_card'           => 'required|file|image|max:5120',
+            'id_card'           => 'nullable|file|image|max:5120',
             'email'             => 'required|email|unique:starcenter_applications,email|unique:users,email',
             'phone'             => 'required|string|max:20',
-            'shop_link'         => 'nullable|url|max:255',
-            'bank_name'         => 'required|string|max:100',
-            'bank_number'       => 'required|string|max:50',
-            'bank_account_name' => 'required|string|max:100',
-            'bank_book'         => 'required|file|image|max:5120',
-            'tax_number'        => 'nullable|string|max:20',
+            'address'           => 'required|string|max:500',
+            'city'              => 'required|string|max:100',
+            'bank_name'         => 'nullable|string|max:100',
+            'bank_number'       => 'nullable|string|max:50',
+            'bank_account_name' => 'nullable|string|max:100',
+            'bank_branch'       => 'nullable|string|max:100',
+            'bank_book'         => 'nullable|file|image|max:5120',
+            'tax_number'        => 'nullable|string|max:30',
+            'npwp_holder_name'  => 'nullable|string|max:100',
             'tax_doc'           => 'nullable|file|image|max:5120',
-            'referral_code'     => 'nullable|string|size:8|exists:users,referral_code',
+            'ig_account'        => 'nullable|string|max:100',
+            'referral_code'     => 'required|string|max:20|exists:users,member_id',
+        ], [
+            'referral_code.exists' => 'Kode inisiator (SC...) tidak ditemukan.',
         ]);
 
-        // Resolve referrer
-        $referrerId = null;
-        if (!empty($validated['referral_code'])) {
-            $referrerId = User::where('referral_code', strtoupper($validated['referral_code']))->value('id');
-        }
+        $referrer = User::where('member_id', $validated['referral_code'])->first();
 
-        // Store private files
-        $idCardPath   = $request->file('id_card')->store('applications/id_cards', 'local');
-        $bankBookPath = $request->file('bank_book')->store('applications/bank_books', 'local');
-        $taxDocPath   = null;
-        if ($request->hasFile('tax_doc')) {
-            $taxDocPath = $request->file('tax_doc')->store('applications/tax_docs', 'local');
-        }
+        $idCardPath   = $request->hasFile('id_card')   ? $request->file('id_card')->store('applications/id_cards', 'local') : null;
+        $bankBookPath = $request->hasFile('bank_book') ? $request->file('bank_book')->store('applications/bank_books', 'local') : null;
+        $taxDocPath   = $request->hasFile('tax_doc')   ? $request->file('tax_doc')->store('applications/tax_docs', 'local') : null;
 
         $application = StarcenterApplication::create([
             'center_name'       => $validated['center_name'],
             'full_name'         => $validated['full_name'],
-            'birth_date'        => $validated['birth_date'],
-            'birth_place'       => $validated['birth_place'],
-            'gender'            => $validated['gender'],
-            'religion'          => $validated['religion'],
-            'marital_status'    => $validated['marital_status'],
-            'occupation'        => $validated['occupation'],
+            'birth_date'        => $validated['birth_date'] ?? null,
             'nik'               => $validated['nik'] ?? null,
             'id_card_path'      => $idCardPath,
             'email'             => $validated['email'],
             'phone'             => $validated['phone'],
-            'shop_link'         => $validated['shop_link'] ?? null,
-            'bank_name'         => $validated['bank_name'],
-            'bank_number'       => $validated['bank_number'],
-            'bank_account_name' => $validated['bank_account_name'],
+            'address'           => $validated['address'],
+            'city'              => $validated['city'],
+            'bank_name'         => $validated['bank_name'] ?? null,
+            'bank_number'       => $validated['bank_number'] ?? null,
+            'bank_account_name' => $validated['bank_account_name'] ?? null,
+            'bank_branch'       => $validated['bank_branch'] ?? null,
             'bank_book_path'    => $bankBookPath,
             'tax_number'        => $validated['tax_number'] ?? null,
+            'npwp_holder_name'  => $validated['npwp_holder_name'] ?? null,
             'tax_doc_path'      => $taxDocPath,
-            'referral_code'     => $validated['referral_code'] ?? null,
-            'referrer_id'       => $referrerId,
+            'ig_account'        => $validated['ig_account'] ?? null,
+            'referral_code'     => $validated['referral_code'],
+            'referrer_id'       => $referrer->id,
             'status'            => 'pending',
         ]);
 
@@ -105,12 +95,9 @@ class StarCenterApplicationController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    /**
-     * Admin: List all applications with optional status filter.
-     */
     public function index(Request $request)
     {
-        $query = StarcenterApplication::with('referrer:id,name')
+        $query = StarcenterApplication::with('referrer:id,name,member_id')
             ->orderBy('created_at', 'desc');
 
         if ($request->has('status')) {
@@ -120,24 +107,21 @@ class StarCenterApplicationController extends Controller
         return response()->json($query->paginate(30));
     }
 
-    /**
-     * Admin: Show one application.
-     */
     public function show(int $id)
     {
-        $app = StarcenterApplication::with(['referrer:id,name,email', 'user:id,name,email,role'])->findOrFail($id);
+        $app = StarcenterApplication::with([
+            'referrer:id,name,email,member_id',
+            'user:id,name,email,role,member_id',
+        ])->findOrFail($id);
         return response()->json($app);
     }
 
-    /**
-     * Admin: Serve a private application document.
-     */
     public function serveDocument(int $id, Request $request)
     {
         $app = StarcenterApplication::findOrFail($id);
 
-        $field = $request->query('field'); // id_card | bank_book | tax_doc
-        $path = match($field) {
+        $field = $request->query('field');
+        $path = match ($field) {
             'id_card'   => $app->id_card_path,
             'bank_book' => $app->bank_book_path,
             'tax_doc'   => $app->tax_doc_path,
@@ -153,6 +137,7 @@ class StarCenterApplicationController extends Controller
 
     /**
      * Admin: Approve application — create User account with starcenter role.
+     * Password default = nomor HP user.
      */
     public function approve(int $id)
     {
@@ -163,20 +148,30 @@ class StarCenterApplicationController extends Controller
         }
 
         DB::transaction(function () use ($app) {
-            $password = Str::random(12);
-
             $user = User::create([
-                'name'              => $app->full_name,
-                'email'             => $app->email,
-                'phone'             => $app->phone,
-                'password'          => Hash::make($password),
-                'role'              => 'starcenter',
-                'referrer_id'       => $app->referrer_id,
-                'referral_code'     => strtoupper(Str::random(8)),
-                'email_verified_at' => now(), // Admin-approved accounts are auto-verified
+                'name'                 => $app->full_name,
+                'center_name'          => $app->center_name,
+                'email'                => $app->email,
+                'phone'                => $app->phone,
+                'password'             => Hash::make($app->phone),
+                'nik'                  => $app->nik,
+                'birth_date'           => $app->birth_date,
+                'address'              => $app->address,
+                'city'                 => $app->city,
+                'bank_name'            => $app->bank_name,
+                'bank_account_number'  => $app->bank_number,
+                'bank_account_holder'  => $app->bank_account_name,
+                'bank_branch'          => $app->bank_branch,
+                'npwp_number'          => $app->tax_number,
+                'npwp_holder_name'     => $app->npwp_holder_name,
+                'ig_account'           => $app->ig_account,
+                'initiator_name'       => $app->referrer?->center_name ?? $app->referrer?->name,
+                'role'                 => 'starcenter',
+                'status'               => 'active',
+                'referrer_id'          => $app->referrer_id,
+                'email_verified_at'    => now(),
             ]);
 
-            // Populate closure table
             if ($app->referrer_id) {
                 StarcenterNetwork::create([
                     'upline_id'   => $app->referrer_id,
@@ -205,9 +200,6 @@ class StarCenterApplicationController extends Controller
         return response()->json(['message' => 'Aplikasi disetujui. Akun starcenter telah dibuat.']);
     }
 
-    /**
-     * Admin: Reject application with reason.
-     */
     public function reject(Request $request, int $id)
     {
         $app = StarcenterApplication::findOrFail($id);

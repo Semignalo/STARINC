@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { User, Phone, Mail, Lock, Save, MapPin, Eye, EyeOff, KeyRound } from 'lucide-react';
+import { User, Phone, Mail, Lock, Save, MapPin, Eye, EyeOff, KeyRound, Building2, Landmark, FileText, Instagram, CreditCard, Calendar, IdCard } from 'lucide-react';
 import { getErrorMessage } from '../../api/client';
 import Swal from 'sweetalert2';
 
@@ -10,10 +10,20 @@ export default function ProfileEdit() {
     // ── Profile Form State ──
     const [profile, setProfile] = useState({
         name: userData?.name || '',
+        center_name: userData?.center_name || '',
+        nik: userData?.nik || '',
+        birth_date: userData?.birth_date || '',
         phone: userData?.phone || '',
         address: userData?.address || '',
         city: userData?.city || '',
         postal_code: userData?.postal_code || '',
+        bank_name: userData?.bank_name || '',
+        bank_account_number: userData?.bank_account_number || '',
+        bank_account_holder: userData?.bank_account_holder || '',
+        bank_branch: userData?.bank_branch || '',
+        npwp_number: userData?.npwp_number || '',
+        npwp_holder_name: userData?.npwp_holder_name || '',
+        ig_account: userData?.ig_account || '',
     });
     const [profileLoading, setProfileLoading] = useState(false);
     const [profileErrors, setProfileErrors] = useState({});
@@ -37,11 +47,15 @@ export default function ProfileEdit() {
 
         // Check if anything changed
         const payload = {};
-        if (profile.name !== userData?.name) payload.name = profile.name;
-        if (profile.phone !== userData?.phone) payload.phone = profile.phone;
-        if (profile.address !== (userData?.address || '')) payload.address = profile.address;
-        if (profile.city !== (userData?.city || '')) payload.city = profile.city;
-        if (profile.postal_code !== (userData?.postal_code || '')) payload.postal_code = profile.postal_code;
+        const fields = [
+            'name', 'center_name', 'nik', 'birth_date',
+            'phone', 'address', 'city', 'postal_code',
+            'bank_name', 'bank_account_number', 'bank_account_holder', 'bank_branch',
+            'npwp_number', 'npwp_holder_name', 'ig_account',
+        ];
+        fields.forEach((f) => {
+            if (profile[f] !== (userData?.[f] || '')) payload[f] = profile[f];
+        });
 
         if (Object.keys(payload).length === 0) {
             Swal.fire({ icon: 'info', title: 'Tidak Ada Perubahan', text: 'Tidak ada data yang berubah.', timer: 1500, showConfirmButton: false });
@@ -114,7 +128,39 @@ export default function ProfileEdit() {
                 </h2>
 
                 <form onSubmit={handleProfileSubmit} className="space-y-5">
+                    {/* Member ID (read-only) */}
+                    {userData?.member_id && (
+                        <div className="bg-gray-50 border border-gray-200 rounded-md px-4 py-3 flex items-center justify-between">
+                            <div>
+                                <p className="text-[10px] uppercase tracking-[0.25em] text-gray-400 mb-0.5">Kode Center</p>
+                                <p className="font-mono text-sm text-gray-900 tracking-wider">{userData.member_id}</p>
+                            </div>
+                            {userData?.initiator_name && (
+                                <div className="text-right">
+                                    <p className="text-[10px] uppercase tracking-[0.25em] text-gray-400 mb-0.5">Inisiator</p>
+                                    <p className="text-sm text-gray-700">{userData.initiator_name}</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                        {/* Center Name */}
+                        <div className="md:col-span-2">
+                            <label className="block text-xs font-medium text-gray-700 mb-1.5">Nama Pendaftaran Center</label>
+                            <div className="relative">
+                                <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                <input
+                                    type="text"
+                                    value={profile.center_name}
+                                    onChange={(e) => setProfile(p => ({ ...p, center_name: e.target.value }))}
+                                    className={`pl-10 ${inputClass(profileErrors.center_name)}`}
+                                    placeholder="Contoh: Starinc Official Surabaya"
+                                />
+                            </div>
+                            {fieldError(profileErrors, 'center_name')}
+                        </div>
 
                         {/* Nama */}
                         <div>
@@ -207,6 +253,141 @@ export default function ProfileEdit() {
                             {fieldError(profileErrors, 'postal_code')}
                         </div>
 
+                        {/* NIK */}
+                        <div>
+                            <label className="block text-xs font-medium text-gray-700 mb-1.5">NIK (KTP)</label>
+                            <div className="relative">
+                                <IdCard className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                <input
+                                    type="text"
+                                    value={profile.nik}
+                                    onChange={(e) => setProfile(p => ({ ...p, nik: e.target.value.replace(/\D/g, '').slice(0, 16) }))}
+                                    className={`pl-10 font-mono tracking-wider ${inputClass(profileErrors.nik)}`}
+                                    placeholder="16 digit"
+                                    maxLength={16}
+                                />
+                            </div>
+                            {fieldError(profileErrors, 'nik')}
+                        </div>
+
+                        {/* Birth Date */}
+                        <div>
+                            <label className="block text-xs font-medium text-gray-700 mb-1.5">Tanggal Lahir</label>
+                            <div className="relative">
+                                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                <input
+                                    type="date"
+                                    value={profile.birth_date}
+                                    onChange={(e) => setProfile(p => ({ ...p, birth_date: e.target.value }))}
+                                    className={`pl-10 ${inputClass(profileErrors.birth_date)}`}
+                                />
+                            </div>
+                            {fieldError(profileErrors, 'birth_date')}
+                        </div>
+
+                        {/* IG */}
+                        <div className="md:col-span-2">
+                            <label className="block text-xs font-medium text-gray-700 mb-1.5">Akun Instagram</label>
+                            <div className="relative">
+                                <Instagram className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                <input
+                                    type="text"
+                                    value={profile.ig_account}
+                                    onChange={(e) => setProfile(p => ({ ...p, ig_account: e.target.value }))}
+                                    className={`pl-10 ${inputClass(profileErrors.ig_account)}`}
+                                    placeholder="@username"
+                                />
+                            </div>
+                            {fieldError(profileErrors, 'ig_account')}
+                        </div>
+
+                    </div>
+
+                    {/* ── Sub-section: Rekening Bank ── */}
+                    <div className="border-t border-gray-100 pt-6 mt-6">
+                        <h3 className="text-sm font-medium text-gray-900 mb-4 flex items-center gap-2">
+                            <Landmark size={14} className="text-gray-400" /> Rekening Bank
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">Nama Bank</label>
+                                <input
+                                    type="text"
+                                    value={profile.bank_name}
+                                    onChange={(e) => setProfile(p => ({ ...p, bank_name: e.target.value }))}
+                                    className={inputClass(profileErrors.bank_name)}
+                                    placeholder="BCA, BNI, Mandiri…"
+                                />
+                                {fieldError(profileErrors, 'bank_name')}
+                            </div>
+                            <div>
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">Cabang Bank</label>
+                                <input
+                                    type="text"
+                                    value={profile.bank_branch}
+                                    onChange={(e) => setProfile(p => ({ ...p, bank_branch: e.target.value }))}
+                                    className={inputClass(profileErrors.bank_branch)}
+                                    placeholder="KCP …"
+                                />
+                                {fieldError(profileErrors, 'bank_branch')}
+                            </div>
+                            <div>
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">No. Rekening</label>
+                                <div className="relative">
+                                    <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                    <input
+                                        type="text"
+                                        value={profile.bank_account_number}
+                                        onChange={(e) => setProfile(p => ({ ...p, bank_account_number: e.target.value }))}
+                                        className={`pl-10 ${inputClass(profileErrors.bank_account_number)}`}
+                                        placeholder="Nomor rekening"
+                                    />
+                                </div>
+                                {fieldError(profileErrors, 'bank_account_number')}
+                            </div>
+                            <div>
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">Nama Pemilik Rekening</label>
+                                <input
+                                    type="text"
+                                    value={profile.bank_account_holder}
+                                    onChange={(e) => setProfile(p => ({ ...p, bank_account_holder: e.target.value }))}
+                                    className={inputClass(profileErrors.bank_account_holder)}
+                                    placeholder="Sesuai buku tabungan"
+                                />
+                                {fieldError(profileErrors, 'bank_account_holder')}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* ── Sub-section: NPWP ── */}
+                    <div className="border-t border-gray-100 pt-6">
+                        <h3 className="text-sm font-medium text-gray-900 mb-4 flex items-center gap-2">
+                            <FileText size={14} className="text-gray-400" /> NPWP
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">No. NPWP</label>
+                                <input
+                                    type="text"
+                                    value={profile.npwp_number}
+                                    onChange={(e) => setProfile(p => ({ ...p, npwp_number: e.target.value }))}
+                                    className={`font-mono ${inputClass(profileErrors.npwp_number)}`}
+                                    placeholder="00.000.000.0-000.000"
+                                />
+                                {fieldError(profileErrors, 'npwp_number')}
+                            </div>
+                            <div>
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">Nama Pemilik NPWP</label>
+                                <input
+                                    type="text"
+                                    value={profile.npwp_holder_name}
+                                    onChange={(e) => setProfile(p => ({ ...p, npwp_holder_name: e.target.value }))}
+                                    className={inputClass(profileErrors.npwp_holder_name)}
+                                    placeholder="Sesuai NPWP"
+                                />
+                                {fieldError(profileErrors, 'npwp_holder_name')}
+                            </div>
+                        </div>
                     </div>
 
                     <div className="flex justify-end pt-2">

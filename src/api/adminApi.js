@@ -6,8 +6,8 @@ export const adminApi = {
         return response.data;
     },
 
-    getUsers: async (page = 1, search = '') => {
-        const response = await apiClient.get('/admin/users', { params: { page, search } });
+    getUsers: async (page = 1, search = '', perPage = 100) => {
+        const response = await apiClient.get('/admin/users', { params: { page, search, per_page: perPage } });
         return response.data;
     },
 

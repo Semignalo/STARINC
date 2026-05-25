@@ -120,11 +120,21 @@ export default function UserDetail() {
             setNewRole(data.user.role);
             setProfileForm({
                 name: data.user.name || '',
+                center_name: data.user.center_name || '',
+                nik: data.user.nik || '',
+                birth_date: data.user.birth_date || '',
                 email: data.user.email || '',
                 phone: data.user.phone || '',
                 address: data.user.address || '',
                 city: data.user.city || '',
                 postal_code: data.user.postal_code || '',
+                bank_name: data.user.bank_name || '',
+                bank_account_number: data.user.bank_account_number || '',
+                bank_account_holder: data.user.bank_account_holder || '',
+                bank_branch: data.user.bank_branch || '',
+                npwp_number: data.user.npwp_number || '',
+                npwp_holder_name: data.user.npwp_holder_name || '',
+                ig_account: data.user.ig_account || '',
             });
         } catch (error) {
             console.error("Error fetching user:", error);
@@ -283,55 +293,120 @@ export default function UserDetail() {
                     </div>
 
                     {!editingProfile ? (
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                            <div>
-                                <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Nama</p>
-                                <p className="text-sm font-medium text-gray-900">{user.name || '-'}</p>
+                        <div className="space-y-6">
+                            {/* Identitas */}
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                                <div>
+                                    <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Kode Center (Member ID)</p>
+                                    <code className="text-sm font-medium text-gray-900 bg-gray-50 px-2 py-1 rounded">{user.member_id || '-'}</code>
+                                </div>
+                                <div>
+                                    <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Nama Pendaftaran Center</p>
+                                    <p className="text-sm font-medium text-gray-900">{user.center_name || '-'}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Nama Lengkap</p>
+                                    <p className="text-sm font-medium text-gray-900">{user.name || '-'}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">NIK</p>
+                                    <p className="text-sm font-medium text-gray-900 font-mono">{user.nik || '-'}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Tanggal Lahir</p>
+                                    <p className="text-sm font-medium text-gray-900">{user.birth_date || '-'}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Email</p>
+                                    <p className="text-sm font-medium text-gray-900">{user.email}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">No. Telepon / WA</p>
+                                    <p className="text-sm font-medium text-gray-900">{user.phone || '-'}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Kota</p>
+                                    <p className="text-sm font-medium text-gray-900">{user.city || '-'}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Akun Instagram</p>
+                                    <p className="text-sm font-medium text-gray-900">{user.ig_account || '-'}</p>
+                                </div>
+                                <div className="md:col-span-2">
+                                    <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Alamat</p>
+                                    <p className="text-sm font-medium text-gray-900">{user.address || '-'}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Inisiator</p>
+                                    <p className="text-sm font-medium text-gray-900">{user.initiator_name || '-'}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Role</p>
+                                    <p className="text-sm font-medium text-gray-900">{roleDisplay[user.role]?.label || user.role}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Status</p>
+                                    <span className={`inline-block px-2 py-0.5 rounded text-xs font-bold uppercase ${user.status === 'inactive' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+                                        {user.status === 'inactive' ? 'Tidak Aktif' : 'Aktif'}
+                                    </span>
+                                </div>
                             </div>
-                            <div>
-                                <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Email</p>
-                                <p className="text-sm font-medium text-gray-900">{user.email}</p>
+
+                            {/* Bank */}
+                            <div className="border-t border-gray-100 pt-5">
+                                <h4 className="text-[11px] font-semibold text-gray-700 uppercase tracking-wider mb-3">Rekening Bank</h4>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                                    <div>
+                                        <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Bank</p>
+                                        <p className="text-sm font-medium text-gray-900">{user.bank_name || '-'}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Cabang</p>
+                                        <p className="text-sm font-medium text-gray-900">{user.bank_branch || '-'}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">No. Rekening</p>
+                                        <p className="text-sm font-medium text-gray-900 font-mono">{user.bank_account_number || '-'}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Nama Pemilik</p>
+                                        <p className="text-sm font-medium text-gray-900">{user.bank_account_holder || '-'}</p>
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">No. Telepon</p>
-                                <p className="text-sm font-medium text-gray-900">{user.phone || '-'}</p>
+
+                            {/* NPWP */}
+                            <div className="border-t border-gray-100 pt-5">
+                                <h4 className="text-[11px] font-semibold text-gray-700 uppercase tracking-wider mb-3">NPWP</h4>
+                                <div className="grid grid-cols-2 gap-6">
+                                    <div>
+                                        <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">No. NPWP</p>
+                                        <p className="text-sm font-medium text-gray-900 font-mono">{user.npwp_number || '-'}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Nama Pemilik NPWP</p>
+                                        <p className="text-sm font-medium text-gray-900">{user.npwp_holder_name || '-'}</p>
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Alamat</p>
-                                <p className="text-sm font-medium text-gray-900">{user.address || '-'}</p>
-                            </div>
-                            <div>
-                                <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Kota</p>
-                                <p className="text-sm font-medium text-gray-900">{user.city || '-'}</p>
-                            </div>
-                            <div>
-                                <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Kode Pos</p>
-                                <p className="text-sm font-medium text-gray-900">{user.postal_code || '-'}</p>
-                            </div>
-                            <div>
-                                <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Role</p>
-                                <p className="text-sm font-medium text-gray-900">{roleDisplay[user.role]?.label || user.role}</p>
-                            </div>
-                            <div>
-                                <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Status Akun</p>
-                                <span className={`inline-block px-2 py-0.5 rounded text-xs font-bold uppercase ${user.status === 'inactive' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
-                                    {user.status === 'inactive' ? 'Tidak Aktif' : 'Aktif'}
-                                </span>
-                            </div>
-                            <div>
-                                <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Total Spending</p>
-                                <p className="text-sm font-medium text-gray-900">Rp. {Number(user.cumulative_spending || 0).toLocaleString('id-ID')}</p>
-                            </div>
-                            <div>
-                                <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Referral Code</p>
-                                <div className="flex items-center gap-2">
-                                    <code className="text-sm font-medium text-gray-900 bg-gray-50 px-2 py-1 rounded">{user.referral_code || '-'}</code>
-                                    {user.referral_code && (
-                                        <button onClick={() => copyToClipboard(user.referral_code)}
-                                            className="p-1 min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-gray-100 rounded transition">
-                                            <Copy size={16} className="text-gray-400" />
-                                        </button>
-                                    )}
+
+                            {/* Spending & Referral */}
+                            <div className="border-t border-gray-100 pt-5 grid grid-cols-2 md:grid-cols-3 gap-6">
+                                <div>
+                                    <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Total Spending</p>
+                                    <p className="text-sm font-medium text-gray-900">Rp. {Number(user.cumulative_spending || 0).toLocaleString('id-ID')}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Referral Code (legacy)</p>
+                                    <div className="flex items-center gap-2">
+                                        <code className="text-sm font-medium text-gray-900 bg-gray-50 px-2 py-1 rounded">{user.referral_code || '-'}</code>
+                                        {user.referral_code && (
+                                            <button onClick={() => copyToClipboard(user.referral_code)}
+                                                className="p-1 min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-gray-100 rounded transition">
+                                                <Copy size={16} className="text-gray-400" />
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -340,10 +415,20 @@ export default function UserDetail() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 {[
                                     { key: 'name', label: 'Nama Lengkap' },
+                                    { key: 'center_name', label: 'Nama Pendaftaran Center' },
+                                    { key: 'nik', label: 'NIK (16 digit)' },
+                                    { key: 'birth_date', label: 'Tanggal Lahir', type: 'date' },
                                     { key: 'email', label: 'Email', type: 'email' },
                                     { key: 'phone', label: 'No. Telepon' },
                                     { key: 'city', label: 'Kota' },
                                     { key: 'postal_code', label: 'Kode Pos' },
+                                    { key: 'ig_account', label: 'Akun Instagram' },
+                                    { key: 'bank_name', label: 'Nama Bank' },
+                                    { key: 'bank_branch', label: 'Cabang Bank' },
+                                    { key: 'bank_account_number', label: 'No. Rekening' },
+                                    { key: 'bank_account_holder', label: 'Pemilik Rekening' },
+                                    { key: 'npwp_number', label: 'No. NPWP' },
+                                    { key: 'npwp_holder_name', label: 'Pemilik NPWP' },
                                 ].map(({ key, label, type = 'text' }) => (
                                     <Input
                                         key={key}

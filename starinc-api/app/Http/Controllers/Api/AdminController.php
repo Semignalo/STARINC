@@ -273,12 +273,22 @@ class AdminController extends Controller
         $user = User::findOrFail($id);
 
         $validated = $request->validate([
-            'name'        => 'required|string|max:255',
-            'email'       => "required|email|unique:users,email,{$id}",
-            'phone'       => 'nullable|string|max:20',
-            'address'     => 'nullable|string|max:500',
-            'city'        => 'nullable|string|max:100',
-            'postal_code' => 'nullable|string|max:10',
+            'name'                => 'required|string|max:255',
+            'center_name'         => 'nullable|string|max:255',
+            'nik'                 => 'nullable|string|size:16',
+            'birth_date'          => 'nullable|date',
+            'email'               => "required|email|unique:users,email,{$id}",
+            'phone'               => 'nullable|string|max:20',
+            'address'             => 'nullable|string|max:500',
+            'city'                => 'nullable|string|max:100',
+            'postal_code'         => 'nullable|string|max:10',
+            'bank_name'           => 'nullable|string|max:50',
+            'bank_account_number' => 'nullable|string|max:50',
+            'bank_account_holder' => 'nullable|string|max:100',
+            'bank_branch'         => 'nullable|string|max:100',
+            'npwp_number'         => 'nullable|string|max:30',
+            'npwp_holder_name'    => 'nullable|string|max:100',
+            'ig_account'          => 'nullable|string|max:100',
         ]);
 
         $user->update($validated);

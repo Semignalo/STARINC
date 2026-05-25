@@ -16,7 +16,10 @@ class User extends Authenticatable implements MustVerifyEmail
     use HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
-        'name', 'email', 'password', 'phone', 'address', 'city', 'postal_code',
+        'member_id', 'name', 'center_name', 'nik', 'birth_date',
+        'email', 'password', 'phone', 'address', 'city', 'postal_code',
+        'bank_name', 'bank_account_number', 'bank_account_holder', 'bank_branch',
+        'npwp_number', 'npwp_holder_name', 'ig_account', 'initiator_name',
         'role', 'status', 'referrer_id', 'referral_code',
         'cumulative_spending', 'last_transaction_at',
     ];
@@ -27,6 +30,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return [
             'email_verified_at'  => 'datetime',
+            'birth_date'         => 'date',
             'last_transaction_at'=> 'datetime',
             'password'           => 'hashed',
             'cumulative_spending'=> 'decimal:2',
@@ -39,7 +43,20 @@ class User extends Authenticatable implements MustVerifyEmail
             if (!$user->referral_code) {
                 $user->referral_code = strtoupper(Str::random(8));
             }
+            if (!$user->member_id) {
+                $user->member_id = self::generateMemberId();
+            }
         });
+    }
+
+    public static function generateMemberId(): string
+    {
+        $prefix = 'SC' . now()->format('ym');
+        $last = self::where('member_id', 'like', $prefix . '%')
+            ->orderByDesc('member_id')
+            ->value('member_id');
+        $seq = $last ? ((int) substr($last, strlen($prefix))) + 1 : 1;
+        return $prefix . str_pad((string) $seq, 5, '0', STR_PAD_LEFT);
     }
 
     // ── Relationships ──

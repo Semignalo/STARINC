@@ -207,7 +207,9 @@ export default function Users() {
 
     const filteredUsers = users.filter(u =>
         u.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        u.name?.toLowerCase().includes(searchTerm.toLowerCase())
+        u.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        u.center_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        u.member_id?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const treeRoots = networkData ? buildTree(networkData.users) : [];
@@ -247,7 +249,7 @@ export default function Users() {
                             <Input
                                 icon={Search}
                                 type="text"
-                                placeholder="Cari Nama / Email..."
+                                placeholder="Cari Nama / Center / Email / Kode..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
@@ -269,6 +271,7 @@ export default function Users() {
                                 <thead className="bg-gray-50/60 border-b border-gray-200">
                                     <tr>
                                         <th className="px-4 py-2.5 text-[11px] font-medium uppercase tracking-wider text-gray-500 text-left">Nama</th>
+                                        <th className="px-4 py-2.5 text-[11px] font-medium uppercase tracking-wider text-gray-500 text-left">Nama Center</th>
                                         <th className="px-4 py-2.5 text-[11px] font-medium uppercase tracking-wider text-gray-500 text-left">Email</th>
                                         <th className="px-4 py-2.5 text-[11px] font-medium uppercase tracking-wider text-gray-500 text-left">Tanggal Daftar</th>
                                         <th className="px-4 py-2.5 text-[11px] font-medium uppercase tracking-wider text-gray-500 text-left">Role / Status</th>
@@ -283,7 +286,11 @@ export default function Users() {
                                             : '—';
                                         return (
                                             <tr key={user.id} className="hover:bg-gray-50/60 transition-colors">
-                                                <td className="px-4 py-2.5 font-medium text-gray-900">{user.name || '—'}</td>
+                                                <td className="px-4 py-2.5">
+                                                    <div className="font-medium text-gray-900">{user.name || '—'}</div>
+                                                    {user.member_id && <div className="text-[10px] font-mono text-gray-400 tracking-wider mt-0.5">{user.member_id}</div>}
+                                                </td>
+                                                <td className="px-4 py-2.5 text-gray-700">{user.center_name || <span className="text-gray-300">—</span>}</td>
                                                 <td className="px-4 py-2.5 text-gray-600">{user.email}</td>
                                                 <td className="px-4 py-2.5 text-gray-500">{dateStr}</td>
                                                 <td className="px-4 py-2.5">

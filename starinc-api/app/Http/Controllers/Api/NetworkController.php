@@ -49,8 +49,8 @@ class NetworkController extends Controller
 
         return response()->json([
             'data' => [
-                'referral_code' => $user->referral_code,
-                'referral_url' => config('app.frontend_url', 'http://localhost:5173').'/register?ref='.$user->referral_code,
+                'referral_code' => $user->member_id,
+                'referral_url' => config('app.frontend_url', 'http://localhost:5173').'/register?ref='.$user->member_id,
                 'total_referrals' => $referrals->count(),
                 'referrals' => $referrals,
             ],
