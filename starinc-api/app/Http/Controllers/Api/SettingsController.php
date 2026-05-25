@@ -148,20 +148,4 @@ class SettingsController extends Controller
         ]);
     }
 
-    /**
-     * Update Tier setting (admin)
-     */
-    public function updateTier(Request $request, int $id)
-    {
-        $tier = \App\Models\Tier::findOrFail($id);
-        $validated = $request->validate([
-            'name' => 'sometimes|string',
-            'min_spend' => 'sometimes|numeric',
-            'discount_percent' => 'sometimes|numeric',
-        ]);
-        
-        $tier->update($validated);
-        
-        return response()->json(['message' => 'Tier berhasil diupdate.', 'tier' => $tier]);
-    }
 }

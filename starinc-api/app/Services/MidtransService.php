@@ -39,7 +39,7 @@ class MidtransService
         if ((float) $order->discount_amount > 0) {
             $itemDetails[] = [
                 'id'       => 'DISCOUNT',
-                'name'     => 'Diskon Tier',
+                'name'     => 'Diskon Center',
                 'price'    => -((int) $order->discount_amount),
                 'quantity' => 1,
             ];

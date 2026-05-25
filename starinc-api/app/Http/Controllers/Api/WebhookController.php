@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Services\CommissionService;
 use App\Services\OrderService;
-use App\Services\TierService;
 use Illuminate\Http\Request;
 use Midtrans\Config;
 
@@ -15,8 +14,7 @@ class WebhookController extends Controller
     public function midtrans(
         Request $request,
         CommissionService $commissionService,
-        OrderService $orderService,
-        TierService $tierService
+        OrderService $orderService
     ) {
         Config::$serverKey    = config('services.midtrans.server_key');
         Config::$isProduction = config('services.midtrans.is_production', false);
@@ -77,12 +75,12 @@ class WebhookController extends Controller
 
         if ($transactionStatus === 'capture') {
             if ($fraudStatus === 'accept') {
-                $this->onPaymentSuccess($order, $commissionService, $tierService);
+                $this->onPaymentSuccess($order, $commissionService);
             } else {
                 $this->onPaymentFailed($order, $orderService);
             }
         } elseif ($transactionStatus === 'settlement') {
-            $this->onPaymentSuccess($order, $commissionService, $tierService);
+            $this->onPaymentSuccess($order, $commissionService);
         } elseif (in_array($transactionStatus, ['cancel', 'deny', 'expire', 'failure'])) {
             $this->onPaymentFailed($order, $orderService);
         }
@@ -90,7 +88,7 @@ class WebhookController extends Controller
         return response()->json(['message' => 'OK']);
     }
 
-    private function onPaymentSuccess(Order $order, CommissionService $commissionService, TierService $tierService): void
+    private function onPaymentSuccess(Order $order, CommissionService $commissionService): void
     {
         // Idempotency guard — jangan proses dua kali
         if ($order->status !== 'pending_payment') {
@@ -104,7 +102,6 @@ class WebhookController extends Controller
             $productSpend = $order->subtotal - $order->discount_amount;
             $user->increment('cumulative_spending', $productSpend);
             $user->update(['last_transaction_at' => now()]);
-            $tierService->evaluateUpgrade($user->fresh());
         }
 
         $commissionService->distribute($order);

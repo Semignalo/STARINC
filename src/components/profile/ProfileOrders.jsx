@@ -264,7 +264,7 @@ export default function ProfileOrders() {
                                         )}
                                         {order.discount_amount > 0 && (
                                             <div className="text-xs text-gray-900 mb-2 flex justify-between tabular-nums">
-                                                <span>Diskon Tier</span>
+                                                <span>Diskon Center</span>
                                                 <span>- {fmt(order.discount_amount)}</span>
                                             </div>
                                         )}

@@ -66,7 +66,6 @@ export default function NetworkTree({ referrals, currentUser }) {
         id: currentUser.id,
         name: currentUser.name,
         email: currentUser.email,
-        tier: currentUser.tier,
         level: 0,
         children: []
     };

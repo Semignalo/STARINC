@@ -34,7 +34,7 @@ const copy = {
         quoteBy: '— Starcenter Member, Jakarta',
         compRows: [
             { label: 'Product Price', regular: 'Retail Price', star: 'Wholesale Price' },
-            { label: 'Partner Status', regular: 'Tier-based', star: 'Permanent' },
+            { label: 'Partner Status', regular: 'Limited', star: 'Permanent' },
             { label: 'New Product Access', regular: 'After Launch', star: 'Early Access' },
             { label: 'Promo Materials', regular: '—', star: 'Provided' },
             { label: 'Dedicated Support', regular: '—', star: 'Dedicated Team' },
@@ -90,7 +90,7 @@ const copy = {
         quoteBy: '— Starcenter Member, Jakarta',
         compRows: [
             { label: 'Harga Produk', regular: 'Harga Normal', star: 'Harga Grosir' },
-            { label: 'Status Mitra', regular: 'Tier-based', star: 'Permanen' },
+            { label: 'Status Mitra', regular: 'Terbatas', star: 'Permanen' },
             { label: 'Akses Produk Baru', regular: 'Setelah Rilis', star: 'Early Access' },
             { label: 'Materi Promosi', regular: '—', star: 'Disediakan' },
             { label: 'Dedicated Support', regular: '—', star: 'Tim Khusus' },

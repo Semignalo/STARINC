@@ -11,11 +11,6 @@ export const settingsApi = {
         return response.data;
     },
 
-    getTiers: async () => {
-        const response = await apiClient.get('/tiers');
-        return response.data;
-    },
-
     getSystemSettings: async () => {
         const response = await apiClient.get('/settings/system');
         return response.data;
